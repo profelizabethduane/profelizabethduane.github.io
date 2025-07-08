@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparação de Complexidade Algorítmica</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            width: 90%;
+            max-width: 900px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comparação de Complexidade Algorítmica: O(1), O(N), O(N<sup>2</sup>)</h1>
+
+    <div class="controls">
+        <label for="nRange">Valor máximo de N: <span id="nValue">100</span></label><br>
+        <input type="range" id="nRange" min="50" max="1000" step="50" value="100">
+    </div>
+
+    <div class="chart-container">
+        <canvas id="complexityChart"></canvas>
+    </div>
+
+    <div class="footer">
+        <p>Dados simulados para ilustração. Os tempos reais de execução podem variar.</p>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('complexityChart').getContext('2d');
+        const nRange = document.getElementById('nRange');
+        const nValue = document.getElementById('nValue');
+
+        let complexityChart;
+
+        function generateData(maxN) {
+            const step = Math.max(1, Math.floor(maxN / 100));
+            const N_values = [];
+            for (let i = 1; i <= maxN; i += step) {
+                N_values.push(i);
+            }
+
+            const O1_data = N_values.map(n => 5);
+            const ON_data = N_values.map(n => n * 0.05);
+            const ON2_data = N_values.map(n => n * n * 0.0001);
+
+            return { N_values, O1_data, ON_data, ON2_data };
+        }
+
+        function createChart(maxN) {
+            const { N_values, O1_data, ON_data, ON2_data } = generateData(maxN);
+
+            if (complexityChart) {
+                complexityChart.destroy();
+            }
+
+            complexityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: N_values,
+                    datasets: [
+                        {
+                            label: 'O(1) - Constante',
+                            data: O1_data,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'O(N) - Linear',
+                            data: ON_data,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'O(N²) - Quadrática',
+                            data: ON2_data,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tamanho da Entrada (N)'
+                            },
+                            type: 'linear',
+                            position: 'bottom'
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Tempo / Operações'
+                            },
+                            min: 0
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(2);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Inicializa o gráfico
+        createChart(parseInt(nRange.value));
+
+        // Atualiza o gráfico quando o slider muda
+        nRange.addEventListener('input', () => {
+            const maxN = parseInt(nRange.value);
+            nValue.textContent = maxN;
+            createChart(maxN);
+        });
+    </script>
+</body>
+</html>
