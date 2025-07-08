@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparação de Complexidade Algorítmica</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            width: 90%;
+            max-width: 900px; /* Largura máxima para o gráfico */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        canvas {
+            display: block; /* Garante que o canvas se comporte como um bloco */
+            width: 100% !important; /* Sobrescreve o estilo inline do Chart.js */
+            height: auto !important; /* Mantém a proporção */
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comparação de Complexidade Algorítmica: O(1), O(N), O(N²)</h1>
+
+    <div class="chart-container">
+        <canvas id="complexityChart"></canvas>
+    </div>
+
+    <div class="footer">
+        <p>Dados simulados para ilustração. Os tempos reais de execução podem variar.</p>
+    </div>
+
+    <script>
+        // Dados para os tamanhos de entrada (N)
+        const N_values = [];
+        for (let i = 1; i <= 500; i += 10) { // Vai de 1 a 500, pulando de 10 em 10
+            N_values.push(i);
+        }
+
+        // Calcula os valores de "tempo" para cada complexidade
+        // O(1) - Tempo constante (muito pequeno, ilustrativo)
+        const O1_data = N_values.map(n => 5); // Simula 5 unidades de tempo constante
+
+        // O(N) - Tempo linear
+        const ON_data = N_values.map(n => n * 0.05); // Simula 0.05 * N unidades de tempo
+
+        // O(N^2) - Tempo quadrático
+        const ON2_data = N_values.map(n => n * n * 0.0001); // Simula 0.0001 * N^2 unidades de tempo
+
+        // Configuração do gráfico Chart.js
+        const ctx = document.getElementById('complexityChart').getContext('2d');
+        const complexityChart = new Chart(ctx, {
+            type: 'line', // Tipo de gráfico: linha
+            data: {
+                labels: N_values, // Rótulos do eixo X (tamanhos de N)
+                datasets: [
+                    {
+                        label: 'O(1) - Constante',
+                        data: O1_data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        fill: false, // Não preencher a área abaixo da linha
+                        tension: 0.1 // Suaviza a linha
+                    },
+                    {
+                        label: 'O(N) - Linear',
+                        data: ON_data,
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'O(N^2) - Quadrática',
+                        data: ON2_data,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Permite que o gráfico se ajuste ao tamanho do contêiner
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tamanho da Entrada (N)'
+                        },
+                        type: 'linear', // Garante que o eixo X seja linear para números
+                        position: 'bottom'
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Tempo / Operações'
+                        },
+                        min: 0 // Garante que o eixo Y comece em 0
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toFixed(2); // Formata para 2 casas decimais
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
