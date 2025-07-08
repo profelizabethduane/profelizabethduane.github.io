@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparação de Complexidade Algorítmica</title>
+    <title>ComparaÃ§Ã£o de Complexidade AlgorÃ­tmica</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -24,7 +24,7 @@
         }
         .chart-container {
             width: 90%;
-            max-width: 900px; /* Largura máxima para o gráfico */
+            max-width: 900px; /* Largura mï¿½xima para o grï¿½fico */
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -33,7 +33,7 @@
         canvas {
             display: block; /* Garante que o canvas se comporte como um bloco */
             width: 100% !important; /* Sobrescreve o estilo inline do Chart.js */
-            height: auto !important; /* Mantém a proporção */
+            height: auto !important; /* Mantï¿½m a proporï¿½ï¿½o */
         }
         .footer {
             margin-top: 30px;
@@ -44,14 +44,14 @@
     </style>
 </head>
 <body>
-    <h1>Comparação de Complexidade Algorítmica: O(1), O(N), O(N²)</h1>
+    <h1>ComparaÃ§Ã£o de Complexidade AlgorÃ­tmica: O(1), O(N), O(N2)</h1>
 
     <div class="chart-container">
         <canvas id="complexityChart"></canvas>
     </div>
 
     <div class="footer">
-        <p>Dados simulados para ilustração. Os tempos reais de execução podem variar.</p>
+        <p>Dados simulados para ilustraÃ§Ã£o. Os tempos reais de execuÃ§Ã£o podem variar.</p>
     </div>
 
     <script>
@@ -68,15 +68,15 @@
         // O(N) - Tempo linear
         const ON_data = N_values.map(n => n * 0.05); // Simula 0.05 * N unidades de tempo
 
-        // O(N^2) - Tempo quadrático
+        // O(N^2) - Tempo quadrï¿½tico
         const ON2_data = N_values.map(n => n * n * 0.0001); // Simula 0.0001 * N^2 unidades de tempo
 
-        // Configuração do gráfico Chart.js
+        // Configuraï¿½ï¿½o do grï¿½fico Chart.js
         const ctx = document.getElementById('complexityChart').getContext('2d');
         const complexityChart = new Chart(ctx, {
-            type: 'line', // Tipo de gráfico: linha
+            type: 'line', // Tipo de grï¿½fico: linha
             data: {
-                labels: N_values, // Rótulos do eixo X (tamanhos de N)
+                labels: N_values, // Rï¿½tulos do eixo X (tamanhos de N)
                 datasets: [
                     {
                         label: 'O(1) - Constante',
@@ -84,7 +84,7 @@
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderWidth: 2,
-                        fill: false, // Não preencher a área abaixo da linha
+                        fill: false, // Nï¿½o preencher a ï¿½rea abaixo da linha
                         tension: 0.1 // Suaviza a linha
                     },
                     {
@@ -97,7 +97,7 @@
                         tension: 0.1
                     },
                     {
-                        label: 'O(N^2) - Quadrática',
+                        label: 'O(N^2) - Quadrï¿½tica',
                         data: ON2_data,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -109,20 +109,20 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Permite que o gráfico se ajuste ao tamanho do contêiner
+                maintainAspectRatio: false, // Permite que o grï¿½fico se ajuste ao tamanho do contï¿½iner
                 scales: {
                     x: {
                         title: {
                             display: true,
                             text: 'Tamanho da Entrada (N)'
                         },
-                        type: 'linear', // Garante que o eixo X seja linear para números
+                        type: 'linear', // Garante que o eixo X seja linear para nï¿½meros
                         position: 'bottom'
                     },
                     y: {
                         title: {
                             display: true,
-                            text: 'Tempo / Operações'
+                            text: 'Tempo / Operaï¿½ï¿½es'
                         },
                         min: 0 // Garante que o eixo Y comece em 0
                     }
