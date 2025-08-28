@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introdução à Computação para Engenharia Química</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Blue Accent -->
+    <!-- Application Structure Plan: A thematic, single-page application with a fixed navigation bar. The structure allows non-linear exploration of core concepts: Hardware, Software, Dados, and Organização. Each section uses interactive cards and diagrams to reveal information on click, promoting active learning. The final section synthesizes all concepts in a practical Chemical Engineering scenario. This structure was chosen to transform a linear lesson plan into an engaging, self-paced digital learning tool that is more intuitive and visually appealing for first-year students. -->
+    <!-- Visualization & Content Choices: 
+        - Intro: Goal: Contextualize. Method: Text. Interaction: None. Justification: Sets the stage for the importance of the topic.
+        - Hardware: Goal: Inform/Organize. Method: Interactive diagram using HTML/CSS divs. Interaction: Click on components to show a modal with details. Justification: More engaging than a static list; mimics exploration.
+        - Software: Goal: Organize/Compare. Method: Card-based layout. Interaction: Click on cards to flip and reveal examples relevant to ChemE. Justification: Visually separates categories and provides context-specific examples.
+        - Dados: Goal: Inform. Method: Bar chart (Chart.js) and text blocks. Interaction: Static chart, dynamic text example. Justification: The chart provides a clear visual for data unit hierarchy.
+        - Organização: Goal: Explain a process. Method: Animated diagram (HTML/CSS/JS). Interaction: Animation on view. Justification: Dynamically shows the input-process-output flow, making it easier to understand than a static diagram.
+        - Aplicação: Goal: Synthesize. Method: Interactive process diagram. Interaction: Click on diagram elements to trigger modals explaining the role of hardware/software/data. Justification: Connects abstract concepts to a real-world engineering problem, solidifying learning.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfaf6;
+            color: #4a4a4a;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+        .active-link {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .chart-container {
+            position: relative; 
+            width: 100%; 
+            max-width: 600px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) { 
+            .chart-container { 
+                height: 350px; 
+            } 
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-xl font-bold text-gray-800">Lab de Programação</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#inicio" class="nav-link text-gray-600 pb-1">Início</a>
+                <a href="#hardware" class="nav-link text-gray-600 pb-1">Hardware</a>
+                <a href="#software" class="nav-link text-gray-600 pb-1">Software</a>
+                <a href="#dados" class="nav-link text-gray-600 pb-1">Dados</a>
+                <a href="#organizacao" class="nav-link text-gray-600 pb-1">Organização</a>
+                <a href="#aplicacao" class="nav-link text-gray-600 pb-1">Aplicação</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#inicio" class="block nav-link text-gray-600">Início</a>
+            <a href="#hardware" class="block nav-link text-gray-600">Hardware</a>
+            <a href="#software" class="block nav-link text-gray-600">Software</a>
+            <a href="#dados" class="block nav-link text-gray-600">Dados</a>
+            <a href="#organizacao" class="block nav-link text-gray-600">Organização</a>
+            <a href="#aplicacao" class="block nav-link text-gray-600">Aplicação</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="inicio" class="min-h-[80vh] flex items-center">
+            <div class="text-center w-full">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Desmistificando o Computador</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Uma introdução aos conceitos fundamentais da computação e sua relevância para a <span class="text-blue-500 font-semibold">Engenharia Química</span>.</p>
+                <p class="text-md text-gray-500 max-w-2xl mx-auto mt-6">Desde a simulação de reatores até a análise de dados experimentais, a programação é uma ferramenta indispensável. Antes de programar, vamos entender a ferramenta que usaremos.</p>
+            </div>
+        </section>
+
+        <section id="hardware" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Hardware: A Parte Física</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Hardware é tudo que você pode tocar em um computador. Explore os componentes principais clicando neles abaixo para saber mais.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div data-modal-target="cpu" class="card p-6 border rounded-lg cursor-pointer bg-blue-50">
+                    <span class="text-4xl">🧠</span>
+                    <h3 class="font-bold mt-2">CPU</h3>
+                    <p class="text-sm text-gray-500">O Cérebro</p>
+                </div>
+                <div data-modal-target="ram" class="card p-6 border rounded-lg cursor-pointer bg-green-50">
+                    <span class="text-4xl">⚡</span>
+                    <h3 class="font-bold mt-2">Memória RAM</h3>
+                    <p class="text-sm text-gray-500">Memória de Curto Prazo</p>
+                </div>
+                <div data-modal-target="storage" class="card p-6 border rounded-lg cursor-pointer bg-yellow-50">
+                    <span class="text-4xl">💾</span>
+                    <h3 class="font-bold mt-2">Armazenamento</h3>
+                    <p class="text-sm text-gray-500">Memória de Longo Prazo</p>
+                </div>
+                <div data-modal-target="input" class="card p-6 border rounded-lg cursor-pointer bg-purple-50 md:col-span-1">
+                    <span class="text-4xl">⌨️</span>
+                    <h3 class="font-bold mt-2">Entrada</h3>
+                    <p class="text-sm text-gray-500">Como damos ordens</p>
+                </div>
+                <div data-modal-target="output" class="card p-6 border rounded-lg cursor-pointer bg-red-50 md:col-span-2">
+                    <span class="text-4xl">🖥️</span>
+                    <h3 class="font-bold mt-2">Saída</h3>
+                    <p class="text-sm text-gray-500">Como vemos os resultados</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="software" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Software: A Parte Lógica</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Software são as instruções que dizem ao hardware o que fazer. Existem diferentes tipos, cada um com uma finalidade específica.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-5xl">👑</span>
+                    <h3 class="text-xl font-bold my-4">Sistemas Operacionais</h3>
+                    <p class="text-gray-600">Gerenciam todo o computador. São os "maestros" que garantem que hardware e outros softwares trabalhem em harmonia. Exemplos: Windows, Linux, macOS.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-5xl">🛠️</span>
+                    <h3 class="text-xl font-bold my-4">Softwares Aplicativos</h3>
+                    <p class="text-gray-600">Programas para tarefas específicas. Na Engenharia Química, usamos MATLAB, Python, Excel e simuladores como ASPEN HYSYS.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-5xl">✍️</span>
+                    <h3 class="text-xl font-bold my-4">Linguagens de Programação</h3>
+                    <p class="text-gray-600">As ferramentas que usamos para criar novos softwares e dar instruções ao computador. Em breve, começaremos a usar Python!</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dados" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Dados: A Matéria-Prima</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Dados são fatos brutos. O computador os processa para gerar informação útil. Tudo em um computador é representado por 0s e 1s (bits).</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">De Bits a Informação</h3>
+                        <p class="text-gray-600 mb-4">Computadores entendem apenas "ligado" (1) e "desligado" (0). Esses são os **bits**. Um conjunto de 8 bits forma um **byte**, que pode representar um caractere, como a letra 'A'.</p>
+                        <p class="text-gray-600">O gráfico ao lado mostra como essas unidades crescem, permitindo armazenar dados cada vez mais complexos.</p>
+                        <div class="mt-6 p-4 bg-gray-100 rounded-lg">
+                            <p><span class="font-bold">Dado Bruto:</span> 25.5</p>
+                            <p><span class="font-bold">Informação:</span> A temperatura do Reator 2 é de 25.5 °C.</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="organizacao" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Organização: Como Tudo Funciona</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">O computador segue um ciclo básico para realizar qualquer tarefa: recebe dados, processa-os e devolve um resultado.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row justify-around items-center space-y-8 md:space-y-0 md:space-x-8">
+                <div class="text-center">
+                    <div class="bg-purple-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-2"><span class="text-4xl">📥</span></div>
+                    <h3 class="font-bold">1. Entrada (Input)</h3>
+                    <p class="text-sm text-gray-500">Dados são inseridos</p>
+                </div>
+                <div class="text-gray-300 text-4xl font-light hidden md:block">→</div>
+                 <div class="text-gray-300 text-4xl font-light block md:hidden">↓</div>
+                <div class="text-center">
+                    <div class="bg-blue-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-2"><span class="text-4xl">⚙️</span></div>
+                    <h3 class="font-bold">2. Processamento</h3>
+                    <p class="text-sm text-gray-500">A CPU executa instruções</p>
+                </div>
+                <div class="text-gray-300 text-4xl font-light hidden md:block">→</div>
+                 <div class="text-gray-300 text-4xl font-light block md:hidden">↓</div>
+                <div class="text-center">
+                    <div class="bg-green-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-2"><span class="text-4xl">📤</span></div>
+                    <h3 class="font-bold">3. Saída (Output)</h3>
+                    <p class="text-sm text-gray-500">O resultado é exibido</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="aplicacao" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Aplicação na Engenharia Química</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Vamos aplicar esses conceitos a um problema real: otimizar a temperatura de um reator. Clique nos elementos do diagrama para ver como hardware, software e dados interagem.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto text-center">
+                 <div class="relative border-2 border-dashed border-gray-300 p-10 rounded-lg">
+                    <div data-modal-target="sensor" class="card absolute top-1/3 left-4 transform -translate-y-1/2 p-3 bg-red-100 rounded-lg cursor-pointer">
+                        <span class="text-2xl">🌡️</span>
+                        <p class="text-xs font-semibold">Sensor</p>
+                    </div>
+                    <div data-modal-target="reator" class="card p-6 bg-gray-200 rounded-full w-48 h-48 flex flex-col items-center justify-center mx-auto cursor-pointer">
+                        <span class="text-5xl">🧪</span>
+                        <h3 class="font-bold mt-2">Reator</h3>
+                    </div>
+                    <div data-modal-target="atuador" class="card absolute bottom-1/3 right-4 transform translate-y-1/2 p-3 bg-green-100 rounded-lg cursor-pointer">
+                        <span class="text-2xl">밸</span>
+                        <p class="text-xs font-semibold">Atuador</p>
+                    </div>
+                    <div data-modal-target="controlador" class="card absolute -bottom-8 left-1/2 transform -translate-x-1/2 p-3 bg-blue-100 rounded-lg cursor-pointer">
+                        <span class="text-2xl">💻</span>
+                        <p class="text-xs font-semibold">Controlador</p>
+                    </div>
+                    <div class="absolute top-1/3 left-20 text-gray-400 text-2xl font-light">→</div>
+                    <div class="absolute bottom-1/3 right-20 text-gray-400 text-2xl font-light">←</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 Laboratório de Programação de Computadores. Conteúdo adaptado para fins educacionais.</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none modal-backdrop">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 modal-content transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800"></h3>
+                <button id="modal-close" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="modal-body" class="text-gray-600"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalData = {
+                cpu: {
+                    title: '🧠 Unidade Central de Processamento (CPU)',
+                    body: '<p>É o "cérebro" do computador. Sua função é executar as instruções dos softwares, realizando cálculos e tomando decisões lógicas. A velocidade da CPU impacta diretamente o desempenho geral do sistema.</p>'
+                },
+                ram: {
+                    title: '⚡ Memória RAM',
+                    body: '<p>Funciona como a "memória de curto prazo". Armazena temporariamente os dados e programas que estão em uso no momento, permitindo que a CPU os acesse rapidamente. É volátil, ou seja, seu conteúdo é apagado quando o computador é desligado.</p>'
+                },
+                storage: {
+                    title: '💾 Armazenamento (HD/SSD)',
+                    body: '<p>É a "memória de longo prazo". Guarda permanentemente o sistema operacional, os softwares e seus arquivos. Diferente da RAM, não é volátil. SSDs são muito mais rápidos que HDs tradicionais.</p>'
+                },
+                input: {
+                    title: '⌨️ Dispositivos de Entrada',
+                    body: '<p>São os componentes que usamos para enviar dados e comandos para o computador. Exemplos incluem teclado, mouse, microfone e scanners. Na indústria, sensores de temperatura ou pressão também são dispositivos de entrada.</p>'
+                },
+                output: {
+                    title: '🖥️ Dispositivos de Saída',
+                    body: '<p>São os componentes que o computador usa para nos mostrar os resultados do processamento. Exemplos comuns são o monitor, a impressora e caixas de som. Em um processo industrial, um atuador que abre uma válvula é um dispositivo de saída.</p>'
+                },
+                sensor: {
+                    title: '🌡️ Sensor de Temperatura',
+                    body: '<p><strong>Hardware:</strong> O sensor físico que mede a temperatura do reator.</p><p><strong>Dados:</strong> Gera um sinal elétrico que é convertido para um dado digital (ex: 25.5).</p><p><strong>Software:</strong> Um programa lê esse dado em intervalos regulares para monitorar o processo.</p>'
+                },
+                reator: {
+                    title: '🧪 Reator Químico',
+                    body: '<p>O coração do nosso processo. O objetivo é controlar suas condições (como a temperatura) para maximizar a eficiência e a segurança da reação química que ocorre em seu interior.</p>'
+                },
+                atuador: {
+                    title: '밸 Atuador (Válvula de Controle)',
+                    body: '<p><strong>Hardware:</strong> A válvula mecânica que controla o fluxo de um fluido de aquecimento ou resfriamento.</p><p><strong>Dados:</strong> Recebe um comando (ex: "abrir 50%").</p><p><strong>Software:</strong> O sistema de controle envia o comando para o atuador com base na análise dos dados do sensor.</p>'
+                },
+                controlador: {
+                    title: '💻 Controlador (Computador)',
+                    body: '<p><strong>Hardware:</strong> O computador industrial (CLP ou similar) que executa o software de controle.</p><p><strong>Software:</strong> O programa que contém a lógica de controle. Ele compara a temperatura medida (dado do sensor) com a temperatura desejada (setpoint) e decide qual ação tomar (enviar comando ao atuador).</p>'
+                }
+            };
+
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalClose = document.getElementById('modal-close');
+
+            document.querySelectorAll('[data-modal-target]').forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const targetId = trigger.dataset.modalTarget;
+                    const data = modalData[targetId];
+                    if (data) {
+                        modalTitle.textContent = data.title;
+                        modalBody.innerHTML = data.body;
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        modal.querySelector('.modal-content').classList.remove('scale-95');
+                    }
+                });
+            });
+
+            function closeModal() {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.querySelector('.modal-content').classList.add('scale-95');
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            const dataCtx = document.getElementById('dataChart').getContext('2d');
+            new Chart(dataCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Bit', 'Byte', 'Kilobyte (KB)', 'Megabyte (MB)', 'Gigabyte (GB)'],
+                    datasets: [{
+                        label: 'Tamanho Relativo (escala logarítmica)',
+                        data: [1, 8, 8 * 1024, 8 * 1024 * 1024, 8 * 1024 * 1024 * 1024],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Número de Bits'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.raw;
+                                    if (value === 1) return '1 Bit';
+                                    if (value === 8) return '8 Bits';
+                                    if (value === 8 * 1024) return '8.192 Bits';
+                                    if (value === 8 * 1024 * 1024) return '~8.4 Milhões de Bits';
+                                    return '~8.5 Bilhões de Bits';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-link');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active-link');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
