@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organização de Computadores e Pastas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals with Blue Accent -->
+    <!-- Application Structure Plan: A thematic single-page application with a fixed navigation bar for easy access to different sections. The structure is designed to be more engaging than a linear document. It starts with an introduction, then moves to an interactive diagram of computer components (where users click to learn), followed by a visual simulation of a file system hierarchy, and concludes with best practices presented as clear, concise cards. This non-linear, interactive approach was chosen to facilitate active learning and make abstract concepts, like file hierarchies, more tangible and easier to understand for beginners. -->
+    <!-- Visualization & Content Choices: 
+        - Computer Components: Goal: Inform/Organize. Method: Interactive diagram using HTML/CSS divs. Interaction: Clicking on a component (CPU, RAM, etc.) opens a modal with its detailed description and analogy. Justification: This visual and tactile approach is more memorable and engaging than reading a simple list.
+        - File System: Goal: Explain hierarchy. Method: A simulated file explorer interface built with nested HTML lists. Interaction: Users can click on folders to expand/collapse them, revealing their contents and purpose. Justification: This provides a direct, hands-on experience with a file system structure, making a complex concept intuitive.
+        - Best Practices: Goal: Summarize/Inform. Method: A grid of cards with icons. Interaction: Simple hover effects for visual feedback. Justification: Cards are excellent for presenting key takeaways in a scannable, easy-to-digest format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover {
+            color: #0d6efd;
+        }
+        .active-link {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .folder-tree ul {
+            padding-left: 1.5rem;
+            border-left: 1px dashed #ced4da;
+        }
+        .folder-tree li {
+            position: relative;
+        }
+        .folder-tree .folder > span {
+            cursor: pointer;
+        }
+        .folder-tree .folder > span:hover {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-xl font-bold text-gray-800">Organização do Computador</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#inicio" class="nav-link text-gray-600 pb-1">Início</a>
+                <a href="#componentes" class="nav-link text-gray-600 pb-1">Componentes</a>
+                <a href="#pastas" class="nav-link text-gray-600 pb-1">Pastas</a>
+                <a href="#praticas" class="nav-link text-gray-600 pb-1">Boas Práticas</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="#inicio" class="block nav-link text-gray-600">Início</a>
+            <a href="#componentes" class="block nav-link text-gray-600">Componentes</a>
+            <a href="#pastas" class="block nav-link text-gray-600">Pastas</a>
+            <a href="#praticas" class="block nav-link text-gray-600">Boas Práticas</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="inicio" class="min-h-[80vh] flex items-center">
+            <div class="text-center w-full">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Arquitetura Digital</h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Entenda como os componentes de um computador trabalham juntos e como organizar seus arquivos digitais de forma eficiente.</p>
+                <p class="text-md text-gray-500 max-w-2xl mx-auto mt-6">Esta página é um guia interativo para desvendar a organização do hardware e a estrutura de pastas que formam a base da computação moderna.</p>
+            </div>
+        </section>
+
+        <section id="componentes" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Componentes Principais do Computador</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Um computador é um sistema com várias partes que interagem. Clique em cada componente abaixo para descobrir sua função e uma analogia para facilitar o entendimento.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div data-modal-target="cpu" class="card p-6 border rounded-lg cursor-pointer bg-blue-50">
+                        <span class="text-4xl">🧠</span>
+                        <h3 class="font-bold mt-2">CPU</h3>
+                        <p class="text-sm text-gray-500">O Cérebro</p>
+                    </div>
+                    <div data-modal-target="ram" class="card p-6 border rounded-lg cursor-pointer bg-green-50">
+                        <span class="text-4xl">⚡</span>
+                        <h3 class="font-bold mt-2">Memória RAM</h3>
+                        <p class="text-sm text-gray-500">Mesa de Trabalho</p>
+                    </div>
+                    <div data-modal-target="storage" class="card p-6 border rounded-lg cursor-pointer bg-yellow-50">
+                        <span class="text-4xl">🗄️</span>
+                        <h3 class="font-bold mt-2">Armazenamento</h3>
+                        <p class="text-sm text-gray-500">Armário de Arquivos</p>
+                    </div>
+                    <div data-modal-target="io" class="card p-6 border rounded-lg cursor-pointer bg-purple-50">
+                        <span class="text-4xl">↔️</span>
+                        <h3 class="font-bold mt-2">Entrada/Saída</h3>
+                        <p class="text-sm text-gray-500">Comunicação</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pastas" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Organização de Pastas no Disco Rígido</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Os arquivos em seu computador são organizados em uma estrutura hierárquica, como uma árvore. Explore a estrutura de pastas típica do Windows clicando nas pastas para expandir.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg max-w-3xl mx-auto">
+                <div class="folder-tree font-mono text-sm">
+                    <ul>
+                        <li class="folder">
+                            <span class="folder-toggle">📁 C:\</span>
+                            <ul class="hidden">
+                                <li class="folder">
+                                    <span class="folder-toggle" data-info="Onde a maioria dos programas instalados são armazenados.">📁 Program Files</span>
+                                    <ul class="hidden">
+                                        <li>📄 software.exe</li>
+                                    </ul>
+                                </li>
+                                <li class="folder">
+                                    <span class="folder-toggle" data-info="A pasta mais importante para você! Contém todos os seus arquivos pessoais.">📁 Users</span>
+                                    <ul class="hidden">
+                                        <li class="folder">
+                                            <span class="folder-toggle" data-info="Sua pasta pessoal, com documentos, downloads, etc.">📁 SeuNome</span>
+                                            <ul class="hidden">
+                                                <li>📄 Documentos</li>
+                                                <li>📄 Downloads</li>
+                                                <li>📄 Imagens</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="folder">
+                                    <span class="folder-toggle" data-info="Contém os arquivos essenciais do sistema operacional Windows. Não altere!">📁 Windows</span>
+                                    <ul class="hidden">
+                                        <li>📄 system32</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div id="folder-info" class="mt-6 p-4 bg-gray-100 rounded-lg text-center text-gray-700 min-h-[50px]">
+                    Clique em uma pasta para ver sua descrição aqui.
+                </div>
+            </div>
+        </section>
+
+        <section id="praticas" class="py-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Boas Práticas de Organização</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Manter seus arquivos organizados economiza tempo e evita dores de cabeça. Aqui estão algumas dicas essenciais.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-4xl">🗂️</span>
+                    <h3 class="text-lg font-bold my-3">Crie Pastas Temáticas</h3>
+                    <p class="text-gray-600 text-sm">Agrupe arquivos por projeto, disciplina ou tipo. Ex: "Documentos/Faculdade/Cálculo I".</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-4xl">🏷️</span>
+                    <h3 class="text-lg font-bold my-3">Use Nomes Descritivos</h3>
+                    <p class="text-gray-600 text-sm">Nomeie arquivos de forma clara. "Relatorio_Reator_2025-08-28.docx" é melhor que "trabalho.docx".</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-4xl">🧹</span>
+                    <h3 class="text-lg font-bold my-3">Evite a Área de Trabalho Lotada</h3>
+                    <p class="text-gray-600 text-sm">Use a área de trabalho para atalhos e arquivos temporários, não como armazenamento principal.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl shadow-lg text-center">
+                    <span class="text-4xl">☁️</span>
+                    <h3 class="text-lg font-bold my-3">Faça Backup Regularmente</h3>
+                    <p class="text-gray-600 text-sm">Guarde cópias de arquivos importantes em um HD externo ou na nuvem para evitar perdas.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t mt-20">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 Guia de Organização de Computadores. Criado para fins educacionais.</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none modal-backdrop">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 modal-content transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800"></h3>
+                <button id="modal-close" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="modal-body" class="text-gray-600"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalData = {
+                cpu: {
+                    title: '🧠 Unidade Central de Processamento (CPU)',
+                    body: '<p class="mb-2"><strong>Função:</strong> É o "cérebro" do computador, responsável por executar todas as instruções e cálculos.</p><p><strong>Analogia:</strong> Pense na CPU como o diretor de uma orquestra, que coordena todos os músicos (componentes) para tocar a música (software).</p>'
+                },
+                ram: {
+                    title: '⚡ Memória RAM',
+                    body: '<p class="mb-2"><strong>Função:</strong> É a memória de acesso rápido e temporária, que armazena os programas e dados em uso no momento. É volátil, ou seja, apaga ao desligar.</p><p><strong>Analogia:</strong> É como a sua mesa de trabalho, onde você coloca os documentos que está usando agora para acesso rápido.</p>'
+                },
+                storage: {
+                    title: '🗄️ Dispositivos de Armazenamento (HD/SSD)',
+                    body: '<p class="mb-2"><strong>Função:</strong> São memórias de longo prazo que guardam permanentemente seus arquivos, programas e o sistema operacional. Não são voláteis.</p><p><strong>Analogia:</strong> É o armário de arquivos do escritório, onde tudo é guardado de forma permanente para uso futuro.</p>'
+                },
+                io: {
+                    title: '↔️ Dispositivos de Entrada e Saída (I/O)',
+                    body: '<p class="mb-2"><strong>Função:</strong> Permitem a sua interação com o computador. Dispositivos de <strong>entrada</strong> (teclado, mouse) enviam dados para o computador. Dispositivos de <strong>saída</strong> (monitor, impressora) mostram os resultados.</p><p><strong>Analogia:</strong> São a porta de entrada e saída do escritório, permitindo a comunicação com o mundo exterior.</p>'
+                }
+            };
+
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalClose = document.getElementById('modal-close');
+
+            document.querySelectorAll('[data-modal-target]').forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const targetId = trigger.dataset.modalTarget;
+                    const data = modalData[targetId];
+                    if (data) {
+                        modalTitle.innerHTML = data.title;
+                        modalBody.innerHTML = data.body;
+                        modal.classList.remove('opacity-0', 'pointer-events-none');
+                        modal.querySelector('.modal-content').classList.remove('scale-95');
+                    }
+                });
+            });
+
+            function closeModal() {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.querySelector('.modal-content').classList.add('scale-95');
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            const folderToggles = document.querySelectorAll('.folder-toggle');
+            const folderInfo = document.getElementById('folder-info');
+            folderToggles.forEach(toggle => {
+                toggle.addEventListener('click', (e) => {
+                    const parentLi = e.target.parentElement;
+                    const sublist = parentLi.querySelector('ul');
+                    if (sublist) {
+                        sublist.classList.toggle('hidden');
+                    }
+                    const infoText = e.target.dataset.info;
+                    folderInfo.textContent = infoText || 'Clique em uma pasta para ver sua descrição aqui.';
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = 'inicio';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 70) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-link');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active-link');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
