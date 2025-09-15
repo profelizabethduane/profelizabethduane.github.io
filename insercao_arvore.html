@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Árvore Binária</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        canvas {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        /* Custom styles for canvas elements if needed, not using Tailwind */
+        .node-circle {
+            fill: #3b82f6;
+            stroke: #2563eb;
+            stroke-width: 2px;
+        }
+        .node-text {
+            fill: #ffffff;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Main Container -->
+    <div class="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full flex flex-col items-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Simulador de Árvore Binária</h1>
+        <p class="text-gray-600 text-center mb-6">
+            Insira um número e clique em "Inserir" para adicioná-lo à árvore.
+        </p>
+
+        <!-- Input and Control Panel -->
+        <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6 w-full justify-center">
+            <input type="number" id="numberInput" placeholder="Digite um número"
+                   class="w-full sm:w-auto p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="insertButton"
+                    class="w-full sm:w-auto px-6 py-3 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition duration-300">
+                Inserir
+            </button>
+            <button id="resetButton"
+                    class="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600 transition duration-300">
+                Reiniciar
+            </button>
+        </div>
+
+        <!-- Status Message Area -->
+        <div id="statusMessage" class="text-sm font-medium text-center h-6"></div>
+
+        <!-- Canvas for Visualization -->
+        <canvas id="treeCanvas" class="w-full border border-gray-300 rounded-lg"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        const numberInput = document.getElementById('numberInput');
+        const insertButton = document.getElementById('insertButton');
+        const resetButton = document.getElementById('resetButton');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Classes for the binary tree data structure
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        class BinaryTree {
+            constructor() {
+                this.root = null;
+            }
+
+            // Simple insertion logic: find the first available spot using a queue (breadth-first traversal)
+            insert(value) {
+                const newNode = new Node(value);
+                if (this.root === null) {
+                    this.root = newNode;
+                    return;
+                }
+
+                const queue = [this.root];
+                while (queue.length > 0) {
+                    const currentNode = queue.shift();
+
+                    if (currentNode.left === null) {
+                        currentNode.left = newNode;
+                        return;
+                    } else {
+                        queue.push(currentNode.left);
+                    }
+
+                    if (currentNode.right === null) {
+                        currentNode.right = newNode;
+                        return;
+                    } else {
+                        queue.push(currentNode.right);
+                    }
+                }
+            }
+        }
+
+        const tree = new BinaryTree();
+
+        // Canvas and drawing variables
+        const nodeRadius = 25;
+        const verticalSpacing = 70;
+        const initialHorizontalSpacing = 400;
+
+        // Function to draw the tree on the canvas
+        function drawTree(node, x, y, horizontalSpacing) {
+            if (node === null) return;
+
+            // Draw line to the left child
+            if (node.left !== null) {
+                const childX = x - horizontalSpacing / 2;
+                const childY = y + verticalSpacing;
+                ctx.beginPath();
+                ctx.moveTo(x, y + nodeRadius);
+                ctx.lineTo(childX, childY - nodeRadius);
+                ctx.strokeStyle = '#9ca3af'; // gray-400
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                drawTree(node.left, childX, childY, horizontalSpacing / 2);
+            }
+
+            // Draw line to the right child
+            if (node.right !== null) {
+                const childX = x + horizontalSpacing / 2;
+                const childY = y + verticalSpacing;
+                ctx.beginPath();
+                ctx.moveTo(x, y + nodeRadius);
+                ctx.lineTo(childX, childY - nodeRadius);
+                ctx.strokeStyle = '#9ca3af'; // gray-400
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                drawTree(node.right, childX, childY, horizontalSpacing / 2);
+            }
+
+            // Draw the circle for the node
+            ctx.beginPath();
+            ctx.arc(x, y, nodeRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#3b82f6'; // blue-500
+            ctx.fill();
+            ctx.strokeStyle = '#2563eb'; // blue-600
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Draw the value of the node
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.value, x, y);
+        }
+
+        // Main function to clear canvas and redraw the tree
+        function redraw() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (tree.root) {
+                drawTree(tree.root, canvas.width / 2, 50, initialHorizontalSpacing);
+            }
+        }
+
+        // Event listener for the "Insert" button
+        insertButton.addEventListener('click', () => {
+            const value = parseInt(numberInput.value);
+            if (!isNaN(value)) {
+                tree.insert(value);
+                redraw();
+                statusMessage.textContent = `Número ${value} inserido com sucesso!`;
+                statusMessage.className = 'text-sm font-medium text-center h-6 text-green-600';
+            } else {
+                statusMessage.textContent = 'Por favor, digite um número válido.';
+                statusMessage.className = 'text-sm font-medium text-center h-6 text-red-600';
+            }
+            numberInput.value = '';
+            numberInput.focus();
+        });
+
+        // Event listener for the "Reset" button
+        resetButton.addEventListener('click', () => {
+            tree.root = null;
+            redraw();
+            statusMessage.textContent = 'Árvore reiniciada.';
+            statusMessage.className = 'text-sm font-medium text-center h-6 text-gray-600';
+        });
+
+        // Make the canvas responsive
+        function resizeCanvas() {
+            const container = document.querySelector('.bg-white');
+            canvas.width = container.offsetWidth - 48; // Adjust for padding
+            canvas.height = 500; // Fixed height for a reasonable view
+            redraw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = resizeCanvas;
+        
+    </script>
+
+</body>
+</html>
