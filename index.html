@@ -3,13 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
+    <title>Páginas de Suporte - Prof. Elizabeth Duane</title>
+    <style>
+        /* Reset e Base */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Fundo claro */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff; /* Fundo branco para o conteúdo */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            border-radius: 8px;
+        }
+
+        /* Título Principal */
+        h1 {
+            color: #007bff; /* Azul primário */
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        /* Título de Seção (Disciplina) */
+        h2 {
+            color: #5a6268;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            padding-left: 10px;
+            border-left: 4px solid #007bff; /* Linha de destaque */
+        }
+
+        /* Lista de Links */
+        .link-list {
+            list-style: none; /* Remove marcadores padrão */
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-list li {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+
+        .link-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Links */
+        a {
+            text-decoration: none; /* Remove sublinhado */
+            color: #0056b3; /* Cor azul mais escura para o link */
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #007bff; /* Cor ao passar o mouse */
+            text-decoration: underline;
+        }
+
+        .separator {
+            margin: 30px 0;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+
+    </style>
 </head>
 <body>
-    <p>
-        Acesse o gráfico de complexidade algorítmica:
-        <a href="complexidade_algoritmica_grafico.html">Gráfico de Complexidade Algorítmica</a>
-    </p>
+    <div class="container">
+        <h1>📚 Páginas de Suporte de Disciplinas</h1>
+        <p style="text-align: center; font-size: 1.1em; color: #6c757d;">
+            Prof. Elizabeth Duane
+        </p>
 
+        <hr class="separator">
+
+        <h2>🔬 Laboratório de Programação de Computação I (Engenharia Química)</h2>
+        <ul class="link-list">
+            <li>
+                <a href="hardware_software.html">Hardware e Software</a>
+            </li>
+            <li>
+                <a href="organizacao_computadores.html">Organização do Computador</a>
+            </li>
+        </ul>
+
+        <h2>💻 Linguagens e Técnicas de Programação I (Informática)</h2>
+        <ul class="link-list">
+            <li>
+                <a href="complexidade_algoritmica_grafico.html">Gráfico de Complexidade Algorítmica</a>
+            </li>
+            <li>
+                <a href="insercao_arvore.html">Inserção em Árvore (primeiro espaço vazio)</a>
+            </li>
+            <li>
+                <a href="quick_sort_lomuto.html">QuickSort - Algoritmo de Lomuto</a>
+            </li>
+        </ul>
+
+    </div>
 </body>
 </html>
