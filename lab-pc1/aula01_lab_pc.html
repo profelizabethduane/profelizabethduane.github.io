@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab PC1 — Aula 01: O Computador por Dentro</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --white: #ffffff;
+    --surface: #f0eeea;
+    --border: #e2dfd8;
+    --text: #1a1916;
+    --muted: #706d66;
+    --green: #1a7a4a;
+    --green-bg: #eaf5ef;
+    --green-border: #b6dfc8;
+    --blue: #1a4fa0;
+    --blue-bg: #eaf0fb;
+    --blue-border: #b3caef;
+    --orange: #b84c00;
+    --orange-bg: #fdf2ea;
+    --orange-border: #f5c89a;
+    --purple: #5c2d91;
+    --purple-bg: #f2eafa;
+    --purple-border: #d4b8f0;
+    --red: #c0392b;
+    --red-bg: #fdecea;
+    --font-head: 'Fraunces', serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,247,244,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 54px;
+  }
+  .nav-logo { font-family: var(--font-head); font-weight: 700; font-size: .95rem; color: var(--text); }
+  .nav-logo span { color: var(--green); }
+  .nav-links { display: flex; gap: 1.25rem; list-style: none; }
+  .nav-links a { font-size: .75rem; font-weight: 600; color: var(--muted); text-decoration: none; letter-spacing: .04em; text-transform: uppercase; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .page-wrap { max-width: 1200px; margin: 0 auto; padding: 0 5vw; }
+
+  section { padding: 4.5rem 0; }
+  section:first-of-type { padding-top: 2rem; }
+  section + section { border-top: 1px solid var(--border); }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-family: var(--font-mono); font-size: .7rem; font-weight: 500;
+    color: var(--green); letter-spacing: .1em; text-transform: uppercase;
+    background: var(--green-bg); border: 1px solid var(--green-border);
+    padding: .25rem .75rem; border-radius: 999px; margin-bottom: 1rem;
+  }
+
+  h2 { font-family: var(--font-head); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 900; line-height: 1.1; letter-spacing: -.02em; margin-bottom: .75rem; }
+  h3 { font-family: var(--font-head); font-size: 1.2rem; font-weight: 700; letter-spacing: -.01em; margin-bottom: .4rem; }
+  p { color: var(--muted); margin-bottom: .9rem; }
+  p:last-child { margin-bottom: 0; }
+
+  .hero { padding: 5rem 5vw 2rem; max-width: 1200px; margin: 0 auto; }
+  .hero-eyebrow { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1.25rem; }
+  .hero h1 em { font-style: normal; color: var(--green); }
+  .hero-desc { font-size: 1.1rem; max-width: 560px; color: var(--muted); margin-bottom: 2rem; }
+  .hero-cta { display: inline-flex; align-items: center; gap: .5rem; background: var(--text); color: var(--white); font-family: var(--font-body); font-weight: 600; padding: .8rem 1.75rem; border-radius: var(--radius); text-decoration: none; font-size: .95rem; transition: background .2s, transform .15s; }
+  .hero-cta:hover { background: var(--green); transform: translateY(-1px); }
+  .hero-pills { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 2rem; }
+  .pill { font-size: .72rem; font-weight: 500; background: var(--white); border: 1px solid var(--border); color: var(--muted); padding: .25rem .75rem; border-radius: 999px; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: .875rem; margin-top: 1.75rem; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: #c8c5bc; transform: translateY(-2px); }
+  .card-num { font-family: var(--font-mono); font-size: .65rem; color: var(--muted); margin-bottom: .5rem; }
+  .card h3 { font-size: .95rem; }
+  .card p { font-size: .85rem; }
+
+  .grade-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 1.75rem; }
+  .grade-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem 1.25rem; text-align: center; box-shadow: var(--shadow); }
+  .grade-val { font-family: var(--font-head); font-size: 3rem; font-weight: 900; line-height: 1; margin-bottom: .5rem; }
+  .gv-green { color: var(--green); }
+  .gv-blue  { color: var(--blue); }
+  .gv-orange{ color: var(--orange); }
+  .grade-name { font-weight: 600; font-size: .9rem; color: var(--text); margin-bottom: .25rem; }
+  .grade-desc { font-size: .78rem; color: var(--muted); }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1.5rem 0 1rem; }
+  .tab-btn { background: var(--white); border: 1px solid var(--border); color: var(--muted); font-family: var(--font-body); font-size: .8rem; font-weight: 600; padding: .45rem 1rem; border-radius: 8px; cursor: pointer; transition: all .18s; }
+  .tab-btn.active, .tab-btn:hover { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .hw-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; box-shadow: var(--shadow); display: grid; grid-template-columns: 56px 1fr; gap: 1.25rem; align-items: start; }
+  .hw-icon { width: 56px; height: 56px; border-radius: 12px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+  .hw-card h3 { font-size: 1.05rem; }
+  .hw-card p { font-size: .875rem; }
+  .spec-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0 .75rem; }
+  .spec { font-family: var(--font-mono); font-size: .68rem; background: var(--surface); border: 1px solid var(--border); color: var(--muted); padding: .18rem .55rem; border-radius: 5px; }
+
+  .info { background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: var(--radius); padding: 1rem 1.2rem; font-size: .875rem; color: var(--text); margin: 1rem 0; }
+  .tip  { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--radius); padding: 1rem 1.2rem; font-size: .875rem; color: var(--text); margin: 1rem 0; }
+  .warn { background: var(--orange-bg); border: 1px solid var(--orange-border); border-radius: var(--radius); padding: 1rem 1.2rem; font-size: .875rem; color: var(--text); margin: 1rem 0; }
+
+  .reveal-btn { display: inline-flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 600; color: var(--blue); background: var(--blue-bg); border: 1px solid var(--blue-border); padding: .35rem .9rem; border-radius: 7px; cursor: pointer; transition: background .15s; margin-top: .5rem; }
+  .reveal-btn:hover { background: var(--blue-border); }
+  .reveal-content { display: none; margin-top: .75rem; }
+  .reveal-content.open { display: block; }
+
+  .code { background: #1e1e2e; color: #cdd6f4; border-radius: var(--radius); padding: 1.4rem 1.5rem; font-family: var(--font-mono); font-size: .82rem; line-height: 1.8; overflow-x: auto; margin: 1rem 0; box-shadow: var(--shadow); }
+  .kw  { color: #cba6f7; }
+  .fn  { color: #a6e3a1; }
+  .str { color: #a6e3a1; }
+  .num { color: #fab387; }
+  .cm  { color: #6c7086; }
+
+  .cycle { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: center; gap: .5rem; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem 1.5rem; box-shadow: var(--shadow); margin: 1.75rem 0; }
+  .cycle-step { text-align: center; }
+  .cycle-step .ci { font-size: 2rem; margin-bottom: .4rem; }
+  .cycle-step h4 { font-family: var(--font-head); font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
+  .cycle-step p { font-size: .75rem; margin: 0; }
+  .cycle-arrow { color: var(--muted); font-size: 1.2rem; text-align: center; }
+
+  .bits-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .75rem; margin: 1.25rem 0; }
+  .bit { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem .75rem; text-align: center; box-shadow: var(--shadow); }
+  .bit-val { font-family: var(--font-head); font-size: 1.25rem; font-weight: 900; color: var(--green); }
+  .bit-label { font-size: .7rem; color: var(--muted); margin-top: .2rem; }
+
+  .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .875rem; margin-top: 1.5rem; }
+  .app-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow); border-top: 3px solid transparent; transition: transform .2s; }
+  .app-card:hover { transform: translateY(-2px); }
+  .app-card.a1 { border-top-color: var(--green); }
+  .app-card.a2 { border-top-color: var(--blue); }
+  .app-card.a3 { border-top-color: var(--orange); }
+  .app-card.a4 { border-top-color: var(--purple); }
+  .app-card.a5 { border-top-color: #0891b2; }
+  .app-card.a6 { border-top-color: #be185d; }
+  .app-icon { font-size: 1.5rem; margin-bottom: .6rem; }
+  .app-card h3 { font-size: .95rem; }
+  .app-card p { font-size: .8rem; }
+
+  .quiz-box { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); margin-top: 1.75rem; }
+  .quiz-head { font-family: var(--font-head); font-size: 1.15rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: .5rem; }
+  .question { margin-bottom: 1.75rem; }
+  .question > p { color: var(--text); font-weight: 500; font-size: .925rem; margin-bottom: .75rem; }
+  .opts { display: flex; flex-direction: column; gap: .4rem; }
+  .opt { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: .7rem 1rem; cursor: pointer; font-size: .85rem; color: var(--muted); display: flex; align-items: center; gap: .75rem; transition: all .15s; }
+  .opt:hover { border-color: #b0aba2; color: var(--text); }
+  .opt.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .opt.wrong   { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+  .opt-l { width: 22px; height: 22px; border-radius: 5px; background: var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: .68rem; font-weight: 600; }
+  .fb { display: none; margin-top: .6rem; font-size: .82rem; padding: .65rem 1rem; border-radius: 7px; font-weight: 500; }
+  .fb.show { display: block; }
+  .fb.ok   { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .fb.nope { background: var(--red-bg); color: var(--red); border: 1px solid #f5b7b1; }
+
+  .progress-wrap { background: var(--surface); border-radius: 999px; height: 5px; margin: 1.5rem 0 1.25rem; }
+  .progress-fill { height: 5px; border-radius: 999px; background: var(--green); width: 0; transition: width .4s; }
+
+  .btn-primary { background: var(--text); color: var(--white); font-family: var(--font-body); font-weight: 600; padding: .75rem 1.75rem; border: none; border-radius: var(--radius); cursor: pointer; font-size: .9rem; transition: background .2s; }
+  .btn-primary:hover { background: var(--green); }
+  .btn-sec { background: none; border: 1.5px solid var(--border); color: var(--muted); font-family: var(--font-body); font-size: .8rem; font-weight: 600; padding: .6rem 1.25rem; border-radius: var(--radius); cursor: pointer; transition: all .15s; }
+  .btn-sec:hover { border-color: var(--text); color: var(--text); }
+
+  .score-box { display: none; margin-top: 1.5rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+  .score-box.show { display: block; }
+  .score-big { font-family: var(--font-head); font-size: 3.5rem; font-weight: 900; color: var(--green); }
+  .score-msg { color: var(--muted); font-size: .875rem; margin-top: .35rem; }
+
+  .classify-src { display: flex; flex-wrap: wrap; gap: .5rem; min-height: 50px; margin-bottom: 1.25rem; padding: .75rem; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); }
+  .drag-tag { font-family: var(--font-mono); font-size: .75rem; font-weight: 500; background: var(--white); border: 1.5px solid var(--border); color: var(--text); padding: .35rem .9rem; border-radius: 7px; cursor: grab; user-select: none; transition: box-shadow .15s; }
+  .drag-tag:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+  .bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .875rem; }
+  .bin { background: var(--white); border: 2px dashed var(--border); border-radius: var(--radius); padding: 1rem; min-height: 110px; transition: border-color .2s; }
+  .bin.drag-over { border-color: var(--blue); background: var(--blue-bg); }
+  .bin h4 { font-family: var(--font-head); font-size: .85rem; font-weight: 700; margin-bottom: .6rem; color: var(--text); }
+  .bin-items { display: flex; flex-wrap: wrap; gap: .4rem; min-height: 36px; }
+
+  textarea { width: 100%; min-height: 90px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); padding: .9rem 1rem; font-family: var(--font-body); font-size: .875rem; resize: vertical; transition: border-color .2s; }
+  textarea:focus { outline: none; border-color: var(--green); }
+
+  .divider { width: 40px; height: 3px; background: var(--green); border-radius: 2px; margin: 1rem 0 1.5rem; }
+
+  footer { background: var(--white); border-top: 1px solid var(--border); padding: 1.5rem 5vw; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem; }
+  footer p { color: var(--muted); font-size: .78rem; margin: 0; }
+
+  .fi { opacity: 0; transform: translateY(16px); transition: opacity .5s, transform .5s; }
+  .fi.in { opacity: 1; transform: none; }
+
+  @media (max-width: 640px) {
+    .grade-row { grid-template-columns: 1fr; }
+    .cycle { grid-template-columns: 1fr; }
+    .cycle-arrow { transform: rotate(90deg); font-size: .9rem; }
+    .hw-card { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">💻  Lab PC<span>1</span></div>
+  <ul class="nav-links">
+    <li><a href="#sobre">Curso</a></li>
+    <li><a href="#hardware">Hardware</a></li>
+    <li><a href="#software">Software</a></li>
+    <li><a href="#dados">Dados</a></li>
+    <li><a href="#organizacao">Organização</a></li>
+    <li><a href="#aplicacoes">Aplicações</a></li>
+    <li><a href="#atividades">Atividades</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <p class="hero-eyebrow">Laboratório de PC 1 · Aula 01 · Engenharia Química · CEFET-MG Contagem</p>
+  <h1>O Computador<br><em>por Dentro</em></h1>
+  <p class="hero-desc">Hardware, software e dados — os fundamentos que você precisa dominar antes de escrever sua primeira linha de código em C.</p>
+
+
+</div>
+
+<div class="page-wrap">
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="section-label">// apresentação do curso</div>
+  <h2>Bem-vindo ao Lab de PC 1</h2>
+  <div class="divider"></div>
+  <p>Esta disciplina é seu ponto de partida na programação. Durante o semestre você vai sair do zero e ser capaz de criar programas reais em <strong>linguagem C</strong> para resolver problemas de engenharia. Ao final do curso, você será capaz de:</p>
+
+  <div class="cards fi">
+    <div class="card">
+      <div class="card-num">// objetivo 01</div>
+      <h3>Entender a máquina</h3>
+      <p>Compreender o que é hardware, software e algoritmo, e como eles se conectam.</p>
+    </div>
+    <div class="card">
+      <div class="card-num">// objetivo 02</div>
+      <h3>Pensar passo a passo</h3>
+      <p>Desenvolver raciocínio lógico para decompor qualquer problema em instruções executáveis.</p>
+    </div>
+    <div class="card">
+      <div class="card-num">// objetivo 03</div>
+      <h3>Programar em C</h3>
+      <p>Dominar variáveis, condicionais, laços, vetores, funções e manipulação de arquivos.</p>
+    </div>
+    <div class="card" style="border-color: var(--green-border); background: var(--green-bg);">
+      <div class="card-num" style="color:var(--green);">// ao final do semestre</div>
+      <h3>Você criará programas que…</h3>
+      <p>Leem dados, realizam cálculos de engenharia e exibem resultados automaticamente — sem precisar de planilha.</p>
+    </div>
+  </div>
+
+  <div class="warn">
+    📌 <strong>Correquisito:</strong> Esta disciplina roda em paralelo com <em>Programação de Computadores 1 (PC1)</em>. A teoria é aprofundada em PC1; aqui você <strong>pratica e implementa</strong>.
+  </div>
+
+  <div class="section-label" style="margin-top:3rem;">// distribuição de pontos</div>
+  <h2>Como você será avaliado</h2>
+  <div class="divider"></div>
+
+  <div class="grade-row fi">
+    <div class="grade-card">
+      <div class="grade-val gv-green">40</div>
+      <div class="grade-name">Prova 1</div>
+      <div class="grade-desc">Conceitos, algoritmos e linguagem C básica</div>
+    </div>
+    <div class="grade-card">
+      <div class="grade-val gv-blue">40</div>
+      <div class="grade-name">Prova 2</div>
+      <div class="grade-desc">Laços, vetores, funções e arquivos</div>
+    </div>
+    <div class="grade-card">
+      <div class="grade-val gv-orange">20</div>
+      <div class="grade-name">Listas de Exercícios</div>
+      <div class="grade-desc">Entregas ao longo do semestre</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    💡 As listas são a <strong>forma mais segura de construir sua nota</strong> na prova: são feitas no laboratório ou em casa, com consulta, e mostram exatamente o que cai nas provas. Não as negligencie.
+  </div>
+</section>
+
+<!-- HARDWARE -->
+<section id="hardware">
+  <div class="section-label">// unidade 1.1 — hardware</div>
+  <h2>Hardware: a parte física</h2>
+  <div class="divider"></div>
+  <p>Hardware são todos os componentes físicos do computador — o que você pode tocar. Antes de programar, é fundamental entender <em>onde</em> o programa vai rodar.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('cpu', this)">🧠 CPU</button>
+    <button class="tab-btn" onclick="switchTab('ram', this)">⚡ Memória RAM</button>
+    <button class="tab-btn" onclick="switchTab('hd', this)">💾 Armazenamento</button>
+    <button class="tab-btn" onclick="switchTab('io', this)">⌨️ Entrada/Saída</button>
+    <button class="tab-btn" onclick="switchTab('gpu', this)">🎮 GPU</button>
+  </div>
+
+  <div id="tab-cpu" class="tab-content active">
+    <div class="hw-card">
+      <div class="hw-icon">🧠</div>
+      <div>
+        <h3>CPU — Unidade Central de Processamento</h3>
+        <p>É o "cérebro" do computador. Executa todas as instruções: somar números, comparar valores, tomar decisões. Sua velocidade é medida em GHz (bilhões de operações por segundo).</p>
+        <div class="spec-row">
+          <span class="spec">Intel Core / AMD Ryzen</span>
+          <span class="spec">2 a 64+ núcleos</span>
+          <span class="spec">2–6 GHz</span>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r1')">💡 Ver analogia do dia a dia</button>
+        <div id="r1" class="reveal-content tip">
+          <strong>Analogia:</strong> A CPU é como o <strong>seu cérebro resolvendo uma prova</strong>. Você lê a questão (entrada), pensa e calcula (processamento) e escreve a resposta (saída). O que define sua "velocidade" é quantas questões consegue resolver por minuto — assim como a CPU é medida em operações por segundo.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-ram" class="tab-content">
+    <div class="hw-card">
+      <div class="hw-icon">⚡</div>
+      <div>
+        <h3>Memória RAM — Memória de Trabalho</h3>
+        <p>Guarda temporariamente os dados e programas que estão <em>em uso agora</em>. É muito rápida, mas <strong>volátil</strong>: ao desligar o computador, tudo que está na RAM é apagado.</p>
+        <div class="spec-row">
+          <span class="spec">DDR4 / DDR5</span>
+          <span class="spec">8 a 128 GB típicos</span>
+          <span class="spec">Volátil</span>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r2')">💡 Ver analogia do dia a dia</button>
+        <div id="r2" class="reveal-content tip">
+          <strong>Analogia:</strong> A RAM é como a <strong>mesa onde você estuda</strong>. Você coloca ali só o que está usando agora — caderno, calculadora, caneta. Quando você termina e se levanta, a mesa fica vazia. Quanto maior a mesa, mais você consegue trabalhar ao mesmo tempo sem precisar ficar guardando e pegando coisas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-hd" class="tab-content">
+    <div class="hw-card">
+      <div class="hw-icon">💾</div>
+      <div>
+        <h3>Armazenamento — HD / SSD</h3>
+        <p>Guarda dados <strong>permanentemente</strong>, mesmo com o computador desligado: arquivos, programas, sistema operacional. SSDs são muito mais rápidos que HDs mecânicos. É aqui que seu código em C fica salvo.</p>
+        <div class="spec-row">
+          <span class="spec">HDD (mecânico)</span>
+          <span class="spec">SSD (memória flash)</span>
+          <span class="spec">256 GB a vários TB</span>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r3')">💡 Ver analogia do dia a dia</button>
+        <div id="r3" class="reveal-content tip">
+          <strong>Analogia:</strong> O armazenamento é como uma <strong>mochila ou estante de livros</strong>. Tudo que você guarda lá fica permanentemente — mesmo depois de ir embora. A diferença para a RAM (sua mesa de estudos): a estante guarda tudo para quando precisar depois; a mesa é só para o que está usando agora.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-io" class="tab-content">
+    <div class="hw-card">
+      <div class="hw-icon">⌨️</div>
+      <div>
+        <h3>Dispositivos de Entrada e Saída</h3>
+        <p><strong>Entrada:</strong> teclado, mouse, câmera, microfone — formas de fornecer dados ao computador.<br><strong>Saída:</strong> monitor, caixa de som, impressora — formas do computador comunicar resultados ao usuário.</p>
+        <div class="spec-row">
+          <span class="spec">Entrada: teclado, mouse</span>
+          <span class="spec">Saída: monitor, impressora</span>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r4')">💡 Ver analogia do dia a dia</button>
+        <div id="r4" class="reveal-content tip">
+          <strong>Analogia:</strong> Entrada é como <strong>fazer uma pergunta</strong> — você fornece informações. Saída é <strong>receber a resposta</strong> — o computador devolve o resultado. Em programação, o teclado é sua "voz" e o monitor é o "quadro" que mostra a resposta.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-gpu" class="tab-content">
+    <div class="hw-card">
+      <div class="hw-icon">🎮</div>
+      <div>
+        <h3>GPU — Processamento Gráfico e Paralelo</h3>
+        <p>Originalmente para jogos, hoje usada em qualquer tarefa que precise de muitos cálculos simultâneos: inteligência artificial, simulações científicas e renderização 3D.</p>
+        <div class="spec-row">
+          <span class="spec">NVIDIA / AMD</span>
+          <span class="spec">Milhares de núcleos</span>
+          <span class="spec">IA / Simulações</span>
+        </div>
+        <button class="reveal-btn" onclick="toggleReveal('r5')">💡 Ver analogia do dia a dia</button>
+        <div id="r5" class="reveal-content tip">
+          <strong>Analogia:</strong> A GPU é como uma <strong>turma inteira resolvendo uma prova ao mesmo tempo</strong>. A CPU é um aluno muito inteligente que resolve questões difíceis uma de cada vez. A GPU são 5.000 alunos, cada um resolvendo uma questão simples simultaneamente — no total, muito mais rápido para certas tarefas.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOFTWARE -->
+<section id="software">
+  <div class="section-label">// unidade 1.2 — software</div>
+  <h2>Software: as instruções</h2>
+  <div class="divider"></div>
+  <p>Software é o conjunto de instruções que diz ao hardware o que fazer. Sem software, um computador é apenas um conjunto de peças físicas — não faz nada útil por conta própria.</p>
+
+  <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:.875rem; margin-top:1.75rem;">
+    <div class="card" style="border-left: 3px solid var(--green);">
+      <div class="card-num">// tipo 1</div>
+      <h3>🖥️ Sistema Operacional</h3>
+      <p>Gerencia todos os recursos do computador. Faz a ponte entre você e o hardware.</p>
+      <p style="color:var(--green); font-size:.8rem; font-weight:600;">Exemplos: Windows, Linux, macOS</p>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--blue);">
+      <div class="card-num">// tipo 2</div>
+      <h3>🛠️ Software Aplicativo</h3>
+      <p>Programas criados para tarefas específicas do usuário.</p>
+      <p style="color:var(--blue); font-size:.8rem; font-weight:600;">Exemplos: Word, Excel, MATLAB, calculadora</p>
+    </div>
+    <div class="card" style="border-left: 3px solid var(--orange);">
+      <div class="card-num">// tipo 3</div>
+      <h3>✍️ Linguagem de Programação</h3>
+      <p>Ferramenta para escrever novos softwares e dar instruções ao computador.</p>
+      <p style="color:var(--orange); font-size:.8rem; font-weight:600;">Nesta disciplina: linguagem C</p>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:2.5rem;">// de texto para máquina</div>
+  <h3 style="font-size:1.4rem; margin-bottom:.75rem;">Como seu código vira ação?</h3>
+  <ol style="margin: .75rem 0 1rem 1.25rem; display:flex; flex-direction:column; gap:.4rem; color:var(--muted); font-size:.95rem;">
+    <li>Você escreve código em <strong style="color:var(--text);">linguagem C</strong> (legível por humanos).</li>
+    <li>O <strong style="color:var(--text);">compilador</strong> — outro software — traduz isso para linguagem de máquina (0s e 1s).</li>
+    <li>A <strong style="color:var(--text);">CPU</strong> lê os comandos em linguagem de máquina e os executa.</li>
+  </ol>
+
+  <!-- Flowchart: code → compile → run -->
+  <div style="background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:2rem 1.5rem; box-shadow:var(--shadow); margin:1rem 0; overflow-x:auto;">
+    <svg viewBox="0 0 680 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',sans-serif;">
+      <!-- Box 1: Você escreve -->
+      <rect x="10" y="30" width="150" height="80" rx="10" fill="#eaf5ef" stroke="#b6dfc8" stroke-width="1.5"/>
+      <text x="85" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="#1a7a4a">✍️ Você escreve</text>
+      <text x="85" y="80" text-anchor="middle" font-size="10" fill="#706d66">código em linguagem</text>
+      <text x="85" y="96" text-anchor="middle" font-size="10" fill="#706d66">C (legível por humanos)</text>
+      <!-- Arrow -->
+      <line x1="160" y1="70" x2="196" y2="70" stroke="#b0aba2" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Box 2: Compilador -->
+      <rect x="197" y="30" width="150" height="80" rx="10" fill="#eaf0fb" stroke="#b3caef" stroke-width="1.5"/>
+      <text x="272" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="#1a4fa0">⚙️ Compilador</text>
+      <text x="272" y="80" text-anchor="middle" font-size="10" fill="#706d66">traduz para linguagem</text>
+      <text x="272" y="96" text-anchor="middle" font-size="10" fill="#706d66">de máquina (0s e 1s)</text>
+      <!-- Arrow -->
+      <line x1="347" y1="70" x2="383" y2="70" stroke="#b0aba2" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Box 3: CPU executa -->
+      <rect x="384" y="30" width="150" height="80" rx="10" fill="#fdf2ea" stroke="#f5c89a" stroke-width="1.5"/>
+      <text x="459" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="#b84c00">🧠 CPU executa</text>
+      <text x="459" y="80" text-anchor="middle" font-size="10" fill="#706d66">as instruções binárias</text>
+      <text x="459" y="96" text-anchor="middle" font-size="10" fill="#706d66">em bilhões de ciclos/s</text>
+      <!-- Arrow -->
+      <line x1="534" y1="70" x2="570" y2="70" stroke="#b0aba2" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Box 4: Resultado -->
+      <rect x="571" y="30" width="100" height="80" rx="10" fill="#f0eeea" stroke="#e2dfd8" stroke-width="1.5"/>
+      <text x="621" y="62" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1916">📺 Resultado</text>
+      <text x="621" y="80" text-anchor="middle" font-size="10" fill="#706d66">aparece</text>
+      <text x="621" y="96" text-anchor="middle" font-size="10" fill="#706d66">na tela</text>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#b0aba2"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  <div class="tip">💡 O compilador é um software que atua como <strong>tradutor</strong>: converte seu código (que você entende) para instruções binárias (que a CPU entende). Você aprenderá a usar o compilador <strong>GCC</strong> nas próximas aulas.</div>
+</section>
+
+<!-- DADOS -->
+<section id="dados">
+  <div class="section-label">// unidade 1.3 — dados</div>
+  <h2>Dados: a matéria-prima</h2>
+  <div class="divider"></div>
+  <p>Computadores entendem apenas <strong>0</strong> e <strong>1</strong> — dois estados elétricos: desligado e ligado. Tudo que existe no computador (texto, números, imagens, vídeos) é representado por combinações desses dois valores.</p>
+
+  <h3 style="margin: 1.5rem 0 .75rem;">Hierarquia das unidades</h3>
+  <div class="bits-row">
+    <div class="bit"><div class="bit-val">0 / 1</div><div class="bit-label">Bit</div></div>
+    <div class="bit"><div class="bit-val">8 bits</div><div class="bit-label">Byte = 1 char</div></div>
+    <div class="bit"><div class="bit-val">1.024 B</div><div class="bit-label">Kilobyte (KB)</div></div>
+    <div class="bit"><div class="bit-val">1.024 KB</div><div class="bit-label">Megabyte (MB)</div></div>
+    <div class="bit"><div class="bit-val">1.024 MB</div><div class="bit-label">Gigabyte (GB)</div></div>
+    <div class="bit"><div class="bit-val">1.024 GB</div><div class="bit-label">Terabyte (TB)</div></div>
+  </div>
+
+  <div class="tip">
+    💡 Por que 1.024 e não 1.000? Computadores trabalham em base 2 (binário): 2¹⁰ = <strong>1.024</strong>. É a "centena" do mundo binário.
+  </div>
+
+  <h3 style="margin: 1.5rem 0 .75rem;">Quanto espaço cada tipo de dado ocupa?</h3>
+  <p>Diferentes tipos de informação exigem quantidades diferentes de bits para serem armazenados — tanto na memória RAM (enquanto o computador está ligado) quanto no HD/SSD (permanentemente).</p>
+
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:.875rem; margin: 1.25rem 0;">
+
+    <div class="card" style="border-top: 3px solid var(--green);">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">🔢</div>
+      <h3 style="font-size:.95rem;">Número inteiro</h3>
+      <p style="font-size:.82rem;">Ex: <strong>42</strong> ou <strong>-7</strong></p>
+      <div style="margin-top:.75rem; background:var(--green-bg); border:1px solid var(--green-border); border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:var(--green); font-weight:600;">32 bits (4 bytes)</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">Representa até ±2 bilhões</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--blue);">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">📐</div>
+      <h3 style="font-size:.95rem;">Número decimal</h3>
+      <p style="font-size:.82rem;">Ex: <strong>3.14</strong> ou <strong>-0.5</strong></p>
+      <div style="margin-top:.75rem; background:var(--blue-bg); border:1px solid var(--blue-border); border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:var(--blue); font-weight:600;">32 a 64 bits (4–8 bytes)</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">Precisão simples ou dupla</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--orange);">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">🔤</div>
+      <h3 style="font-size:.95rem;">Um caractere</h3>
+      <p style="font-size:.82rem;">Ex: <strong>'A'</strong> ou <strong>'@'</strong></p>
+      <div style="margin-top:.75rem; background:var(--orange-bg); border:1px solid var(--orange-border); border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:var(--orange); font-weight:600;">8 bits (1 byte)</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">256 símbolos possíveis</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid var(--purple);">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">📝</div>
+      <h3 style="font-size:.95rem;">Texto (50 caracteres)</h3>
+      <p style="font-size:.82rem;">Ex: <strong>"Engenharia Química"</strong></p>
+      <div style="margin-top:.75rem; background:var(--purple-bg); border:1px solid var(--purple-border); border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:var(--purple); font-weight:600;">~400 bits (50 bytes)</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">1 byte por letra</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid #0891b2;">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">🖼️</div>
+      <h3 style="font-size:.95rem;">Foto (12 MP)</h3>
+      <p style="font-size:.82rem;">Ex: foto do celular</p>
+      <div style="margin-top:.75rem; background:#e0f7fa; border:1px solid #80deea; border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:#0891b2; font-weight:600;">~36 MB sem compressão</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">3 bytes por pixel × 12M pixels</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-top: 3px solid #be185d;">
+      <div style="font-size:1.5rem; margin-bottom:.5rem;">🎬</div>
+      <h3 style="font-size:.95rem;">Vídeo HD (1 min)</h3>
+      <p style="font-size:.82rem;">Ex: vídeo 1080p</p>
+      <div style="margin-top:.75rem; background:#fce7f3; border:1px solid #f9a8d4; border-radius:8px; padding:.6rem .85rem;">
+        <div style="font-family:var(--font-mono); font-size:.75rem; color:#be185d; font-weight:600;">~1–2 GB sem compressão</div>
+        <div style="font-size:.72rem; color:var(--muted); margin-top:.2rem;">30 frames/s × 60s × tamanho do frame</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tip">
+    💡 Os valores acima são para dados <strong>sem compressão</strong>. Na prática, formatos como JPEG (foto) e MP4 (vídeo) usam algoritmos para reduzir drasticamente esse tamanho — mas por baixo dos panos, tudo continua sendo 0s e 1s.
+  </div>
+
+  <div class="info">
+    📖 <strong>Dado vs. Informação:</strong><br>
+    <strong>Dado bruto:</strong> <code style="font-family:var(--font-mono);">7.5</code><br>
+    <strong>Informação:</strong> "A média da turma na Prova 1 foi 7,5 — acima da média histórica de 6,8."<br><br>
+    O papel do programa é transformar dados brutos em informação útil para tomada de decisão.
+  </div>
+</section>
+
+<!-- ORGANIZAÇÃO -->
+<section id="organizacao">
+  <div class="section-label">// unidade 1.4 — organização</div>
+  <h2>Como o computador funciona</h2>
+  <div class="divider"></div>
+  <p>Todo computador segue o <strong>Modelo de Von Neumann</strong>: dados e programas compartilham a mesma memória. Qualquer tarefa segue sempre o mesmo ciclo:</p>
+
+  <div class="cycle fi">
+    <div class="cycle-step">
+      <div class="ci">📥</div>
+      <h4>Entrada</h4>
+      <p>Dados fornecidos (teclado, arquivo)</p>
+    </div>
+    <div class="cycle-arrow">→</div>
+    <div class="cycle-step">
+      <div class="ci">🧠</div>
+      <h4>Processamento</h4>
+      <p>CPU executa o programa</p>
+    </div>
+    <div class="cycle-arrow">→</div>
+    <div class="cycle-step">
+      <div class="ci">💾</div>
+      <h4>Memória</h4>
+      <p>RAM guarda dados temporários</p>
+    </div>
+    <div class="cycle-arrow">→</div>
+    <div class="cycle-step">
+      <div class="ci">📤</div>
+      <h4>Saída</h4>
+      <p>Resultado na tela ou arquivo</p>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:.75rem;">Exemplo: fluxograma para calcular sua média</h3>
+  <p>Antes de escrever qualquer código, o programador desenha um fluxograma — o "mapa" do que o programa vai fazer:</p>
+
+  <div style="background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:2rem 1.5rem; box-shadow:var(--shadow); margin:1rem 0; overflow-x:auto;">
+    <svg viewBox="0 0 340 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:340px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',sans-serif;">
+      <defs>
+        <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#706d66"/>
+        </marker>
+      </defs>
+
+      <!-- INÍCIO -->
+      <ellipse cx="170" cy="30" rx="60" ry="22" fill="#1a7a4a" stroke="none"/>
+      <text x="170" y="35" text-anchor="middle" font-size="12" font-weight="700" fill="white">INÍCIO</text>
+
+      <!-- arrow -->
+      <line x1="170" y1="52" x2="170" y2="80" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- ENTRADA: ler P1 -->
+      <rect x="70" y="81" width="200" height="48" rx="0" fill="#eaf0fb" stroke="#b3caef" stroke-width="1.5" rx="6"/>
+      <text x="170" y="102" text-anchor="middle" font-size="11" font-weight="600" fill="#1a4fa0">📥 Entrada</text>
+      <text x="170" y="120" text-anchor="middle" font-size="10" fill="#706d66">Ler nota P1, P2 e Lista</text>
+
+      <!-- arrow -->
+      <line x1="170" y1="129" x2="170" y2="157" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- PROCESSAMENTO -->
+      <rect x="70" y="158" width="200" height="48" rx="6" fill="#fdf2ea" stroke="#f5c89a" stroke-width="1.5"/>
+      <text x="170" y="179" text-anchor="middle" font-size="11" font-weight="600" fill="#b84c00">⚙️ Processamento</text>
+      <text x="170" y="197" text-anchor="middle" font-size="10" fill="#706d66">total = P1 + P2 + Lista</text>
+
+      <!-- arrow -->
+      <line x1="170" y1="206" x2="170" y2="234" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- DECISÃO: total >= 60? -->
+      <polygon points="170,235 290,290 170,345 50,290" fill="#f2eafa" stroke="#d4b8f0" stroke-width="1.5"/>
+      <text x="170" y="285" text-anchor="middle" font-size="11" font-weight="600" fill="#5c2d91">total ≥ 60?</text>
+
+      <!-- SIM label + arrow -->
+      <text x="295" y="287" font-size="10" fill="#1a7a4a" font-weight="600">SIM</text>
+      <line x1="290" y1="290" x2="290" y2="380" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- NÃO label + arrow -->
+      <text x="38" y="287" font-size="10" fill="#c0392b" font-weight="600">NÃO</text>
+      <line x1="50" y1="290" x2="50" y2="380" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- SAÍDA: Aprovado -->
+      <rect x="225" y="381" width="130" height="48" rx="6" fill="#eaf5ef" stroke="#b6dfc8" stroke-width="1.5"/>
+      <text x="290" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#1a7a4a">📺 Saída</text>
+      <text x="290" y="419" text-anchor="middle" font-size="10" fill="#706d66">"Aprovado!"</text>
+
+      <!-- SAÍDA: Recuperação -->
+      <rect x="-15" y="381" width="130" height="48" rx="6" fill="#fdecea" stroke="#f5b7b1" stroke-width="1.5"/>
+      <text x="50" y="401" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">📺 Saída</text>
+      <text x="50" y="419" text-anchor="middle" font-size="10" fill="#706d66">"Recuperação"</text>
+
+      <!-- Join arrows to FIM -->
+      <line x1="290" y1="429" x2="290" y2="495" stroke="#706d66" stroke-width="1.5"/>
+      <line x1="50" y1="429" x2="50" y2="495" stroke="#706d66" stroke-width="1.5"/>
+      <line x1="50" y1="495" x2="290" y2="495" stroke="#706d66" stroke-width="1.5"/>
+      <line x1="170" y1="495" x2="170" y2="523" stroke="#706d66" stroke-width="1.5" marker-end="url(#a2)"/>
+
+      <!-- FIM -->
+      <ellipse cx="170" cy="545" rx="60" ry="22" fill="#1a1916" stroke="none"/>
+      <text x="170" y="550" text-anchor="middle" font-size="12" font-weight="700" fill="white">FIM</text>
+    </svg>
+  </div>
+  <div class="tip">💡 Fluxogramas usam símbolos padronizados: <strong>oval</strong> = início/fim, <strong>retângulo</strong> = processo, <strong>paralelogramo</strong> = entrada/saída, <strong>losango</strong> = decisão. Nas próximas aulas você transformará fluxogramas como esse em código C.</div>
+</section>
+
+<!-- APLICAÇÕES -->
+<section id="aplicacoes">
+  <div class="section-label">// por que isso importa para você?</div>
+  <h2>Onde você usará isso na Engenharia Química</h2>
+  <div class="divider"></div>
+  <p>Programação não é exclusividade de quem vai trabalhar com TI. Engenheiros químicos modernos usam código para resolver em segundos o que levaria horas manualmente.</p>
+
+  <div class="app-grid fi">
+    <div class="app-card a1">
+      <div class="app-icon">⚖️</div>
+      <h3>Balanços de Massa e Energia</h3>
+      <p>Automatizar cálculos com múltiplas correntes e reciclos — o que seria uma planilha enorme vira um programa de 20 linhas.</p>
+    </div>
+    <div class="app-card a2">
+      <div class="app-icon">📊</div>
+      <h3>Análise de Dados Experimentais</h3>
+      <p>Processar centenas de medições de laboratório, calcular médias, identificar erros e gerar relatórios automaticamente.</p>
+    </div>
+    <div class="app-card a3">
+      <div class="app-icon">🔢</div>
+      <h3>Cálculos de Cinética</h3>
+      <p>Resolver equações de velocidade de reação que não têm solução analítica, usando métodos numéricos iterativos.</p>
+    </div>
+    <div class="app-card a4">
+      <div class="app-icon">🌡️</div>
+      <h3>Termodinâmica Computacional</h3>
+      <p>Calcular propriedades de misturas (entalpia, entropia) com equações de estado que seriam tediosas de calcular à mão.</p>
+    </div>
+    <div class="app-card a5">
+      <div class="app-icon">🏭</div>
+      <h3>Simulação de Processos</h3>
+      <p>Criar mini-simuladores de colunas de destilação ou trocadores de calor para estudo e dimensionamento.</p>
+    </div>
+    <div class="app-card a6">
+      <div class="app-icon">📁</div>
+      <h3>Automação de Relatórios</h3>
+      <p>Gerar automaticamente relatórios lendo arquivos de dados, sem precisar digitar número algum manualmente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ATIVIDADES -->
+<section id="atividades">
+  <div class="section-label">// hora de praticar</div>
+  <h2>Atividades</h2>
+  <div class="divider"></div>
+  <p>Estas atividades são para fixar o conteúdo. Não valem nota agora, mas os conceitos <strong>aparecem nas provas e nas listas</strong>.</p>
+
+  <div class="quiz-box fi">
+    <div class="quiz-head">🧠 Quiz — Hardware, Software e Dados</div>
+
+    <div class="question" id="q1">
+      <p>1. Você está assistindo a uma videoaula, escrevendo um e-mail e ouvindo música ao mesmo tempo. Os três programas ficam abertos. Qual componente precisa ter capacidade suficiente para isso funcionar sem travar?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q1',this,false)"><span class="opt-l">A</span> HD/SSD</div>
+        <div class="opt" onclick="ans('q1',this,true)"><span class="opt-l">B</span> Memória RAM</div>
+        <div class="opt" onclick="ans('q1',this,false)"><span class="opt-l">C</span> Monitor</div>
+        <div class="opt" onclick="ans('q1',this,false)"><span class="opt-l">D</span> Teclado</div>
+      </div>
+      <div class="fb" id="fb-q1"></div>
+    </div>
+
+    <div class="question" id="q2">
+      <p>2. Você salva um trabalho no computador e desliga a máquina. No dia seguinte, o arquivo ainda está lá. Isso é possível graças a qual componente?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q2',this,false)"><span class="opt-l">A</span> Memória RAM</div>
+        <div class="opt" onclick="ans('q2',this,false)"><span class="opt-l">B</span> CPU</div>
+        <div class="opt" onclick="ans('q2',this,true)"><span class="opt-l">C</span> HD ou SSD</div>
+        <div class="opt" onclick="ans('q2',this,false)"><span class="opt-l">D</span> GPU</div>
+      </div>
+      <div class="fb" id="fb-q2"></div>
+    </div>
+
+    <div class="question" id="q3">
+      <p>3. O Windows e o Linux são exemplos de qual tipo de software?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q3',this,false)"><span class="opt-l">A</span> Software aplicativo</div>
+        <div class="opt" onclick="ans('q3',this,false)"><span class="opt-l">B</span> Linguagem de programação</div>
+        <div class="opt" onclick="ans('q3',this,true)"><span class="opt-l">C</span> Sistema operacional</div>
+        <div class="opt" onclick="ans('q3',this,false)"><span class="opt-l">D</span> Compilador</div>
+      </div>
+      <div class="fb" id="fb-q3"></div>
+    </div>
+
+    <div class="question" id="q4">
+      <p>4. Qual é a sequência correta do ciclo de processamento de um computador?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q4',this,false)"><span class="opt-l">A</span> Processamento → Entrada → Saída</div>
+        <div class="opt" onclick="ans('q4',this,true)"><span class="opt-l">B</span> Entrada → Processamento → Saída</div>
+        <div class="opt" onclick="ans('q4',this,false)"><span class="opt-l">C</span> Saída → Entrada → Processamento</div>
+        <div class="opt" onclick="ans('q4',this,false)"><span class="opt-l">D</span> Memória → CPU → Tela</div>
+      </div>
+      <div class="fb" id="fb-q4"></div>
+    </div>
+
+    <div class="question" id="q5">
+      <p>5. Quantos bytes existem em 1 Kilobyte?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q5',this,false)"><span class="opt-l">A</span> 100</div>
+        <div class="opt" onclick="ans('q5',this,false)"><span class="opt-l">B</span> 1.000</div>
+        <div class="opt" onclick="ans('q5',this,true)"><span class="opt-l">C</span> 1.024</div>
+        <div class="opt" onclick="ans('q5',this,false)"><span class="opt-l">D</span> 8</div>
+      </div>
+      <div class="fb" id="fb-q5"></div>
+    </div>
+
+    <div class="question" id="q6">
+      <p>6. No código C, a linha <code style="font-family:var(--font-mono); background:var(--surface); padding:.1rem .3rem; border-radius:4px;">float media = 7.5;</code> cria uma variável. Onde ela fica enquanto o programa está rodando?</p>
+      <div class="opts">
+        <div class="opt" onclick="ans('q6',this,false)"><span class="opt-l">A</span> No HD/SSD</div>
+        <div class="opt" onclick="ans('q6',this,true)"><span class="opt-l">B</span> Na memória RAM</div>
+        <div class="opt" onclick="ans('q6',this,false)"><span class="opt-l">C</span> Dentro da CPU</div>
+        <div class="opt" onclick="ans('q6',this,false)"><span class="opt-l">D</span> No sistema operacional</div>
+      </div>
+      <div class="fb" id="fb-q6"></div>
+    </div>
+
+    <div class="progress-wrap"><div class="progress-fill" id="pb1"></div></div>
+    <button class="btn-primary" onclick="submitQuiz(6,'pb1','score1')">Ver minha pontuação</button>
+    <div class="score-box" id="score1">
+      <div class="score-big" id="score1-val">—</div>
+      <div class="score-msg" id="score1-msg"></div>
+    </div>
+  </div>
+
+  <!-- CLASSIFICAR -->
+  <div class="quiz-box fi" style="margin-top:1.5rem;">
+    <div class="quiz-head">🗂️ Atividade 2 — Classifique os itens</div>
+    <p style="color:var(--muted); font-size:.875rem; margin-bottom:1.25rem;">Arraste (ou clique no item e depois na categoria) cada elemento para a caixa correta: <strong>Hardware</strong>, <strong>Software</strong> ou <strong>Dado</strong>.</p>
+
+    <div class="classify-src" id="drag-src">
+      <div class="drag-tag" draggable="true" data-cat="hardware" id="di1" onclick="selItem(this)">Processador Intel</div>
+      <div class="drag-tag" draggable="true" data-cat="software" id="di2" onclick="selItem(this)">Excel</div>
+      <div class="drag-tag" draggable="true" data-cat="dado" id="di3" onclick="selItem(this)">Nota: 8.5</div>
+      <div class="drag-tag" draggable="true" data-cat="hardware" id="di4" onclick="selItem(this)">RAM 16 GB</div>
+      <div class="drag-tag" draggable="true" data-cat="software" id="di5" onclick="selItem(this)">Windows 11</div>
+      <div class="drag-tag" draggable="true" data-cat="dado" id="di6" onclick="selItem(this)">Hora: 14:32</div>
+      <div class="drag-tag" draggable="true" data-cat="software" id="di7" onclick="selItem(this)">Compilador GCC</div>
+      <div class="drag-tag" draggable="true" data-cat="hardware" id="di8" onclick="selItem(this)">SSD 512 GB</div>
+      <div class="drag-tag" draggable="true" data-cat="dado" id="di9" onclick="selItem(this)">Distância: 350 km</div>
+      <div class="drag-tag" draggable="true" data-cat="software" id="di10" onclick="selItem(this)">WhatsApp</div>
+    </div>
+
+    <div class="bins">
+      <div class="bin" id="bin-hardware" ondragover="event.preventDefault()" ondrop="dropIt(event,'hardware')" onclick="dropSel('hardware')">
+        <h4>🔧 Hardware</h4>
+        <div class="bin-items" id="bi-hardware"></div>
+      </div>
+      <div class="bin" id="bin-software" ondragover="event.preventDefault()" ondrop="dropIt(event,'software')" onclick="dropSel('software')">
+        <h4>💿 Software</h4>
+        <div class="bin-items" id="bi-software"></div>
+      </div>
+      <div class="bin" id="bin-dado" ondragover="event.preventDefault()" ondrop="dropIt(event,'dado')" onclick="dropSel('dado')">
+        <h4>📊 Dado</h4>
+        <div class="bin-items" id="bi-dado"></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1.25rem;">
+      <button class="btn-primary" onclick="checkClassify()">✅ Verificar</button>
+      <button class="btn-sec" onclick="resetClassify()">↺ Recomeçar</button>
+    </div>
+    <div id="cl-result" class="tip" style="display:none; margin-top:1rem;"></div>
+  </div>
+
+  <!-- REFLEXÃO -->
+  <div class="quiz-box fi" style="margin-top:1.5rem;">
+    <div class="quiz-head">✍️ Atividade 3 — Reflexão escrita</div>
+    <p style="color:var(--muted); font-size:.875rem; margin-bottom:1.5rem;">Não existe resposta única certa. Escreva com suas palavras e compare com a sugestão.</p>
+
+    <div class="question">
+      <p>1. Pense em algum cálculo repetitivo que você já fez (nota final, média, conversão de unidades). Se você fosse ensinar um robô a fazer esse cálculo, quais seriam os passos em ordem?</p>
+      <textarea id="ta1" placeholder="Descreva os passos em ordem, como se estivesse dando instruções…"></textarea>
+      <button class="reveal-btn" onclick="toggleReveal('s1')">💡 Ver sugestão</button>
+      <div id="s1" class="reveal-content tip">
+        <strong>Exemplo — Calcular nota final desta disciplina:</strong><br>
+        1. Pedir a nota da Prova 1 (0 a 40)<br>
+        2. Pedir a nota da Prova 2 (0 a 40)<br>
+        3. Pedir a nota das listas (0 a 20)<br>
+        4. Somar os três valores<br>
+        5. Se a soma ≥ 60, mostrar "Aprovado"; caso contrário, "Recuperação"<br><br>
+        Isso é exatamente o que você vai implementar em C nas próximas semanas!
+      </div>
+    </div>
+
+    <div class="question" style="margin-top:1.5rem;">
+      <p>2. Qual a diferença entre a memória RAM e o HD/SSD? Por que um computador precisa dos dois?</p>
+      <textarea id="ta2" placeholder="Explique com suas próprias palavras…"></textarea>
+      <button class="reveal-btn" onclick="toggleReveal('s2')">💡 Ver sugestão</button>
+      <div id="s2" class="reveal-content tip">
+        A <strong>RAM</strong> é rápida mas temporária — guarda o que está em uso agora. O <strong>HD/SSD</strong> é permanente mas mais lento — guarda tudo que precisa existir depois que o computador desliga.<br><br>
+        Um computador precisa dos dois porque trabalhar só com HD seria lento demais (como escrever direto na estante, sem mesa), e trabalhar só com RAM significaria perder tudo ao desligar.
+      </div>
+    </div>
+  </div>
+
+  <!-- DESAFIO -->
+  <div class="quiz-box fi" style="margin-top:1.5rem; border: 2px solid var(--orange-border); background: var(--orange-bg);">
+    <div class="quiz-head" style="color:var(--orange);">⚡ Desafio — Interprete o fluxograma</div>
+    <p style="font-size:.875rem; color:var(--muted); margin-bottom:1rem;">Analise o fluxograma abaixo e responda: o que o programa calcula e quais serão as saídas possíveis?</p>
+
+    <div style="background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.25rem; overflow-x:auto;">
+      <svg viewBox="0 0 320 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;display:block;margin:0 auto;font-family:'Plus Jakarta Sans',sans-serif;">
+        <defs>
+          <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#706d66"/>
+          </marker>
+        </defs>
+        <ellipse cx="160" cy="28" rx="55" ry="20" fill="#1a1916"/>
+        <text x="160" y="33" text-anchor="middle" font-size="11" font-weight="700" fill="white">INÍCIO</text>
+        <line x1="160" y1="48" x2="160" y2="73" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <rect x="60" y="74" width="200" height="44" rx="6" fill="#eaf0fb" stroke="#b3caef" stroke-width="1.5"/>
+        <text x="160" y="93" text-anchor="middle" font-size="11" font-weight="600" fill="#1a4fa0">📥 Ler número N</text>
+        <text x="160" y="109" text-anchor="middle" font-size="10" fill="#706d66">(digitado pelo usuário)</text>
+        <line x1="160" y1="118" x2="160" y2="143" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <rect x="60" y="144" width="200" height="44" rx="6" fill="#fdf2ea" stroke="#f5c89a" stroke-width="1.5"/>
+        <text x="160" y="163" text-anchor="middle" font-size="11" font-weight="600" fill="#b84c00">⚙️ resultado = N × N</text>
+        <text x="160" y="179" text-anchor="middle" font-size="10" fill="#706d66">(calcular o quadrado)</text>
+        <line x1="160" y1="188" x2="160" y2="213" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <polygon points="160,214 280,264 160,314 40,264" fill="#f2eafa" stroke="#d4b8f0" stroke-width="1.5"/>
+        <text x="160" y="259" text-anchor="middle" font-size="11" font-weight="600" fill="#5c2d91">resultado &gt; 100?</text>
+        <text x="284" y="261" font-size="10" fill="#1a7a4a" font-weight="600">SIM</text>
+        <line x1="280" y1="264" x2="280" y2="350" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <rect x="215" y="351" width="130" height="42" rx="6" fill="#eaf5ef" stroke="#b6dfc8" stroke-width="1.5"/>
+        <text x="280" y="369" text-anchor="middle" font-size="10" font-weight="600" fill="#1a7a4a">📺 Exibir</text>
+        <text x="280" y="385" text-anchor="middle" font-size="10" fill="#706d66">"Grande!"</text>
+        <text x="22" y="261" font-size="10" fill="#c0392b" font-weight="600">NÃO</text>
+        <line x1="40" y1="264" x2="40" y2="350" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <rect x="-25" y="351" width="130" height="42" rx="6" fill="#fdecea" stroke="#f5b7b1" stroke-width="1.5"/>
+        <text x="40" y="369" text-anchor="middle" font-size="10" font-weight="600" fill="#c0392b">📺 Exibir</text>
+        <text x="40" y="385" text-anchor="middle" font-size="10" fill="#706d66">"Pequeno!"</text>
+        <line x1="280" y1="393" x2="280" y2="455" stroke="#706d66" stroke-width="1.5"/>
+        <line x1="40" y1="393" x2="40" y2="455" stroke="#706d66" stroke-width="1.5"/>
+        <line x1="40" y1="455" x2="280" y2="455" stroke="#706d66" stroke-width="1.5"/>
+        <line x1="160" y1="455" x2="160" y2="478" stroke="#706d66" stroke-width="1.5" marker-end="url(#a3)"/>
+        <ellipse cx="160" cy="498" rx="55" ry="20" fill="#1a1916"/>
+        <text x="160" y="503" text-anchor="middle" font-size="11" font-weight="700" fill="white">FIM</text>
+      </svg>
+    </div>
+
+    <textarea id="ta3" style="min-height:80px; background:var(--white);" placeholder="O que esse programa faz? Se N = 8, qual a saída? E se N = 11?"></textarea>
+    <button class="reveal-btn" onclick="toggleReveal('s3')" style="margin-top:.75rem;">✅ Ver resposta</button>
+    <div id="s3" class="reveal-content tip">
+      <strong>O que o programa faz:</strong> lê um número N, calcula seu quadrado (N²) e verifica se o resultado é maior que 100.<br><br>
+      <strong>Se N = 8:</strong> 8 × 8 = 64 → 64 &gt; 100? Não → exibe <em>"Pequeno!"</em><br>
+      <strong>Se N = 11:</strong> 11 × 11 = 121 → 121 &gt; 100? Sim → exibe <em>"Grande!"</em><br><br>
+      Perceba a estrutura: <strong>Entrada → Processamento → Decisão → Saída</strong> — esse é o esqueleto de qualquer algoritmo.
+    </div>
+  </div>
+
+  <!-- BAIXAR RESULTADO -->
+  <div class="quiz-box fi" style="margin-top:1.5rem; border: 2px solid var(--green-border);">
+    <div class="quiz-head">📄 Salvar meu resultado</div>
+    <p style="color:var(--muted); font-size:.875rem; margin-bottom:1.25rem;">Preencha seu nome e baixe um PDF com suas respostas e pontuação desta aula.</p>
+    <div style="display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; margin-bottom:1.25rem;">
+      <input id="student-name" type="text" placeholder="Digite seu nome completo"
+        style="flex:1; min-width:240px; padding:.75rem 1rem; border:1.5px solid var(--border); border-radius:var(--radius); font-family:var(--font-body); font-size:.9rem; background:var(--bg); color:var(--text); transition:border-color .2s;"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <button class="btn-primary" onclick="downloadPDF()" style="white-space:nowrap;">⬇️ Baixar PDF</button>
+    </div>
+    <div id="pdf-msg" style="display:none;" class="tip"></div>
+  </div>
+</section>
+
+</div><!-- end page-wrap -->
+
+<footer>
+  <p>📚 Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026</p>
+</footer>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleReveal(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+const answered = {};
+
+function ans(qId, el, correct) {
+  if (answered[qId] !== undefined) return;
+  answered[qId] = correct;
+  el.classList.add(correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('fb-' + qId);
+  fb.classList.add('show', correct ? 'ok' : 'nope');
+  const tips = {
+    q1: { ok: 'A RAM guarda todos os programas abertos simultaneamente. Pouca RAM = computador travando.', fail: 'A RAM é quem mantém todos os programas abertos ao mesmo tempo — não o HD, que guarda arquivos permanentemente.' },
+    q2: { ok: 'HD e SSD mantêm dados mesmo sem energia — são memórias não-voláteis.', fail: 'A RAM perde tudo ao desligar (volátil). Quem guarda permanentemente é o HD ou SSD.' },
+    q3: { ok: 'Sistemas operacionais gerenciam hardware e programas, sendo a camada base do computador.', fail: 'Windows e Linux são sistemas operacionais — gerenciam toda a máquina.' },
+    q4: { ok: 'Entrada → Processamento → Saída é o ciclo básico de qualquer programa.', fail: 'O ciclo correto é: primeiro os dados entram, a CPU processa, e por fim o resultado é exibido na saída.' },
+    q5: { ok: '1 KB = 2¹⁰ = 1.024 bytes. Na computação usamos potências de 2.', fail: '1 Kilobyte = 1.024 bytes. Computadores operam em base 2: 2¹⁰ = 1.024.' },
+    q6: { ok: 'Variáveis em C são criadas na RAM durante a execução e desaparecem ao fim do programa.', fail: 'Variáveis ficam na RAM durante a execução — não no HD (que guarda arquivos).' },
+  };
+  fb.textContent = (correct ? '✅ Correto! ' : '❌ Não exatamente. ') + tips[qId][correct ? 'ok' : 'fail'];
+}
+
+function submitQuiz(total, pbId, scoreId) {
+  let score = Object.values(answered).filter(Boolean).length;
+  document.getElementById(pbId).style.width = Math.round(score / total * 100) + '%';
+  const box = document.getElementById(scoreId);
+  box.classList.add('show');
+  document.getElementById(scoreId + '-val').textContent = score + ' / ' + total;
+  const msgs = ['Revise o material e tente novamente!', 'Está no caminho — releia as seções onde errou.', 'Bom trabalho! Há alguns pontos para revisar.', 'Muito bem! Você entendeu os conceitos principais.', 'Excelente! Pronto para a próxima aula.'];
+  document.getElementById(scoreId + '-msg').textContent = msgs[Math.min(Math.floor(score / total * 4), 4)];
+}
+
+let selEl = null;
+function selItem(el) {
+  if (selEl) selEl.style.outline = '';
+  selEl = el;
+  el.style.outline = '2px solid var(--blue)';
+}
+function dropSel(bin) {
+  if (!selEl || !document.getElementById('drag-src').contains(selEl)) return;
+  document.getElementById('bi-' + bin).appendChild(selEl);
+  selEl.style.outline = '';
+  selEl = null;
+}
+function dropIt(ev, bin) {
+  ev.preventDefault();
+  const el = document.getElementById(ev.dataTransfer.getData('text'));
+  if (el) document.getElementById('bi-' + bin).appendChild(el);
+}
+document.querySelectorAll('.drag-tag').forEach(el => {
+  el.addEventListener('dragstart', e => e.dataTransfer.setData('text', el.id));
+});
+function checkClassify() {
+  let ok = 0;
+  ['hardware','software','dado'].forEach(cat => {
+    document.querySelectorAll('#bi-' + cat + ' .drag-tag').forEach(item => {
+      const c = item.dataset.cat === cat;
+      item.style.borderColor = c ? 'var(--green)' : 'var(--red)';
+      item.style.color = c ? 'var(--green)' : 'var(--red)';
+      if (c) ok++;
+    });
+  });
+  const res = document.getElementById('cl-result');
+  res.style.display = 'block';
+  res.textContent = `Você acertou ${ok} de 10. ${ok === 10 ? '🎉 Perfeito!' : 'Os itens em vermelho estão na categoria errada — tente movê-los.'}`;
+}
+function resetClassify() {
+  const src = document.getElementById('drag-src');
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById('di' + i);
+    if (el) { el.style.borderColor = ''; el.style.color = ''; el.style.outline = ''; src.appendChild(el); }
+  }
+  ['hardware','software','dado'].forEach(c => document.getElementById('bi-' + c).innerHTML = '');
+  document.getElementById('cl-result').style.display = 'none';
+  selEl = null;
+}
+
+function getClassifyResult() {
+  const bins = { hardware: [], software: [], dado: [] };
+  ['hardware','software','dado'].forEach(cat => {
+    document.querySelectorAll('#bi-' + cat + ' .drag-tag').forEach(item => {
+      bins[cat].push(item.textContent.trim());
+    });
+  });
+  return bins;
+}
+
+function downloadPDF() {
+  const name = document.getElementById('student-name').value.trim();
+  if (!name) {
+    const msg = document.getElementById('pdf-msg');
+    msg.style.display = 'block';
+    msg.textContent = '⚠️ Por favor, insira seu nome antes de baixar.';
+    msg.style.background = 'var(--orange-bg)';
+    msg.style.borderColor = 'var(--orange-border)';
+    return;
+  }
+
+  // Quiz score
+  const score = Object.values(answered).filter(Boolean).length;
+  const total = 6;
+
+  // Classify result
+  const bins = getClassifyResult();
+  const clResultEl = document.getElementById('cl-result');
+  const clText = clResultEl.style.display !== 'none' ? clResultEl.textContent : 'Não verificada ainda.';
+
+  // Textareas
+  const ta1 = document.getElementById('ta1').value.trim() || '(sem resposta)';
+  const ta2 = document.getElementById('ta2').value.trim() || '(sem resposta)';
+  const ta3 = document.getElementById('ta3').value.trim() || '(sem resposta)';
+
+  const now = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Resultado – ${name}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Plus Jakarta Sans',sans-serif; color:#1a1916; background:#fff; padding:40px 48px; font-size:13px; line-height:1.7; }
+  .header { border-bottom:3px solid #1a7a4a; padding-bottom:16px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:flex-end; }
+  .header h1 { font-size:22px; font-weight:900; color:#1a1916; }
+  .header p { font-size:11px; color:#706d66; }
+  .student { background:#eaf5ef; border:1px solid #b6dfc8; border-radius:8px; padding:12px 16px; margin-bottom:24px; }
+  .student strong { font-size:15px; }
+  .section { margin-bottom:24px; }
+  .section-title { font-size:13px; font-weight:700; color:#1a7a4a; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; padding-bottom:4px; border-bottom:1px solid #e2dfd8; }
+  .score-box { display:inline-block; background:#eaf5ef; border:1px solid #b6dfc8; border-radius:8px; padding:10px 20px; font-size:28px; font-weight:900; color:#1a7a4a; margin-bottom:8px; }
+  .score-label { font-size:11px; color:#706d66; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; font-size:12px; }
+  th { background:#f0eeea; padding:6px 10px; text-align:left; font-weight:600; border:1px solid #e2dfd8; }
+  td { padding:6px 10px; border:1px solid #e2dfd8; vertical-align:top; }
+  .answer-box { background:#f8f7f4; border:1px solid #e2dfd8; border-radius:6px; padding:10px 12px; white-space:pre-wrap; font-size:12px; color:#1a1916; margin-top:4px; min-height:40px; }
+  .footer { margin-top:32px; padding-top:12px; border-top:1px solid #e2dfd8; font-size:10px; color:#706d66; text-align:center; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>⚗️ Lab PC1 — Aula 01</h1>
+    <p>O Computador por Dentro · CEFET-MG Campus Contagem</p>
+  </div>
+  <div style="text-align:right">
+    <p>${now}</p>
+    <p>1º Período · Engenharia Química</p>
+  </div>
+</div>
+
+<div class="student">
+  <p style="font-size:11px;color:#706d66;margin-bottom:2px;">Aluno(a)</p>
+  <strong>${name}</strong>
+</div>
+
+<div class="section">
+  <div class="section-title">Quiz — Hardware, Software e Dados</div>
+  <div class="score-box">${score} / ${total}</div><br>
+  <span class="score-label">${score === total ? '🎉 Pontuação máxima!' : score >= 4 ? '✅ Bom desempenho' : '📖 Revise o material'}</span>
+  <table style="margin-top:12px;">
+    <tr><th>#</th><th>Questão</th><th>Resultado</th></tr>
+    ${[1,2,3,4,5,6].map(i => {
+      const r = answered['q'+i];
+      const label = r === undefined ? 'Não respondida' : r ? '✅ Correta' : '❌ Errada';
+      const questions = [
+        'Programas abertos ao mesmo tempo — qual componente?',
+        'Arquivo permanece após desligar — qual componente?',
+        'Windows e Linux — qual tipo de software?',
+        'Sequência correta do ciclo de processamento',
+        'Quantos bytes em 1 Kilobyte?',
+        'Variável float — onde fica durante execução?'
+      ];
+      return `<tr><td>${i}</td><td>${questions[i-1]}</td><td>${label}</td></tr>`;
+    }).join('')}
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">Atividade 2 — Classificação</div>
+  <p style="color:#706d66;font-size:12px;margin-bottom:8px;">${clText}</p>
+  <table>
+    <tr>
+      <th>🔧 Hardware</th>
+      <th>💿 Software</th>
+      <th>📊 Dado</th>
+    </tr>
+    <tr>
+      <td>${bins.hardware.length ? bins.hardware.join(', ') : '(vazio)'}</td>
+      <td>${bins.software.length ? bins.software.join(', ') : '(vazio)'}</td>
+      <td>${bins.dado.length ? bins.dado.join(', ') : '(vazio)'}</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">Atividade 3 — Reflexão Escrita</div>
+  <p style="font-weight:600; margin-bottom:4px; font-size:12px;">1. Passos para ensinar um robô a fazer um cálculo:</p>
+  <div class="answer-box">${ta1.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+  <p style="font-weight:600; margin-top:12px; margin-bottom:4px; font-size:12px;">2. Diferença entre RAM e HD/SSD:</p>
+  <div class="answer-box">${ta2.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+</div>
+
+<div class="section">
+  <div class="section-title">⚡ Desafio — Interprete o Fluxograma</div>
+  <p style="font-weight:600; margin-bottom:4px; font-size:12px;">O que o programa faz? Saída para N=8 e N=11?</p>
+  <div class="answer-box">${ta3.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+</div>
+
+<div class="footer">
+  Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `LabPC1_Aula01_${name.replace(/\s+/g,'_')}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  const msg = document.getElementById('pdf-msg');
+  msg.style.display = 'block';
+  msg.style.background = 'var(--green-bg)';
+  msg.style.borderColor = 'var(--green-border)';
+  msg.textContent = '✅ Arquivo baixado! Abra no navegador e use Ctrl+P → "Salvar como PDF" para gerar o PDF.';
+}
+
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.08 });
+document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
