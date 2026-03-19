@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab PC1 — Aula 02: Introdução aos Algoritmos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #1a2e4a;
+      --navy-light:  #243d5c;
+      --blue:        #2c6fad;
+      --blue-light:  #3a82c4;
+      --blue-pale:   #e8f1f9;
+      --white:       #ffffff;
+      --bg:          #f5f7fa;
+      --surface:     #ffffff;
+      --border:      #dde3ea;
+      --border-light:#eef1f5;
+      --text:        #1c2b3a;
+      --text-muted:  #5a6a7a;
+      --green:       #1e7145;
+      --green-pale:  #e8f5ee;
+      --amber:       #8a5c00;
+      --amber-pale:  #fef7e6;
+      --red:         #c0392b;
+      --red-pale:    #fdecea;
+      --code-bg:     #1e2d3d;
+      --code-text:   #cfe2f3;
+      --radius:      8px;
+      --radius-lg:   12px;
+      --shadow-sm:   0 1px 4px rgba(26,46,74,.08);
+      --shadow:      0 2px 10px rgba(26,46,74,.10);
+      --shadow-md:   0 4px 20px rgba(26,46,74,.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--navy);
+      display: flex; align-items: center;
+      padding: 0 2rem; height: 52px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.2);
+    }
+    .nav-brand {
+      font-size: .875rem; font-weight: 700; color: #fff;
+      padding-right: 1.25rem;
+      border-right: 1px solid rgba(255,255,255,.18);
+      margin-right: 1rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    nav a {
+      color: rgba(255,255,255,.72);
+      text-decoration: none;
+      font-size: .78rem; font-weight: 500;
+      padding: 0 .7rem; line-height: 52px;
+      border-bottom: 2px solid transparent;
+      transition: color .18s, border-color .18s;
+      white-space: nowrap;
+    }
+    nav a:hover { color: #fff; border-bottom-color: rgba(255,255,255,.5); }
+
+    /* Hero */
+    .hero {
+      background: var(--navy);
+      color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      font-weight: 700; line-height: 1.2;
+      margin-bottom: .6rem;
+    }
+    .hero h1 span { color: #7dbfef; }
+    .hero p {
+      font-size: .975rem; color: rgba(255,255,255,.7);
+      max-width: 540px; margin: 0 auto 2rem;
+    }
+    .hero-meta {
+      display: flex; justify-content: center;
+      gap: 1.25rem; flex-wrap: wrap;
+      font-size: .75rem; color: rgba(255,255,255,.5);
+    }
+
+    /* Layout */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 3rem 0 2.5rem; }
+    section + section { border-top: 1px solid var(--border-light); }
+
+    .section-label {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: .65rem;
+    }
+    h2 {
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      font-weight: 700; color: var(--navy);
+      line-height: 1.25; margin-bottom: .6rem;
+    }
+    .lead {
+      font-size: .95rem; color: var(--text-muted);
+      max-width: 660px; margin-bottom: 2rem; line-height: 1.7;
+    }
+    h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: .45rem; }
+    p  { margin-bottom: .8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem; margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-icon { font-size: 1.5rem; margin-bottom: .65rem; display: block; }
+    .card-tag {
+      display: inline-block;
+      font-size: .62rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: .18rem .55rem; border-radius: 50px;
+      margin-bottom: .45rem;
+    }
+    .tag-blue  { background: var(--blue-pale);  color: var(--blue); }
+    .tag-navy  { background: #e6eaf0;            color: var(--navy); }
+    .tag-green { background: var(--green-pale);  color: var(--green); }
+    .tag-amber { background: var(--amber-pale);  color: var(--amber); }
+
+    /* Concept box */
+    .concept-box {
+      background: var(--surface);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.1rem 1.35rem;
+      margin: 1.1rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .concept-box.green { border-color: #2e9e63; }
+
+    /* Callout */
+    .callout {
+      display: flex; gap: .9rem; align-items: flex-start;
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      margin: 1.1rem 0;
+      font-size: .88rem; line-height: 1.6;
+      border: 1px solid transparent;
+    }
+    .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+    .callout.tip  { background: var(--blue-pale);  border-color: #c0d8f0; color: #1a3a5c; }
+    .callout.info { background: var(--green-pale); border-color: #b2ddc8; color: #133d29; }
+    .callout.warn { background: var(--amber-pale); border-color: #f0d898; color: #5a3e00; }
+
+    /* Flow */
+    .flow {
+      display: flex; align-items: stretch; gap: 0;
+      flex-wrap: wrap; margin: 1.5rem 0;
+    }
+    .flow-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.1rem;
+      text-align: center; min-width: 110px;
+      box-shadow: var(--shadow-sm); flex: 1;
+    }
+    .flow-box .ficon  { font-size: 1.3rem; display: block; margin-bottom: .3rem; }
+    .flow-box .ftitle { font-weight: 600; font-size: .82rem; color: var(--navy); }
+    .flow-box .fsub   { font-size: .7rem; color: var(--text-muted); margin-top: .15rem; }
+    .flow-box.hl { border-color: var(--blue); background: var(--blue-pale); }
+    .flow-arrow {
+      display: flex; align-items: center; padding: 0 .5rem;
+      color: var(--blue); font-size: 1.1rem; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* Steps */
+    .steps { list-style: none; margin: 1.1rem 0; }
+    .steps li {
+      display: flex; gap: .85rem; align-items: flex-start;
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: .9rem;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .step-num {
+      min-width: 24px; height: 24px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+
+    /* Algo types */
+    .algo-type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem; margin: 1.5rem 0;
+    }
+    .algo-type {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .algo-type-header {
+      padding: .75rem 1rem;
+      display: flex; align-items: center; gap: .65rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .algo-type-header.narrativa    { background: #eef4fb; }
+    .algo-type-header.fluxograma   { background: #eef7f2; }
+    .algo-type-header.pseudocodigo { background: #fdf7ec; }
+    .algo-type-header span { font-weight: 600; font-size: .9rem; color: var(--navy); }
+    .algo-type-body { padding: 1rem; font-size: .86rem; }
+    .algo-type-body p { font-size: .86rem; color: var(--text-muted); margin-bottom: .7rem; }
+
+    /* Flowchart */
+    .flowchart {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0; padding: .5rem 0;
+    }
+    .fc-oval {
+      background: #e8e4f8; border: 1.5px solid #9b8fe8;
+      border-radius: 50px;
+      padding: .4rem 1.2rem;
+      font-weight: 600; font-size: .78rem; color: var(--navy);
+    }
+    .fc-rect {
+      background: var(--blue-pale); border: 1.5px solid #8ab8de;
+      border-radius: 5px;
+      padding: .4rem 1rem;
+      font-size: .78rem; color: var(--navy);
+      text-align: center; min-width: 155px;
+    }
+    .fc-para {
+      background: var(--blue-pale); border: 1.5px solid #8ab8de;
+      clip-path: polygon(7% 0%, 100% 0%, 93% 100%, 0% 100%);
+      padding: .4rem 1.2rem .4rem .9rem;
+      font-size: .78rem; color: var(--navy);
+      text-align: center; min-width: 165px;
+    }
+    .fc-arrow { color: #8ab8de; font-size: 1rem; line-height: 1.4; user-select: none; }
+
+    /* Code */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      margin: .9rem 0; overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; line-height: 1.75;
+      color: var(--code-text);
+    }
+    .kw  { color: #79d4ff; }
+    .fn  { color: #f8c555; }
+    .str { color: #95dba4; }
+    .cm  { color: #5e8a9e; font-style: italic; }
+    .nm  { color: #ffb87a; }
+    .op  { color: #ff9e9e; }
+
+    /* Details */
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: .65rem 0;
+    }
+    summary {
+      cursor: pointer;
+      padding: .8rem 1rem;
+      font-weight: 600; font-size: .86rem;
+      color: var(--blue);
+      user-select: none; list-style: none;
+    }
+    summary::before { content: '▶  '; font-size: .65rem; }
+    details[open] summary::before { content: '▼  '; }
+    details[open] { border-color: var(--blue); }
+    .details-body { padding: .15rem 1rem .9rem; font-size: .88rem; }
+
+    /* Table */
+    .analysis-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.1rem 0; font-size: .85rem;
+    }
+    .analysis-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left;
+      font-weight: 600; font-size: .8rem;
+    }
+    .analysis-table td {
+      padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    .analysis-table tr:nth-child(even) td { background: var(--bg); }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      background: #e8f1f9; color: var(--navy);
+      padding: .1rem .35rem; border-radius: 4px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700;
+      padding: .15rem .5rem; border-radius: 50px;
+    }
+    .badge-in   { background: var(--blue-pale);  color: var(--blue); }
+    .badge-proc { background: var(--green-pale);  color: var(--green); }
+    .badge-out  { background: var(--amber-pale);  color: var(--amber); }
+
+    /* Task */
+    .task-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+    .task-head { background: var(--navy); color: #fff; padding: .9rem 1.3rem; }
+    .task-head h3 { color: #fff; font-size: 1rem; margin: 0; }
+    .task-body { background: var(--surface); padding: 1.3rem; }
+    .task-steps { list-style: none; margin: .9rem 0; }
+    .task-steps li {
+      display: flex; gap: .7rem; align-items: flex-start;
+      padding: .55rem 0;
+      border-bottom: 1px dashed var(--border-light);
+      font-size: .88rem;
+    }
+    .task-steps li:last-child { border: none; }
+    .ts-num {
+      min-width: 22px; height: 22px;
+      background: var(--blue); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+    .btn-link {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: var(--blue); color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600; font-size: .83rem;
+      padding: .55rem 1.2rem; border-radius: var(--radius);
+      text-decoration: none; margin-top: .65rem;
+      transition: background .18s;
+    }
+    .btn-link:hover { background: var(--navy); }
+
+    /* Quiz */
+    #quiz { background: var(--bg); }
+    .quiz-progress {
+      background: var(--border); border-radius: 50px;
+      height: 5px; margin-bottom: 1.75rem; overflow: hidden;
+    }
+    .quiz-progress-bar {
+      height: 100%; background: var(--blue);
+      border-radius: 50px; transition: width .35s ease;
+    }
+    .q-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem; margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .q-num {
+      font-size: .66rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: .4rem;
+    }
+    .q-text { font-weight: 600; margin-bottom: .9rem; font-size: .92rem; line-height: 1.5; }
+    .q-options { display: flex; flex-direction: column; gap: .45rem; }
+    .q-opt {
+      display: flex; align-items: flex-start; gap: .7rem;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: .65rem .85rem;
+      cursor: pointer; font-size: .87rem; line-height: 1.45;
+      transition: border-color .15s, background .15s;
+      user-select: none;
+    }
+    .q-opt:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+    .q-opt input[type="radio"] { accent-color: var(--blue); margin-top: .25rem; flex-shrink: 0; }
+    .q-opt.correct { border-color: #2e9e63; background: var(--green-pale); }
+    .q-opt.wrong   { border-color: var(--red); background: var(--red-pale); }
+    .q-feedback {
+      margin-top: .8rem; font-size: .83rem;
+      padding: .65rem .9rem; border-radius: var(--radius);
+      display: none; line-height: 1.55;
+    }
+    .q-feedback.show { display: block; }
+    .q-feedback.ok  { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .q-feedback.err { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+    #quiz-btn {
+      display: block; width: 100%; max-width: 280px;
+      margin: 1.4rem auto 0;
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .9rem;
+      padding: .8rem 2rem; border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    #quiz-btn:hover { background: var(--blue); }
+    #quiz-result {
+      display: none; text-align: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2rem;
+      margin-top: 1.4rem; box-shadow: var(--shadow);
+    }
+    #quiz-result.show { display: block; }
+    .result-score { font-size: 3rem; font-weight: 700; color: var(--navy); }
+    .result-sub   { font-size: .9rem; color: var(--text-muted); margin: .4rem 0 1rem; }
+    .result-msg   { font-size: .9rem; margin-bottom: 1.1rem; }
+    #quiz-retry {
+      background: var(--blue); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      padding: .6rem 1.6rem; border-radius: var(--radius); border: none;
+      cursor: pointer; font-size: .86rem; transition: background .18s;
+    }
+    #quiz-retry:hover { background: var(--navy); }
+
+    /* Discussion */
+    .disc-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.2rem; margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .disc-q > p { font-weight: 600; margin-bottom: .7rem; font-size: .92rem; }
+    textarea {
+      width: 100%; border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: .7rem .85rem;
+      font-family: 'Inter', sans-serif; font-size: .86rem;
+      color: var(--text); resize: vertical; min-height: 88px;
+      background: var(--bg); transition: border-color .18s;
+    }
+    textarea:focus { outline: none; border-color: var(--blue); background: var(--surface); }
+
+    /* Summary */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: .9rem; margin: 1.4rem 0;
+    }
+    .sum-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--blue);
+      border-radius: var(--radius-lg);
+      padding: 1rem; box-shadow: var(--shadow-sm);
+    }
+    .sum-item.g { border-top-color: #2e9e63; }
+    .sum-item.a { border-top-color: #c8860a; }
+    .sum-item.r { border-top-color: var(--red); }
+    .sum-item .si-title { font-weight: 600; font-size: .88rem; color: var(--navy); margin-bottom: .35rem; }
+    .sum-item p { font-size: .8rem; color: var(--text-muted); }
+
+    /* Download */
+    .download-area { text-align: center; padding: 1.5rem 0 .5rem; }
+    .download-area p { color: var(--text-muted); font-size: .83rem; margin-bottom: .85rem; }
+    .download-row { display: flex; gap: .65rem; justify-content: center; flex-wrap: wrap; }
+    .download-row input[type="text"] {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: .55rem .85rem; font-family: 'Inter', sans-serif;
+      font-size: .85rem; width: 240px; background: var(--surface);
+      transition: border-color .18s;
+    }
+    .download-row input:focus { outline: none; border-color: var(--blue); }
+    #btn-download {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      padding: .55rem 1.4rem; border-radius: var(--radius); border: none;
+      cursor: pointer; font-size: .85rem;
+      display: inline-flex; align-items: center; gap: .4rem;
+      transition: background .18s;
+    }
+    #btn-download:hover { background: var(--blue); }
+
+    /* Footer */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.5);
+      text-align: center; font-size: .75rem;
+      padding: 1.25rem;
+    }
+
+    @media (max-width: 580px) {
+      nav a { display: none; }
+      .flow { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); align-self: center; }
+    }
+
+    /* Tooltip */
+    .tooltip-wrap {
+      position: relative;
+      display: inline;
+      border-bottom: 1.5px dashed var(--blue);
+      color: var(--blue);
+      font-weight: 600;
+      cursor: help;
+    }
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      background: var(--navy);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 400;
+      line-height: 1.6;
+      padding: .75rem 1rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      z-index: 300;
+      pointer-events: none;
+    }
+    .tooltip-box strong { color: #7dbfef; }
+    /* seta para baixo */
+    .tooltip-box::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--navy);
+    }
+    .tooltip-wrap:hover .tooltip-box { display: block; }
+    /* Atividade de ordenar */
+    .order-problem {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .order-problem-head {
+      background: var(--navy);
+      color: #fff;
+      padding: .75rem 1.2rem;
+      display: flex; align-items: center; gap: .65rem;
+    }
+    .order-problem-head .op-num {
+      background: rgba(255,255,255,.18);
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; flex-shrink: 0;
+    }
+    .order-problem-head h3 { color: #fff; font-size: .95rem; margin: 0; }
+    .order-problem-body { padding: 1.1rem 1.2rem; }
+    .order-problem-body p { font-size: .88rem; color: var(--text-muted); margin-bottom: .9rem; }
+    .order-src {
+      display: flex; flex-wrap: wrap; gap: .45rem;
+      min-height: 52px;
+      padding: .65rem .75rem;
+      background: var(--bg);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+    }
+    .order-drop {
+      display: flex; flex-wrap: wrap; gap: .45rem;
+      min-height: 52px;
+      padding: .65rem .75rem;
+      background: var(--surface);
+      border: 1.5px dashed var(--blue);
+      border-radius: var(--radius);
+      transition: background .15s, border-color .15s;
+    }
+    .order-drop.drag-over { background: var(--blue-pale); border-color: var(--blue-light); }
+    .order-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; font-weight: 500;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: .35rem .8rem;
+      border-radius: 6px;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .order-tag:hover { box-shadow: var(--shadow); border-color: var(--blue); }
+    .order-tag.correct { border-color: #2e9e63; background: var(--green-pale); color: var(--green); cursor: default; }
+    .order-tag.wrong   { border-color: var(--red);  background: var(--red-pale);   color: var(--red);   cursor: default; }
+    .order-label {
+      font-size: .75rem; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .07em;
+      margin-bottom: .35rem;
+    }
+    .order-actions { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: .9rem; }
+    .btn-check {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: .82rem; padding: .5rem 1.1rem;
+      border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    .btn-check:hover { background: var(--blue); }
+    .btn-reset-order {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--text-muted); font-family: 'Inter', sans-serif;
+      font-size: .8rem; font-weight: 600;
+      padding: .5rem 1rem; border-radius: var(--radius);
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .btn-reset-order:hover { border-color: var(--text); color: var(--text); }
+    .order-result {
+      display: none; margin-top: .8rem;
+      font-size: .85rem; padding: .7rem 1rem;
+      border-radius: var(--radius); font-weight: 500;
+    }
+    .order-result.show { display: block; }
+    .order-result.ok   { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .order-result.err  { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+    .order-result.partial { background: var(--amber-pale); color: var(--amber); border: 1px solid #f0d898; }
+
+    /* ── Ordenação de passos ──────────────────────────────────── */
+    .order-activity { margin-bottom: 2rem; }
+    .order-activity + .order-activity { border-top: 1px solid var(--border-light); padding-top: 2rem; }
+    .order-problem {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.25rem;
+    }
+    .order-problem-head {
+      background: var(--navy);
+      color: #fff;
+      padding: .75rem 1.1rem;
+      font-size: .88rem; font-weight: 600;
+    }
+    .order-problem-body { padding: 1.1rem; }
+    .order-problem-body p { font-size: .88rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+    .order-src {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      min-height: 50px; margin-bottom: 1.1rem;
+      padding: .75rem; background: var(--bg);
+      border-radius: var(--radius); border: 1px solid var(--border);
+    }
+    .order-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .76rem; font-weight: 500;
+      background: var(--surface); border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: .35rem .85rem; border-radius: 6px;
+      cursor: grab; user-select: none;
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .order-tag:hover { box-shadow: var(--shadow); border-color: var(--blue-light); }
+    .order-tag.selected { border-color: var(--blue); background: var(--blue-pale); }
+
+    .order-slots {
+      display: flex; flex-direction: column; gap: .45rem;
+    }
+    .order-slot {
+      display: flex; align-items: center; gap: .65rem;
+    }
+    .order-slot-num {
+      min-width: 24px; height: 24px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .order-drop {
+      flex: 1; min-height: 36px;
+      background: var(--bg); border: 1.5px dashed var(--border);
+      border-radius: var(--radius); padding: .4rem .75rem;
+      transition: border-color .2s, background .2s;
+      font-family: 'JetBrains Mono', monospace; font-size: .76rem;
+      color: var(--text-muted);
+      display: flex; align-items: center; cursor: pointer;
+    }
+    .order-drop.drag-over { border-color: var(--blue); background: var(--blue-pale); }
+    .order-drop.filled { border-style: solid; color: var(--text); border-color: var(--border); background: var(--surface); }
+    .order-drop.correct-slot { border-color: #2e9e63; background: var(--green-pale); color: var(--green); }
+    .order-drop.wrong-slot   { border-color: var(--red);  background: var(--red-pale);  color: var(--red); }
+
+    .order-actions { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: 1rem; }
+    .btn-check-order {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .55rem 1.3rem; border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    .btn-check-order:hover { background: var(--blue); }
+    .btn-reset-order {
+      background: none; border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .55rem 1.1rem; border-radius: var(--radius);
+      cursor: pointer; transition: border-color .18s, color .18s;
+    }
+    .btn-reset-order:hover { border-color: var(--text); color: var(--text); }
+    .order-result-msg {
+      display: none; margin-top: .85rem;
+      font-size: .85rem; padding: .65rem .9rem;
+      border-radius: var(--radius); line-height: 1.55;
+    }
+    .order-result-msg.show { display: block; }
+    .order-result-msg.ok  { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .order-result-msg.err { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">💻 Lab PC1</div>
+  <a href="#conceitos">Conceitos</a>
+  <a href="#linguagem">Linguagem</a>
+  <a href="#tipos">Tipos de Algoritmo</a>
+  <a href="#pratica">Prática</a>
+  <a href="#ordenar">Ordenar Passos</a>
+  <a href="#quiz">Quiz</a>
+  <a href="#discussao">Discussão</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">Laboratório de PC 1 · Aula 02 · CEFET-MG Contagem</div>
+  <h1>Introdução aos <span>Algoritmos</span></h1>
+  <p>Instrução, algoritmo, programa e linguagem de programação — os blocos de construção de qualquer software.</p>
+  <div class="hero-meta">
+    <span>⚗️ Engenharia Química · 1º Período</span>
+    <span>👩🏾‍🏫 Profª. Elizabeth Duane</span>
+  </div>
+</header>
+
+<!-- 1 — CONCEITOS -->
+<section id="conceitos">
+  <div class="container">
+    <div class="section-label">Conceitos</div>
+    <h2>Instrução, Algoritmo e Programa</h2>
+    <p class="lead">Antes de escrever qualquer linha de código é preciso dominar três conceitos que formam a base da programação.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-icon">📌</span>
+        <div class="card-tag tag-navy">Conceito 1</div>
+        <h3>Instrução</h3>
+        <p style="font-size:.86rem;">Uma <strong>ação elementar</strong> — uma frase que indica exatamente o que deve ser feito.</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">Exemplos:<br>• Abra a porta<br>• Misture os reagentes<br>• Anote o valor medido</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📋</span>
+        <div class="card-tag tag-blue">Conceito 2</div>
+        <h3>Algoritmo</h3>
+        <p style="font-size:.86rem;">Uma <strong>sequência lógica e finita</strong> de instruções que leva à execução de uma tarefa.</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">Todo algoritmo tem:<br>• Início e fim definidos<br>• Passos em ordem lógica<br>• Resultado esperado</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">💻</span>
+        <div class="card-tag tag-green">Conceito 3</div>
+        <h3>Programa</h3>
+        <p style="font-size:.86rem;">Um algoritmo <strong>escrito em uma linguagem de programação</strong> que o computador consegue executar.</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">Exemplos de linguagens:<br>• C, C++, Python, Java<br>• Cada uma tem sua <span class="tooltip-wrap">sintaxe<span class="tooltip-box">📖 <strong>Sintaxe</strong> é o conjunto de regras que define como as instruções devem ser escritas em uma linguagem. Assim como o português tem gramática, a linguagem C tem sintaxe: cada palavra, símbolo e pontuação precisam estar no lugar certo para o compilador entender o código.</span></span> própria</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div><strong>A relação entre os três:</strong> você cria uma <em>instrução</em> para cada passo; a sequência de instruções forma um <em>algoritmo</em>; ao escrever esse algoritmo em C você tem um <em>programa</em>.</div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Como um programa funciona?</h3>
+    <p style="font-size:.9rem;">Todo programa de computador segue o mesmo ciclo de três etapas:</p>
+
+    <div class="flow">
+      <div class="flow-box hl">
+        <span class="ficon">⌨️</span>
+        <div class="ftitle">Entrada</div>
+        <div class="fsub">Dados fornecidos pelo usuário</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box hl">
+        <span class="ficon">⚙️</span>
+        <div class="ftitle">Processamento</div>
+        <div class="fsub">Operações realizadas pela CPU</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box hl">
+        <span class="ficon">🖥️</span>
+        <div class="ftitle">Saída</div>
+        <div class="fsub">Resultado exibido ao usuário</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">⚗️</div>
+      <div>
+        <strong>Exemplo:</strong> um programa que converte temperatura de Celsius para Kelvin.<br>
+        <strong>Entrada:</strong> valor em Celsius digitado pelo usuário.<br>
+        <strong>Processamento:</strong> K = °C + 273,15.<br>
+        <strong>Saída:</strong> valor em Kelvin exibido na tela.
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Etapas para elaborar um algoritmo</h3>
+    <ul class="steps">
+      <li><div class="step-num">1</div><div><strong>Compreender</strong> completamente o problema a ser resolvido</div></li>
+      <li><div class="step-num">2</div><div>Definir os <strong>dados de entrada</strong> — quais informações o programa recebe</div></li>
+      <li><div class="step-num">3</div><div>Definir o <strong>processamento</strong> — quais operações serão realizadas</div></li>
+      <li><div class="step-num">4</div><div>Definir os <strong>dados de saída</strong> — qual resultado o programa deve exibir</div></li>
+      <li><div class="step-num">5</div><div><strong>Construir</strong> o algoritmo (narrativa, fluxograma ou pseudocódigo)</div></li>
+      <li><div class="step-num">6</div><div><strong>Testar</strong> o algoritmo realizando simulações manuais (<em>chinesinho</em>) ou no computador</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 2 — LINGUAGEM -->
+<section id="linguagem">
+  <div class="container">
+    <div class="section-label">Linguagem de Programação</div>
+    <h2>Do algoritmo ao programa</h2>
+    <p class="lead">Um algoritmo escrito em português não é executável pelo computador. É necessário traduzi-lo para uma linguagem formal que a máquina compreenda.</p>
+
+    <div class="concept-box">
+      <h3>O que é uma linguagem de programação?</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">É um conjunto de regras e símbolos — a <strong>sintaxe</strong> — que permite escrever algoritmos de forma que o computador possa interpretá-los e executá-los. Cada linguagem tem suas próprias palavras reservadas, operadores e estruturas.</p>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Do código à execução: o papel do compilador</h3>
+    <p style="font-size:.9rem;">Você escreve código em linguagem C. Um programa chamado <strong>compilador</strong> traduz esse código para linguagem de máquina (0s e 1s). A CPU então executa essas instruções.</p>
+
+    <div class="flow" style="margin-top:1rem;">
+      <div class="flow-box">
+        <span class="ficon">✍️</span>
+        <div class="ftitle">Você escreve</div>
+        <div class="fsub">Código em C</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <span class="ficon">⚙️</span>
+        <div class="ftitle">Compilador</div>
+        <div class="fsub">Traduz para binário</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <span class="ficon">🧠</span>
+        <div class="ftitle">CPU executa</div>
+        <div class="fsub">0s e 1s</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box hl">
+        <span class="ficon">📺</span>
+        <div class="ftitle">Resultado</div>
+        <div class="fsub">Na tela</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Linguagem natural × Linguagem formal</h3>
+    <div class="card-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="card">
+        <div class="card-tag tag-amber" style="margin-bottom:.6rem;">Linguagem Natural</div>
+        <h3>Como humanos comunicam</h3>
+        <p style="font-size:.86rem;">Usada no cotidiano. É <strong>ambígua</strong>: a mesma frase pode ter interpretações diferentes dependendo do contexto.</p>
+        <p style="font-size:.8rem;color:var(--text-muted);font-style:italic;">"Adicione um pouco de sal"<br>→ Quanto é "um pouco"?</p>
+      </div>
+      <div class="card">
+        <div class="card-tag tag-blue" style="margin-bottom:.6rem;">Linguagem Formal</div>
+        <h3>Como máquinas entendem</h3>
+        <p style="font-size:.86rem;">Usada em programação. É <strong>precisa e sem ambiguidade</strong>: cada instrução tem um único significado.</p>
+        <p style="font-size:.8rem;color:var(--text-muted);"><code>sal = sal + 5;</code><br>→ Soma exatamente 5 unidades.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Ponto importante:</strong> o computador executa exatamente o que você escreve — não o que você <em>quis dizer</em>. Por isso a precisão da linguagem formal é fundamental.</div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Exemplos de ambiguidade</h3>
+    <p style="font-size:.9rem;margin-bottom:1rem;">Veja como a mesma ideia expressa em linguagem natural pode ter múltiplas interpretações — e como a linguagem formal elimina essa dúvida:</p>
+
+    <table class="analysis-table">
+      <thead>
+        <tr>
+          <th>Instrução em linguagem natural</th>
+          <th>Problema de ambiguidade</th>
+          <th>Versão formal (precisa)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><em>"Aqueça um pouco o reator"</em></td>
+          <td>Quanto é "um pouco"? 5 °C? 20 °C?</td>
+          <td><code>temperatura = temperatura + 10.0</code></td>
+        </tr>
+        <tr>
+          <td><em>"Some os números"</em></td>
+          <td>Quais números? Quantos? Onde está o resultado?</td>
+          <td><code>resultado = valor1 + valor2</code></td>
+        </tr>
+        <tr>
+          <td><em>"Mostre o resultado se for grande"</em></td>
+          <td>O que é "grande"? Maior que 100? Maior que 1000?</td>
+          <td><code>se (resultado > 100) escreva(resultado)</code></td>
+        </tr>
+        <tr>
+          <td><em>"Repita até acabar"</em></td>
+          <td>Acabar o quê? Quando exatamente para?</td>
+          <td><code>enquanto (contador &lt; 10) { ... }</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 3 — TIPOS -->
+<section id="tipos">
+  <div class="container">
+    <div class="section-label">Tipos de Algoritmos</div>
+    <h2>Três formas de representar um algoritmo</h2>
+    <p class="lead">Um mesmo algoritmo pode ser representado de três formas. Cada uma tem vantagens em diferentes contextos.</p>
+
+    <div class="algo-type-grid">
+      <div class="algo-type">
+        <div class="algo-type-header narrativa">
+          <span style="font-size:1.2rem;">🗣️</span>
+          <span>Descrição Narrativa</span>
+        </div>
+        <div class="algo-type-body">
+          <p>Passos em <strong>linguagem natural</strong>, numerados em ordem. Fácil de entender, mas pode ser ambígua.</p>
+          <div class="concept-box" style="font-size:.82rem;padding:.8rem 1rem;margin:.5rem 0 0;">
+            <strong>Celsius → Kelvin:</strong><br>
+            Passo 1 — Leia a temperatura em °C<br>
+            Passo 2 — Some 273,15 ao valor lido<br>
+            Passo 3 — Mostre o resultado em Kelvin
+          </div>
+        </div>
+      </div>
+
+      <div class="algo-type">
+        <div class="algo-type-header fluxograma">
+          <span style="font-size:1.2rem;">🔷</span>
+          <span>Fluxograma</span>
+        </div>
+        <div class="algo-type-body">
+          <p>Representação <strong>visual</strong> com símbolos padronizados. Facilita a visualização do fluxo lógico.</p>
+          <div class="flowchart" style="font-size:.78rem;gap:.12rem;">
+            <div class="fc-oval">início</div>
+            <div class="fc-arrow">↓</div>
+            <div class="fc-para">Leia tempC</div>
+            <div class="fc-arrow">↓</div>
+            <div class="fc-rect">tempK = tempC + 273,15</div>
+            <div class="fc-arrow">↓</div>
+            <div class="fc-para">Mostre tempK</div>
+            <div class="fc-arrow">↓</div>
+            <div class="fc-oval">fim</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="algo-type">
+        <div class="algo-type-header pseudocodigo">
+          <span style="font-size:1.2rem;">📝</span>
+          <span>Pseudocódigo (Portugol)</span>
+        </div>
+        <div class="algo-type-body">
+          <p>Mistura linguagem natural com estrutura de programação. <strong>Ponte entre algoritmo e código real.</strong></p>
+          <div class="code-block" style="margin:.5rem 0 0;padding:.9rem 1rem;">
+<pre><span class="kw">real</span> tempC, tempK
+
+<span class="fn">escreva</span>(<span class="str">"Temperatura em °C: "</span>)
+<span class="fn">leia</span>(tempC)
+
+tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
+
+<span class="fn">escreva</span>(<span class="str">"Kelvin: "</span>, tempK)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Análise do problema — Celsius para Kelvin</h3>
+    <p style="font-size:.9rem;">Antes de escrever o algoritmo, identifique: entrada, processamento e saída.</p>
+
+    <table class="analysis-table">
+      <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável / Fórmula</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-in">Entrada</span></td><td>Temperatura fornecida pelo usuário</td><td><code>tempC</code> (número real)</td></tr>
+        <tr><td><span class="badge badge-proc">Processamento</span></td><td>Aplicar a fórmula de conversão</td><td><code>tempK = tempC + 273,15</code></td></tr>
+        <tr><td><span class="badge badge-out">Saída</span></td><td>Temperatura em Kelvin exibida na tela</td><td><code>tempK</code></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">⚗️</div>
+      <div><strong>Por que Kelvin na Engenharia Química?</strong> A escala Kelvin é a escala absoluta de temperatura. Equações como a dos gases ideais (<em>PV = nRT</em>) exigem T em Kelvin. O zero absoluto (0 K = −273,15 °C) é o ponto de energia cinética mínima das moléculas.</div>
+    </div>
+
+    <details style="margin-top:1.25rem;">
+      <summary>Principais símbolos do fluxograma</summary>
+      <div class="details-body">
+        <div class="card-grid" style="margin-top:.75rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+          <div class="card" style="padding:.9rem;text-align:center;">
+            <div class="fc-oval" style="display:inline-block;font-size:.76rem;margin-bottom:.5rem;">início / fim</div>
+            <p style="font-size:.78rem;color:var(--text-muted);">Oval — início e fim</p>
+          </div>
+          <div class="card" style="padding:.9rem;text-align:center;">
+            <div class="fc-para" style="display:inline-block;font-size:.76rem;margin-bottom:.5rem;">entrada / saída</div>
+            <p style="font-size:.78rem;color:var(--text-muted);">Paralelogramo — leitura ou exibição</p>
+          </div>
+          <div class="card" style="padding:.9rem;text-align:center;">
+            <div class="fc-rect" style="display:inline-block;font-size:.76rem;margin-bottom:.5rem;">processamento</div>
+            <p style="font-size:.78rem;color:var(--text-muted);">Retângulo — cálculo ou atribuição</p>
+          </div>
+          <div class="card" style="padding:.9rem;text-align:center;">
+            <div style="width:52px;height:52px;background:#fdf0e2;border:1.5px solid #d4963a;transform:rotate(45deg);margin:0 auto .5rem;display:flex;align-items:center;justify-content:center;">
+              <span style="transform:rotate(-45deg);font-size:.58rem;font-weight:600;color:var(--navy);">decisão</span>
+            </div>
+            <p style="font-size:.78rem;color:var(--text-muted);">Losango — condição</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 4 — PRÁTICA -->
+<section id="pratica">
+  <div class="container">
+    <div class="section-label">Atividade Prática</div>
+    <h2>Implementando no Portugol</h2>
+    <p class="lead">Siga os passos abaixo para implementar e testar o algoritmo de conversão de temperatura.</p>
+
+    <div class="task-wrap">
+      <div class="task-head">
+        <h3>🌡️ Tarefa: Converter Celsius para Kelvin</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;"><strong>Objetivo:</strong> escrever, executar e testar um algoritmo em Portugol que leia uma temperatura em graus Celsius e mostre o equivalente em Kelvin.</p>
+
+        <ul class="task-steps">
+          <li>
+            <div class="ts-num">1</div>
+            <div>Acesse <a href="https://portugol.dev/" target="_blank" style="color:var(--blue);font-weight:600;">portugol.dev</a> no navegador e clique em <strong>"Novo arquivo"</strong>.</div>
+          </li>
+          <li>
+            <div class="ts-num">2</div>
+            <div>Apague o código de exemplo e digite o pseudocódigo abaixo:</div>
+          </li>
+        </ul>
+
+        <div class="code-block">
+<pre><span class="kw">programa</span> {
+  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
+
+    <span class="cm">// Declaração das variáveis</span>
+    <span class="kw">real</span> tempC, tempK
+
+    <span class="cm">// Entrada de dados</span>
+    <span class="fn">escreva</span>(<span class="str">"Digite a temperatura em Celsius: "</span>)
+    <span class="fn">leia</span>(tempC)
+
+    <span class="cm">// Processamento</span>
+    tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
+
+    <span class="cm">// Saída</span>
+    <span class="fn">escreva</span>(<span class="str">"Temperatura em Kelvin: "</span>, tempK, <span class="str">"\n"</span>)
+
+  }
+}</pre>
+        </div>
+
+        <ul class="task-steps">
+          <li>
+            <div class="ts-num">3</div>
+            <div>Clique no botão <strong>▶ Executar</strong> e insira um valor quando solicitado.</div>
+          </li>
+          <li>
+            <div class="ts-num">4</div>
+            <div>
+              Teste com os valores abaixo e verifique se os resultados estão corretos:
+              <table class="analysis-table" style="margin-top:.7rem;">
+                <thead><tr><th>Entrada (°C)</th><th>Resultado esperado (K)</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>273,15 — ponto de fusão da água</td></tr>
+                  <tr><td>100</td><td>373,15 — ponto de ebulição da água</td></tr>
+                  <tr><td>−273,15</td><td>0 — zero absoluto</td></tr>
+                  <tr><td>25</td><td>298,15 — temperatura ambiente padrão</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
+          <li>
+            <div class="ts-num">5</div>
+            <div>Execute e confira os resultados. Quando tiver o programa funcionando, passe para o desafio abaixo.</div>
+          </li>
+        </ul>
+
+        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
+      </div>
+    </div>
+
+    <details>
+      <summary>💡 Erros mais comuns ao executar no Portugol</summary>
+      <div class="details-body">
+        <ul style="padding-left:1.1rem;font-size:.87rem;line-height:2.1;">
+          <li>O código deve estar dentro de <code>funcao inicio() { ... }</code></li>
+          <li>Use ponto como separador decimal: <code>273.15</code>, não <code>273,15</code></li>
+          <li>Variáveis com casas decimais devem ser declaradas como <code>real</code></li>
+          <li>O operador de atribuição é <code>=</code> e o de soma é <code>+</code></li>
+        </ul>
+      </div>
+    </details>
+
+    <details style="margin-top:.6rem;">
+      <summary>📊 Identificando Entrada, Processamento e Saída no código</summary>
+      <div class="details-body">
+        <table class="analysis-table" style="margin-top:.7rem;">
+          <thead><tr><th>Etapa</th><th>Linha do código</th><th>Explicação</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td><code>leia(tempC)</code></td><td>Recebe o valor digitado e armazena em <code>tempC</code></td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td><code>tempK = tempC + 273.15</code></td><td>Realiza o cálculo e armazena em <code>tempK</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td><code>escreva(..., tempK, ...)</code></td><td>Exibe o valor de <code>tempK</code> na tela</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Desafio — mensagem completa -->
+    <div class="task-wrap" style="margin-top:1.75rem;">
+      <div class="task-head" style="background:var(--navy-light);">
+        <h3>🌡️ Desafio: Exibir mensagem completa</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:.9rem;">
+          Modifique o programa para exibir uma mensagem completa, por exemplo:<br>
+          <em style="font-size:.88rem;">"A temperatura de 25.0 °C equivale a 298.15 K"</em><br><br>
+          Quando terminar, cole seu código no campo abaixo e clique em <strong>Enviar código</strong>.
+        </p>
+
+        <div class="callout tip" style="margin-bottom:1rem;">
+          <div class="callout-icon">💡</div>
+          <div>Use o <code>escreva()</code> com vários argumentos separados por vírgula: texto, variável, texto, variável — o Portugol imprime tudo em sequência na mesma linha.</div>
+        </div>
+
+        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
+
+        <div style="margin-top:1.5rem;">
+          <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--navy);">📎 Cole seu código aqui:</label>
+          <textarea id="codigo-temp" placeholder="Cole aqui o código Portugol do desafio..." style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:.82rem;"></textarea>
+          <button id="btn-enviar-temp" onclick="enviarCodigoTemp()" style="margin-top:.65rem;background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;padding:.55rem 1.3rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .18s;">
+            ✅ Enviar código
+          </button>
+
+          <div id="resposta-temp" style="display:none;margin-top:1.1rem;">
+            <div class="callout info" style="margin-bottom:1rem;">
+              <div class="callout-icon">🎉</div>
+              <div><strong>Código recebido!</strong> Veja abaixo a solução de referência e compare com o seu.</div>
+            </div>
+            <details open>
+              <summary>✅ Solução — Portugol</summary>
+              <div class="details-body" style="padding-top:.75rem;">
+                <div class="code-block">
+<pre><span class="kw">programa</span> {
+  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
+
+    <span class="kw">real</span> tempC, tempK
+
+    <span class="fn">escreva</span>(<span class="str">"Digite a temperatura em Celsius: "</span>)
+    <span class="fn">leia</span>(tempC)
+
+    tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
+
+    <span class="fn">escreva</span>(<span class="str">"A temperatura de "</span>, tempC, <span class="str">" °C equivale a "</span>, tempK, <span class="str">" K\n"</span>)
+
+  }
+}</pre>
+                </div>
+                <div class="callout tip" style="margin-top:.75rem;">
+                  <div class="callout-icon">🔍</div>
+                  <div style="font-size:.85rem;">O segredo está em passar vários argumentos separados por vírgula dentro do <code>escreva()</code>: texto, variável, texto, variável — o Portugol imprime tudo em sequência na mesma linha.</div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desafio —  soma de dois números -->
+    <div class="task-wrap" style="margin-top:1.75rem;">
+      <div class="task-head" style="background:var(--navy-light);">
+        <h3>⚡ Desafio: Somar dois números</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:.9rem;">
+          Agora que você já implementou a conversão de temperatura, tente escrever sozinho um algoritmo que
+          <strong>leia dois números inteiros e mostre a soma</strong>. Use o fluxograma abaixo como guia
+          e implemente o código no Portugol.
+        </p>
+
+        <!-- Fluxograma SVG -->
+        <h3 style="margin-bottom:.75rem;">Fluxograma — Soma de dois números</h3>
+        <div style="display:flex;justify-content:center;margin:1rem 0 1.25rem;">
+          <svg width="220" height="430" viewBox="0 0 220 430" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif" font-size="11">
+            <!-- início -->
+            <ellipse cx="110" cy="28" rx="52" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
+            <text x="110" y="32" text-anchor="middle" font-weight="600" fill="#1c2b3a">início</text>
+            <!-- seta -->
+            <line x1="110" y1="48" x2="110" y2="68" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- leia valor1 -->
+            <polygon points="20,68 200,68 192,96 12,96" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="110" y="86" text-anchor="middle" fill="#1c2b3a">Leia valor1</text>
+            <!-- seta -->
+            <line x1="110" y1="96" x2="110" y2="116" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- leia valor2 -->
+            <polygon points="20,116 200,116 192,144 12,144" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="110" y="134" text-anchor="middle" fill="#1c2b3a">Leia valor2</text>
+            <!-- seta -->
+            <line x1="110" y1="144" x2="110" y2="164" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- processamento -->
+            <rect x="30" y="164" width="160" height="36" rx="5" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="110" y="186" text-anchor="middle" fill="#1c2b3a">resultado = valor1 + valor2</text>
+            <!-- seta -->
+            <line x1="110" y1="200" x2="110" y2="220" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- mostre resultado -->
+            <polygon points="20,220 200,220 192,248 12,248" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="110" y="238" text-anchor="middle" fill="#1c2b3a">Mostre resultado</text>
+            <!-- seta -->
+            <line x1="110" y1="248" x2="110" y2="268" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- fim -->
+            <ellipse cx="110" cy="288" rx="52" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
+            <text x="110" y="292" text-anchor="middle" font-weight="600" fill="#1c2b3a">fim</text>
+            <!-- legenda -->
+            <!-- oval -->
+            <ellipse cx="30" cy="340" rx="22" ry="12" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.2"/>
+            <text x="58" y="344" fill="#5a6a7a" font-size="10">início / fim</text>
+            <!-- paralelo -->
+            <polygon points="4,362 68,362 62,376 -2,376" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
+            <text x="76" y="372" fill="#5a6a7a" font-size="10">entrada / saída</text>
+            <!-- rect -->
+            <rect x="4" y="390" width="60" height="20" rx="3" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
+            <text x="76" y="404" fill="#5a6a7a" font-size="10">processamento</text>
+            <!-- defs -->
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#8ab8de"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="callout tip" style="margin-bottom:1rem;">
+          <div class="callout-icon">💡</div>
+          <div>Implemente o algoritmo no Portugol seguindo o fluxograma. Quando terminar, cole seu código abaixo e clique em <strong>Enviar código</strong>.</div>
+        </div>
+
+        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
+
+        <!-- Entrega do desafio de soma -->
+        <div style="margin-top:1.5rem;">
+          <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--navy);">📎 Cole seu código aqui:</label>
+          <textarea id="codigo-soma" placeholder="Cole aqui o código Portugol do desafio da soma..." style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:.82rem;"></textarea>
+          <button id="btn-enviar-soma" onclick="enviarCodigoSoma()" style="margin-top:.65rem;background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;padding:.55rem 1.3rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .18s;">
+            ✅ Enviar código
+          </button>
+
+          <div id="resposta-soma" style="display:none;margin-top:1.1rem;">
+            <div class="callout info" style="margin-bottom:1rem;">
+              <div class="callout-icon">🎉</div>
+              <div><strong>Código recebido!</strong> Veja abaixo a solução de referência e compare com o seu.</div>
+            </div>
+            <details open>
+              <summary>✅ Solução — Portugol</summary>
+              <div class="details-body" style="padding-top:.75rem;">
+                <p style="font-size:.86rem;margin-bottom:.75rem;"><strong>Análise:</strong></p>
+                <table class="analysis-table" style="margin-bottom:1rem;">
+                  <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-in">Entrada</span></td><td>Dois números fornecidos pelo usuário</td><td><code>valor1</code>, <code>valor2</code></td></tr>
+                    <tr><td><span class="badge badge-proc">Processamento</span></td><td>Somar os dois valores</td><td><code>resultado = valor1 + valor2</code></td></tr>
+                    <tr><td><span class="badge badge-out">Saída</span></td><td>Exibir o resultado da soma</td><td><code>resultado</code></td></tr>
+                  </tbody>
+                </table>
+                <div class="code-block">
+<pre><span class="kw">programa</span> {
+  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
+
+    <span class="cm">// Declaração das variáveis</span>
+    <span class="kw">inteiro</span> valor1, valor2, resultado
+
+    <span class="cm">// Entrada de dados</span>
+    <span class="fn">escreva</span>(<span class="str">"Digite o primeiro número: "</span>)
+    <span class="fn">leia</span>(valor1)
+
+    <span class="fn">escreva</span>(<span class="str">"Digite o segundo número: "</span>)
+    <span class="fn">leia</span>(valor2)
+
+    <span class="cm">// Processamento</span>
+    resultado <span class="op">=</span> valor1 <span class="op">+</span> valor2
+
+    <span class="cm">// Saída</span>
+    <span class="fn">escreva</span>(<span class="str">"Soma = "</span>, resultado, <span class="str">"\n"</span>)
+
+  }
+}</pre>
+                </div>
+                <div class="callout info" style="margin-top:.75rem;">
+                  <div class="callout-icon">🔍</div>
+                  <div style="font-size:.85rem;">
+                    <strong>Atenção ao tipo:</strong> como os valores são números sem casas decimais, usamos <code>inteiro</code>
+                    em vez de <code>real</code>. Se quiser somar números como 3,5 e 1,2, troque para <code>real</code>.
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 — ATIVIDADE: ORDENAR PASSOS -->
+<section id="ordenar">
+  <div class="container">
+    <div class="section-label">Atividade</div>
+    <h2>Ordene os Passos do Algoritmo</h2>
+    <p class="lead">Para cada problema abaixo, os passos do algoritmo estão embaralhados. Arraste-os (ou clique e depois clique na posição) para a ordem correta e clique em <strong>Verificar</strong>.</p>
+
+    <!-- ── Problema 1: Calcular média de duas notas ─────────── -->
+    <div class="order-problem">
+      <div class="order-problem-head">Problema 1 — Calcular a média de duas notas</div>
+      <div class="order-problem-body">
+        <p>Um aluno quer saber sua média a partir de duas notas. Ordene os passos do algoritmo:</p>
+
+        <div class="order-src" id="src1">
+          <div class="order-tag" draggable="true" id="p1s1" data-pos="3" onclick="selOrderTag(this,'1')">Calcule: media = (nota1 + nota2) / 2</div>
+          <div class="order-tag" draggable="true" id="p1s2" data-pos="1" onclick="selOrderTag(this,'1')">Leia a primeira nota</div>
+          <div class="order-tag" draggable="true" id="p1s3" data-pos="4" onclick="selOrderTag(this,'1')">Mostre o valor de media</div>
+          <div class="order-tag" draggable="true" id="p1s4" data-pos="2" onclick="selOrderTag(this,'1')">Leia a segunda nota</div>
+        </div>
+
+        <div class="order-slots" id="slots1">
+          <div class="order-slot"><div class="order-slot-num">1</div><div class="order-drop" id="drop1-1" ondragover="event.preventDefault()" ondrop="dropOrder(event,'1',1)" onclick="dropOrderSel('1',1)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">2</div><div class="order-drop" id="drop1-2" ondragover="event.preventDefault()" ondrop="dropOrder(event,'1',2)" onclick="dropOrderSel('1',2)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">3</div><div class="order-drop" id="drop1-3" ondragover="event.preventDefault()" ondrop="dropOrder(event,'1',3)" onclick="dropOrderSel('1',3)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">4</div><div class="order-drop" id="drop1-4" ondragover="event.preventDefault()" ondrop="dropOrder(event,'1',4)" onclick="dropOrderSel('1',4)">arraste aqui</div></div>
+        </div>
+
+        <div class="order-actions">
+          <button class="btn-check-order" onclick="checkOrder('1')">✅ Verificar</button>
+          <button class="btn-reset-order" onclick="resetOrder('1')">↺ Recomeçar</button>
+        </div>
+        <div class="order-result-msg" id="res1"></div>
+      </div>
+    </div>
+
+    <!-- ── Problema 2: Converter km para metros ─────────────── -->
+    <div class="order-problem">
+      <div class="order-problem-head">Problema 2 — Converter quilômetros para metros</div>
+      <div class="order-problem-body">
+        <p>Um engenheiro precisa converter uma distância em km para metros (1 km = 1000 m). Ordene os passos:</p>
+
+        <div class="order-src" id="src2">
+          <div class="order-tag" draggable="true" id="p2s1" data-pos="2" onclick="selOrderTag(this,'2')">Calcule: metros = km * 1000</div>
+          <div class="order-tag" draggable="true" id="p2s2" data-pos="3" onclick="selOrderTag(this,'2')">Mostre o valor em metros</div>
+          <div class="order-tag" draggable="true" id="p2s3" data-pos="1" onclick="selOrderTag(this,'2')">Leia a distância em quilômetros</div>
+        </div>
+
+        <div class="order-slots" id="slots2">
+          <div class="order-slot"><div class="order-slot-num">1</div><div class="order-drop" id="drop2-1" ondragover="event.preventDefault()" ondrop="dropOrder(event,'2',1)" onclick="dropOrderSel('2',1)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">2</div><div class="order-drop" id="drop2-2" ondragover="event.preventDefault()" ondrop="dropOrder(event,'2',2)" onclick="dropOrderSel('2',2)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">3</div><div class="order-drop" id="drop2-3" ondragover="event.preventDefault()" ondrop="dropOrder(event,'2',3)" onclick="dropOrderSel('2',3)">arraste aqui</div></div>
+        </div>
+
+        <div class="order-actions">
+          <button class="btn-check-order" onclick="checkOrder('2')">✅ Verificar</button>
+          <button class="btn-reset-order" onclick="resetOrder('2')">↺ Recomeçar</button>
+        </div>
+        <div class="order-result-msg" id="res2"></div>
+      </div>
+    </div>
+
+    <!-- ── Problema 3: Calcular concentração de solução ──────── -->
+    <div class="order-problem">
+      <div class="order-problem-head">Problema 3 — Calcular a concentração de uma solução</div>
+      <div class="order-problem-body">
+        <p>Um técnico precisa calcular a concentração mássica de uma solução: C = massa ÷ volume. Ordene os passos:</p>
+
+        <div class="order-src" id="src3">
+          <div class="order-tag" draggable="true" id="p3s1" data-pos="3" onclick="selOrderTag(this,'3')">Mostre o valor da concentração em g/L</div>
+          <div class="order-tag" draggable="true" id="p3s2" data-pos="1" onclick="selOrderTag(this,'3')">Leia a massa do soluto em gramas</div>
+          <div class="order-tag" draggable="true" id="p3s3" data-pos="2" onclick="selOrderTag(this,'3')">Leia o volume da solução em litros</div>
+          <div class="order-tag" draggable="true" id="p3s4" data-pos="4" onclick="selOrderTag(this,'3')">Calcule: C = massa / volume</div>
+        </div>
+
+        <div class="order-slots" id="slots3">
+          <div class="order-slot"><div class="order-slot-num">1</div><div class="order-drop" id="drop3-1" ondragover="event.preventDefault()" ondrop="dropOrder(event,'3',1)" onclick="dropOrderSel('3',1)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">2</div><div class="order-drop" id="drop3-2" ondragover="event.preventDefault()" ondrop="dropOrder(event,'3',2)" onclick="dropOrderSel('3',2)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">3</div><div class="order-drop" id="drop3-3" ondragover="event.preventDefault()" ondrop="dropOrder(event,'3',3)" onclick="dropOrderSel('3',3)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">4</div><div class="order-drop" id="drop3-4" ondragover="event.preventDefault()" ondrop="dropOrder(event,'3',4)" onclick="dropOrderSel('3',4)">arraste aqui</div></div>
+        </div>
+
+        <div class="order-actions">
+          <button class="btn-check-order" onclick="checkOrder('3')">✅ Verificar</button>
+          <button class="btn-reset-order" onclick="resetOrder('3')">↺ Recomeçar</button>
+        </div>
+        <div class="order-result-msg" id="res3"></div>
+      </div>
+    </div>
+
+    <!-- ── Problema 4: Calcular nota final ──────────────────── -->
+    <div class="order-problem">
+      <div class="order-problem-head">Problema 4 — Calcular a nota final da disciplina</div>
+      <div class="order-problem-body">
+        <p>A nota final é calculada como: P1 + P2 + Lista. Se o total for ≥ 60, o aluno está aprovado. Ordene os passos:</p>
+
+        <div class="order-src" id="src4">
+          <div class="order-tag" draggable="true" id="p4s1" data-pos="4" onclick="selOrderTag(this,'4')">Se total ≥ 60, mostre "Aprovado"; senão, mostre "Recuperação"</div>
+          <div class="order-tag" draggable="true" id="p4s2" data-pos="2" onclick="selOrderTag(this,'4')">Leia a nota da Prova 2 (P2)</div>
+          <div class="order-tag" draggable="true" id="p4s3" data-pos="1" onclick="selOrderTag(this,'4')">Leia a nota da Prova 1 (P1)</div>
+          <div class="order-tag" draggable="true" id="p4s4" data-pos="3" onclick="selOrderTag(this,'4')">Leia a nota da Lista de Exercícios</div>
+          <div class="order-tag" draggable="true" id="p4s5" data-pos="5" onclick="selOrderTag(this,'4')">Calcule: total = P1 + P2 + Lista</div>
+        </div>
+
+        <div class="order-slots" id="slots4">
+          <div class="order-slot"><div class="order-slot-num">1</div><div class="order-drop" id="drop4-1" ondragover="event.preventDefault()" ondrop="dropOrder(event,'4',1)" onclick="dropOrderSel('4',1)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">2</div><div class="order-drop" id="drop4-2" ondragover="event.preventDefault()" ondrop="dropOrder(event,'4',2)" onclick="dropOrderSel('4',2)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">3</div><div class="order-drop" id="drop4-3" ondragover="event.preventDefault()" ondrop="dropOrder(event,'4',3)" onclick="dropOrderSel('4',3)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">4</div><div class="order-drop" id="drop4-4" ondragover="event.preventDefault()" ondrop="dropOrder(event,'4',4)" onclick="dropOrderSel('4',4)">arraste aqui</div></div>
+          <div class="order-slot"><div class="order-slot-num">5</div><div class="order-drop" id="drop4-5" ondragover="event.preventDefault()" ondrop="dropOrder(event,'4',5)" onclick="dropOrderSel('4',5)">arraste aqui</div></div>
+        </div>
+
+        <div class="order-actions">
+          <button class="btn-check-order" onclick="checkOrder('4')">✅ Verificar</button>
+          <button class="btn-reset-order" onclick="resetOrder('4')">↺ Recomeçar</button>
+        </div>
+        <div class="order-result-msg" id="res4"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 5 — QUIZ -->
+<section id="quiz">
+  <div class="container">
+    <div class="section-label">Quiz</div>
+    <h2>Confirme seu Conhecimento</h2>
+    <p class="lead">Responda todas as questões e clique em <strong>Ver minha pontuação</strong>.</p>
+
+    <div class="quiz-progress"><div class="quiz-progress-bar" id="q-bar" style="width:0%"></div></div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 1 de 8</div>
+      <div class="q-text">Qual das afirmativas define corretamente um <strong>algoritmo</strong>?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q1" value="a"> Um programa escrito em linguagem C.</label>
+        <label class="q-opt"><input type="radio" name="q1" value="b"> Uma sequência lógica e finita de instruções que leva à execução de uma tarefa.</label>
+        <label class="q-opt"><input type="radio" name="q1" value="c"> Um dispositivo físico que processa dados.</label>
+        <label class="q-opt"><input type="radio" name="q1" value="d"> Qualquer conjunto de regras escrito em linguagem natural.</label>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 2 de 8</div>
+      <div class="q-text">Um professor pediu: <em>"Calcule a média das duas notas."</em> Esta frase é um exemplo de:</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q2" value="a"> Algoritmo completo.</label>
+        <label class="q-opt"><input type="radio" name="q2" value="b"> Programa em C.</label>
+        <label class="q-opt"><input type="radio" name="q2" value="c"> Instrução elementar.</label>
+        <label class="q-opt"><input type="radio" name="q2" value="d"> Fluxograma.</label>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 3 de 8</div>
+      <div class="q-text">Qual é a ordem correta do ciclo de funcionamento de um programa?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q3" value="a"> Processamento → Entrada → Saída</label>
+        <label class="q-opt"><input type="radio" name="q3" value="b"> Saída → Processamento → Entrada</label>
+        <label class="q-opt"><input type="radio" name="q3" value="c"> Entrada → Processamento → Saída</label>
+        <label class="q-opt"><input type="radio" name="q3" value="d"> Entrada → Saída → Processamento</label>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 4 de 8</div>
+      <div class="q-text">No algoritmo de conversão, a linha <code>tempK = tempC + 273.15</code> representa qual etapa?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q4" value="a"> Entrada de dados</label>
+        <label class="q-opt"><input type="radio" name="q4" value="b"> Saída de dados</label>
+        <label class="q-opt"><input type="radio" name="q4" value="c"> Processamento</label>
+        <label class="q-opt"><input type="radio" name="q4" value="d"> Declaração de variável</label>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 5 de 8</div>
+      <div class="q-text">A principal diferença entre linguagem natural e linguagem formal de programação é:</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q5" value="a"> A linguagem formal é usada apenas por profissionais de TI.</label>
+        <label class="q-opt"><input type="radio" name="q5" value="b"> A linguagem natural é ambígua; a linguagem formal é precisa e sem ambiguidade.</label>
+        <label class="q-opt"><input type="radio" name="q5" value="c"> A linguagem natural não pode descrever algoritmos.</label>
+        <label class="q-opt"><input type="radio" name="q5" value="d"> A linguagem formal não pode ser lida por humanos.</label>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 6 de 8</div>
+      <div class="q-text">No fluxograma, qual símbolo representa uma <strong>decisão</strong> (estrutura se/senão)?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q6" value="a"> Oval</label>
+        <label class="q-opt"><input type="radio" name="q6" value="b"> Retângulo</label>
+        <label class="q-opt"><input type="radio" name="q6" value="c"> Paralelogramo</label>
+        <label class="q-opt"><input type="radio" name="q6" value="d"> Losango</label>
+      </div>
+      <div class="q-feedback" id="fb6"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 7 de 8</div>
+      <div class="q-text">No Portugol, ao executar o algoritmo com entrada <strong>100 °C</strong>, qual será a saída correta?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q7" value="a"> 100.00 K</label>
+        <label class="q-opt"><input type="radio" name="q7" value="b"> 273.15 K</label>
+        <label class="q-opt"><input type="radio" name="q7" value="c"> 373.15 K</label>
+        <label class="q-opt"><input type="radio" name="q7" value="d"> −173.15 K</label>
+      </div>
+      <div class="q-feedback" id="fb7"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 8 de 8</div>
+      <div class="q-text">Qual das opções abaixo é um exemplo de <strong>programa</strong>, conforme o conceito desta aula?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q8" value="a"> Uma lista de passos escritos em português para calcular uma média.</label>
+        <label class="q-opt"><input type="radio" name="q8" value="b"> Um fluxograma desenhado à mão em papel.</label>
+        <label class="q-opt"><input type="radio" name="q8" value="c"> Um algoritmo implementado em Portugol e executado no portugol.dev.</label>
+        <label class="q-opt"><input type="radio" name="q8" value="d"> Um diagrama de blocos sem código.</label>
+      </div>
+      <div class="q-feedback" id="fb8"></div>
+    </div>
+
+    <button id="quiz-btn" onclick="corrigirQuiz()">Ver minha pontuação</button>
+
+    <div id="quiz-result">
+      <div class="result-score" id="r-score"></div>
+      <div class="result-sub" id="r-sub"></div>
+      <div class="result-msg" id="r-msg"></div>
+      <button id="quiz-retry" onclick="resetQuiz()">↺ Tentar novamente</button>
+    </div>
+  </div>
+</section>
+
+<!-- 6 — DISCUSSÃO -->
+<section id="discussao">
+  <div class="container">
+    <div class="section-label">Discussão</div>
+    <h2>Reflexão em Grupo</h2>
+    <p class="lead">Leia as questões, escreva sua resposta e depois discuta com os colegas. Não há resposta única — o objetivo é consolidar o raciocínio.</p>
+
+    <div class="disc-q">
+      <p>1. Pense em um processo do cotidiano da Engenharia Química (ex.: preparar uma solução, medir um pH, ajustar uma temperatura). Descreva esse processo como um algoritmo em descrição narrativa, identificando entrada, processamento e saída.</p>
+      <textarea placeholder="Escreva seu algoritmo aqui..."></textarea>
+      <details style="margin-top:.65rem;">
+        <summary>💡 Ver sugestão de resposta</summary>
+        <div class="details-body">
+          <strong>Exemplo — Preparar uma solução aquosa:</strong><br><br>
+          <span class="badge badge-in">Entrada</span> Massa do soluto (g) e volume da solução (L)<br><br>
+          Passo 1 — Leia a massa do soluto em gramas<br>
+          Passo 2 — Leia o volume desejado em litros<br>
+          Passo 3 — Calcule a concentração: C = massa ÷ volume<br>
+          Passo 4 — Mostre a concentração em g/L<br><br>
+          <span class="badge badge-out">Saída</span> Concentração mássica da solução
+        </div>
+      </details>
+    </div>
+
+    <div class="disc-q">
+      <p>2. Por que o computador executa exatamente o que está escrito — e não o que o programador <em>quis dizer</em>? Dê um exemplo de instrução ambígua em português e como ela poderia causar erro em um programa.</p>
+      <textarea placeholder="Escreva sua reflexão aqui..."></textarea>
+      <details style="margin-top:.65rem;">
+        <summary>💡 Ver sugestão de resposta</summary>
+        <div class="details-body">
+          O computador executa instruções binárias com precisão absoluta, sem inferência de contexto.<br><br>
+          <strong>Exemplo ambíguo:</strong> "Adicione um pouco de calor ao reator."<br>
+          Para um programa, "um pouco" não tem significado preciso. A versão formal seria:<br>
+          <code>temperatura = temperatura + 5.0</code>
+        </div>
+      </details>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESUMO -->
+<section id="resumo">
+  <div class="container">
+    <div class="section-label">Resumo</div>
+    <h2>O que você aprendeu hoje</h2>
+
+    <div class="summary-grid">
+      <div class="sum-item">
+        <div class="si-title">📌 Instrução</div>
+        <p>Ação elementar que indica o que deve ser feito. Bloco básico de qualquer algoritmo.</p>
+      </div>
+      <div class="sum-item g">
+        <div class="si-title">📋 Algoritmo</div>
+        <p>Sequência lógica e finita de instruções que executa uma tarefa. Deve ter início e fim.</p>
+      </div>
+      <div class="sum-item a">
+        <div class="si-title">💻 Programa</div>
+        <p>Algoritmo implementado em uma linguagem de programação. Executável pelo computador.</p>
+      </div>
+      <div class="sum-item r">
+        <div class="si-title">🔄 Ciclo E–P–S</div>
+        <p>Todo programa segue: Entrada → Processamento → Saída.</p>
+      </div>
+      <div class="sum-item">
+        <div class="si-title">🗂️ Tipos de algoritmo</div>
+        <p>Narrativa (linguagem natural), Fluxograma (visual) e Pseudocódigo (estruturado).</p>
+      </div>
+      <div class="sum-item g">
+        <div class="si-title">🔡 Linguagem formal</div>
+        <p>Precisa e sem ambiguidade. O computador executa exatamente o que está escrito.</p>
+      </div>
+    </div>
+
+    <div class="callout tip" style="margin-top:1.25rem;">
+      <div class="callout-icon">🔜</div>
+      <div><strong>Próxima aula:</strong> Variáveis, tipos de dados e operadores em C. Você vai reescrever o algoritmo de conversão em linguagem C real e compilá-lo.</div>
+    </div>
+
+    <div class="download-area">
+      <p>Preencha seu nome e salve um registro desta atividade.</p>
+      <div class="download-row">
+        <input id="nome-aluno" type="text" placeholder="Seu nome completo" />
+        <button id="btn-download" onclick="baixarResultado()">⬇️ Baixar resultado</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  📚 Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
+</footer>
+
+<script>
+  /* ══════════════════════════════════════════════════════════
+     ATIVIDADE DE ORDENAÇÃO
+  ══════════════════════════════════════════════════════════ */
+
+  // Gabarito: problema → [tagId na posição 1, na posição 2, ...]
+  const ORDER_ANSWER = {
+    '1': ['p1s2','p1s4','p1s1','p1s3'],   // leia n1, leia n2, calcula, mostra
+    '2': ['p2s3','p2s1','p2s2'],           // leia km, calcula, mostra
+    '3': ['p3s2','p3s3','p3s4','p3s1'],   // leia massa, leia vol, calcula, mostra
+    '4': ['p4s3','p4s2','p4s4','p4s5','p4s1'], // P1, P2, lista, calcula, decisão
+  };
+
+  // Estado: qual tag está selecionada via clique, por problema
+  const orderSelected = { '1': null, '2': null, '3': null, '4': null };
+
+  // Drag & drop
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.order-tag').forEach(tag => {
+      tag.addEventListener('dragstart', e => e.dataTransfer.setData('text', tag.id));
+    });
+  });
+
+  function dropOrder(ev, prob, pos) {
+    ev.preventDefault();
+    const tagId = ev.dataTransfer.getData('text');
+    placeTag(prob, pos, tagId);
+  }
+
+  // Click-to-place
+  function selOrderTag(el, prob) {
+    // se a tag já está num slot, devolve para a source primeiro
+    if (el.parentElement && el.parentElement.classList.contains('order-drop')) {
+      const srcEl = document.getElementById('src' + prob);
+      srcEl.appendChild(el);
+    }
+    // desseleciona anterior
+    if (orderSelected[prob]) orderSelected[prob].classList.remove('selected');
+    if (orderSelected[prob] === el) { orderSelected[prob] = null; return; }
+    el.classList.add('selected');
+    orderSelected[prob] = el;
+  }
+
+  function dropOrderSel(prob, pos) {
+    const sel = orderSelected[prob];
+    if (!sel) return;
+    placeTag(prob, pos, sel.id);
+    sel.classList.remove('selected');
+    orderSelected[prob] = null;
+  }
+
+  function placeTag(prob, pos, tagId) {
+    const tag  = document.getElementById(tagId);
+    const slot = document.getElementById('drop' + prob + '-' + pos);
+    if (!tag || !slot) return;
+
+    // se o slot já tem uma tag, devolve ela para a source
+    const existing = slot.querySelector('.order-tag');
+    if (existing) {
+      document.getElementById('src' + prob).appendChild(existing);
+    }
+    // se a tag veio de outro slot, limpa aquele slot
+    if (tag.parentElement && tag.parentElement.classList.contains('order-drop')) {
+      tag.parentElement.innerHTML = '';
+      tag.parentElement.classList.remove('filled');
+      tag.parentElement.textContent = 'arraste aqui';
+    }
+    // coloca a tag no slot
+    slot.textContent = '';
+    slot.appendChild(tag);
+    slot.classList.add('filled');
+    slot.classList.remove('correct-slot','wrong-slot','drag-over');
+  }
+
+  function checkOrder(prob) {
+    const answer = ORDER_ANSWER[prob];
+    const n = answer.length;
+    let acertos = 0;
+
+    for (let i = 1; i <= n; i++) {
+      const slot = document.getElementById('drop' + prob + '-' + i);
+      const tag  = slot ? slot.querySelector('.order-tag') : null;
+      slot.classList.remove('correct-slot','wrong-slot');
+      if (tag && tag.id === answer[i - 1]) {
+        slot.classList.add('correct-slot');
+        acertos++;
+      } else {
+        slot.classList.add('wrong-slot');
+      }
+    }
+
+    const msg = document.getElementById('res' + prob);
+    msg.classList.add('show');
+    if (acertos === n) {
+      msg.textContent = '✅ Perfeito! Todos os passos estão na ordem correta.';
+      msg.className = 'order-result-msg show ok';
+    } else {
+      msg.textContent = `❌ ${acertos} de ${n} passos corretos. Os itens em vermelho estão fora de lugar — tente reorganizá-los.`;
+      msg.className = 'order-result-msg show err';
+    }
+  }
+
+  function resetOrder(prob) {
+    const src = document.getElementById('src' + prob);
+    const answer = ORDER_ANSWER[prob];
+    const n = answer.length;
+    for (let i = 1; i <= n; i++) {
+      const slot = document.getElementById('drop' + prob + '-' + i);
+      const tag = slot.querySelector('.order-tag');
+      if (tag) { tag.classList.remove('selected'); src.appendChild(tag); }
+      slot.classList.remove('filled','correct-slot','wrong-slot');
+      slot.textContent = 'arraste aqui';
+    }
+    const msg = document.getElementById('res' + prob);
+    msg.className = 'order-result-msg';
+    msg.textContent = '';
+    if (orderSelected[prob]) { orderSelected[prob].classList.remove('selected'); orderSelected[prob] = null; }
+  }
+  const GABARITO = {
+    q1:{ ans:'b', exp:'Algoritmo é uma sequência lógica e finita de instruções. Um programa é o algoritmo escrito em linguagem de programação.' },
+    q2:{ ans:'c', exp:'"Calcule a média" é uma ação elementar. Um algoritmo exigiria todos os passos em sequência.' },
+    q3:{ ans:'c', exp:'O ciclo correto é sempre: Entrada → Processamento → Saída.' },
+    q4:{ ans:'c', exp:'tempK = tempC + 273.15 é processamento: realiza o cálculo e armazena o resultado.' },
+    q5:{ ans:'b', exp:'A linguagem natural é ambígua. A linguagem formal é precisa — cada instrução tem um único significado.' },
+    q6:{ ans:'d', exp:'O losango representa decisão. Oval = início/fim, retângulo = processamento, paralelogramo = entrada/saída.' },
+    q7:{ ans:'c', exp:'100 + 273.15 = 373.15 K — ponto de ebulição da água ao nível do mar.' },
+    q8:{ ans:'c', exp:'Um programa é o algoritmo implementado e executável. O Portugol é uma linguagem, e o portugol.dev o executa.' },
+  };
+
+  function corrigirQuiz() {
+    let acertos = 0;
+    const total = Object.keys(GABARITO).length;
+    Object.entries(GABARITO).forEach(([q,{ans,exp}]) => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      const fb  = document.getElementById('fb' + q.slice(1));
+      document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+        const lbl = opt.closest('.q-opt');
+        lbl.style.pointerEvents = 'none';
+        if (opt.value === ans) lbl.classList.add('correct');
+        else if (opt.checked) lbl.classList.add('wrong');
+      });
+      if (sel && sel.value === ans) {
+        acertos++;
+        fb.textContent = '✅ Correto! ' + exp;
+        fb.className = 'q-feedback show ok';
+      } else {
+        fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp;
+        fb.className = 'q-feedback show err';
+      }
+    });
+    document.getElementById('q-bar').style.width = '100%';
+    const pct = Math.round((acertos / total) * 100);
+    document.getElementById('r-score').textContent = acertos + '/' + total;
+    document.getElementById('r-sub').textContent   = pct + '% de aproveitamento';
+    let msg = '', color = '';
+    if      (pct===100){ msg='🏆 Excelente! Domínio completo do conteúdo.';                        color='var(--green)'; }
+    else if (pct>=75)  { msg='👍 Muito bom! Revise os itens marcados em vermelho.';                 color='var(--blue)'; }
+    else if (pct>=50)  { msg='📖 Bom esforço. Revise o conteúdo antes da próxima aula.';            color='var(--amber)'; }
+    else               { msg='🔄 Recomenda-se reler o conteúdo com atenção e tentar novamente.';    color='var(--red)'; }
+    const msgEl = document.getElementById('r-msg');
+    msgEl.textContent = msg; msgEl.style.color = color;
+    const result = document.getElementById('quiz-result');
+    result.classList.add('show');
+    document.getElementById('quiz-btn').style.display = 'none';
+    result.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  function resetQuiz() {
+    Object.keys(GABARITO).forEach(q => {
+      document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+        opt.checked = false;
+        const lbl = opt.closest('.q-opt');
+        lbl.classList.remove('correct','wrong');
+        lbl.style.pointerEvents = '';
+      });
+      const fb = document.getElementById('fb'+q.slice(1));
+      fb.className = 'q-feedback'; fb.textContent = '';
+    });
+    document.getElementById('quiz-result').classList.remove('show');
+    document.getElementById('quiz-btn').style.display = 'block';
+    document.getElementById('q-bar').style.width = '0%';
+    document.getElementById('quiz').scrollIntoView({ behavior:'smooth' });
+  }
+
+  window.addEventListener('scroll', () => {
+    if (document.getElementById('quiz-result').classList.contains('show')) return;
+    const qs = document.getElementById('quiz');
+    const rect = qs.getBoundingClientRect();
+    const pct = Math.min(100, Math.max(0, (-rect.top / qs.offsetHeight) * 120));
+    document.getElementById('q-bar').style.width = pct + '%';
+  });
+
+  /* ── Entrega de códigos ───────────────────────────────────── */
+  let codigoTempEnviado = '';
+  let codigoSomaEnviado = '';
+
+  function enviarCodigoTemp() {
+    const codigo = document.getElementById('codigo-temp').value.trim();
+    if (!codigo) {
+      alert('Cole seu código antes de enviar.');
+      return;
+    }
+    codigoTempEnviado = codigo;
+    document.getElementById('resposta-temp').style.display = 'block';
+    document.getElementById('btn-enviar-temp').textContent = '✔ Código enviado';
+    document.getElementById('btn-enviar-temp').style.background = 'var(--green)';
+    document.getElementById('btn-enviar-temp').disabled = true;
+    document.getElementById('resposta-temp').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function enviarCodigoSoma() {
+    const codigo = document.getElementById('codigo-soma').value.trim();
+    if (!codigo) {
+      alert('Cole seu código antes de enviar.');
+      return;
+    }
+    codigoSomaEnviado = codigo;
+    document.getElementById('resposta-soma').style.display = 'block';
+    document.getElementById('btn-enviar-soma').textContent = '✔ Código enviado';
+    document.getElementById('btn-enviar-soma').style.background = 'var(--green)';
+    document.getElementById('btn-enviar-soma').disabled = true;
+    document.getElementById('resposta-soma').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function baixarResultado() {
+    const nome = document.getElementById('nome-aluno').value.trim();
+    if (!nome) {
+      alert('⚠️ Por favor, insira seu nome antes de baixar.');
+      return;
+    }
+
+    const now = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+    /* ── Quiz ──────────────────────────────────────────────── */
+    const resultEl  = document.getElementById('quiz-result');
+    const quizFeito = resultEl.classList.contains('show');
+    const quizScore = quizFeito ? document.getElementById('r-score').textContent : '—';
+    const quizSub   = quizFeito ? document.getElementById('r-sub').textContent   : 'Quiz não finalizado';
+    const quizTotal = 8;
+
+    const QUIZ_ENUNCIADOS = [
+      'Definição correta de algoritmo',
+      '"Calcule a média das duas notas" — que tipo de elemento é?',
+      'Ordem correta do ciclo de funcionamento de um programa',
+      'tempK = tempC + 273.15 — qual etapa representa?',
+      'Principal diferença: linguagem natural × linguagem formal',
+      'Símbolo de decisão no fluxograma',
+      'Saída do algoritmo com entrada 100 °C',
+      'Exemplo correto de programa'
+    ];
+
+    const quizLinhas = [1,2,3,4,5,6,7,8].map(i => {
+      const sel = document.querySelector(`input[name="q${i}"]:checked`);
+      const lbl = sel ? sel.closest('.q-opt').textContent.trim() : '(não respondida)';
+      const correto = document.querySelector(`input[name="q${i}"].correct`) ||
+                      (sel && sel.closest('.q-opt').classList.contains('correct'));
+      const status = !sel ? '— Não respondida' : correto ? '✅ Correta' : '❌ Errada';
+      return `<tr><td>${i}</td><td>${QUIZ_ENUNCIADOS[i-1]}</td><td>${lbl}</td><td>${status}</td></tr>`;
+    }).join('');
+
+    /* ── Ordenação ─────────────────────────────────────────── */
+    const ORDER_PROBS = {
+      '1': { titulo:'Calcular a média de duas notas', n:4 },
+      '2': { titulo:'Converter quilômetros para metros', n:3 },
+      '3': { titulo:'Calcular a concentração de uma solução', n:4 },
+      '4': { titulo:'Calcular a nota final da disciplina', n:5 },
+    };
+    const ORDER_ANS = {
+      '1': ['p1s2','p1s4','p1s1','p1s3'],
+      '2': ['p2s3','p2s1','p2s2'],
+      '3': ['p3s2','p3s3','p3s4','p3s1'],
+      '4': ['p4s3','p4s2','p4s4','p4s5','p4s1'],
+    };
+
+    function getOrderRows(prob) {
+      const n = ORDER_ANS[prob].length;
+      let rows = '', acertos = 0;
+      for (let i = 1; i <= n; i++) {
+        const slot = document.getElementById('drop' + prob + '-' + i);
+        const tag  = slot ? slot.querySelector('.order-tag') : null;
+        const texto = tag ? tag.textContent.trim() : '(vazio)';
+        const ok    = tag && tag.id === ORDER_ANS[prob][i-1];
+        if (ok) acertos++;
+        const cor = !tag ? '#888' : ok ? '#1e7145' : '#c0392b';
+        const icn = !tag ? '—' : ok ? '✅' : '❌';
+        rows += `<tr><td style="text-align:center;">${i}</td><td>${texto}</td><td style="text-align:center;color:${cor}">${icn}</td></tr>`;
+      }
+      return { rows, acertos, n };
+    }
+
+    let ordenacaoHTML = '';
+    for (const [prob, info] of Object.entries(ORDER_PROBS)) {
+      const { rows, acertos, n } = getOrderRows(prob);
+      const status = acertos === n
+        ? `<span style="color:#1e7145;font-weight:600;">✅ ${acertos}/${n} — Correto!</span>`
+        : `<span style="color:#c0392b;font-weight:600;">❌ ${acertos}/${n} — Revisar</span>`;
+      ordenacaoHTML += `
+      <p style="font-weight:600;font-size:12px;margin:12px 0 6px;">${prob}. ${info.titulo} — ${status}</p>
+      <table>
+        <tr><th>#</th><th>Passo colocado pelo aluno</th><th>Resultado</th></tr>
+        ${rows}
+      </table>`;
+    }
+
+    /* ── Códigos entregues ─────────────────────────────────── */
+    const escHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const codTemp = codigoTempEnviado ? escHtml(codigoTempEnviado) : '<em style="color:#888">(não enviado)</em>';
+    const codSoma = codigoSomaEnviado ? escHtml(codigoSomaEnviado) : '<em style="color:#888">(não enviado)</em>';
+
+    /* ── Reflexões ─────────────────────────────────────────── */
+    const textareas = document.querySelectorAll('#discussao textarea');
+    const ref1 = textareas[0] ? escHtml(textareas[0].value.trim() || '(sem resposta)') : '(sem resposta)';
+    const ref2 = textareas[1] ? escHtml(textareas[1].value.trim() || '(sem resposta)') : '(sem resposta)';
+
+    /* ── HTML gerado ───────────────────────────────────────── */
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Resultado — ${nome}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;color:#1c2b3a;background:#fff;padding:40px 48px;font-size:13px;line-height:1.7;}
+  .header{border-bottom:3px solid #1a2e4a;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;}
+  .header h1{font-size:20px;font-weight:700;color:#1a2e4a;}
+  .header p{font-size:11px;color:#5a6a7a;}
+  .student{background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:12px 16px;margin-bottom:24px;}
+  .student strong{font-size:15px;color:#1a2e4a;}
+  .student span{font-size:11px;color:#5a6a7a;display:block;margin-bottom:2px;}
+  .section{margin-bottom:28px;}
+  .section-title{font-size:11px;font-weight:700;color:#2c6fad;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #e8f1f9;}
+  .score-box{display:inline-block;background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:8px 20px;font-size:26px;font-weight:700;color:#1a2e4a;margin-bottom:6px;}
+  .score-label{font-size:11px;color:#5a6a7a;display:block;margin-bottom:10px;}
+  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:12px;}
+  th{background:#1a2e4a;color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:11px;}
+  td{padding:6px 10px;border-bottom:1px solid #eef1f5;vertical-align:top;}
+  tr:nth-child(even) td{background:#f5f7fa;}
+  .answer-box{background:#f5f7fa;border:1px solid #dde3ea;border-radius:6px;padding:10px 12px;white-space:pre-wrap;font-size:12px;color:#1c2b3a;margin-top:4px;min-height:36px;}
+  .code-box{background:#1e2d3d;border-radius:6px;padding:12px 14px;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe2f3;margin-top:4px;min-height:36px;}
+  .badge-ok{display:inline-block;background:#e8f5ee;color:#1e7145;border:1px solid #9fd4b8;border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700;}
+  .badge-err{display:inline-block;background:#fdecea;color:#c0392b;border:1px solid #e8b0aa;border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700;}
+  .footer{margin-top:32px;padding-top:12px;border-top:1px solid #dde3ea;font-size:10px;color:#5a6a7a;text-align:center;}
+  @media print{body{padding:20px 28px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>💻 Lab PC1 — Aula 02</h1>
+    <p>Introdução aos Algoritmos · CEFET-MG Campus Contagem</p>
+  </div>
+  <div style="text-align:right">
+    <p>${now}</p>
+    <p>1º Período · Engenharia Química</p>
+  </div>
+</div>
+
+<div class="student">
+  <span>Aluno(a)</span>
+  <strong>${nome}</strong>
+</div>
+
+<!-- 1. TAREFA -->
+<div class="section">
+  <div class="section-title">Atividade Prática — Converter Celsius para Kelvin</div>
+  <p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:</p>
+  <div class="code-box">${codTemp}</div>
+</div>
+
+<!-- 2. DESAFIO SOMA -->
+<div class="section">
+  <div class="section-title">Desafio — Somar dois números</div>
+  <p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:</p>
+  <div class="code-box">${codSoma}</div>
+</div>
+
+<!-- 3. ORDENAÇÃO -->
+<div class="section">
+  <div class="section-title">Ordene os Passos do Algoritmo</div>
+  ${ordenacaoHTML}
+</div>
+
+<!-- 4. QUIZ -->
+<div class="section">
+  <div class="section-title">Quiz — Introdução aos Algoritmos</div>
+  <div class="score-box">${quizScore}</div>
+  <span class="score-label">${quizSub}</span>
+  <table>
+    <tr><th>#</th><th>Questão</th><th>Resposta do aluno</th><th>Resultado</th></tr>
+    ${quizLinhas}
+  </table>
+</div>
+
+<!-- 5. REFLEXÃO -->
+<div class="section">
+  <div class="section-title">Reflexão em Grupo</div>
+  <p style="font-weight:600;margin-bottom:4px;font-size:12px;">1. Descreva um processo da Engenharia Química como algoritmo (E-P-S):</p>
+  <div class="answer-box">${ref1}</div>
+  <p style="font-weight:600;margin:14px 0 4px;font-size:12px;">2. Por que o computador executa o que está escrito e não o que o programador quis dizer?</p>
+  <div class="answer-box">${ref2}</div>
+</div>
+
+<div class="footer">
+  Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
+</div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type:'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `LabPC1_Aula02_${nome.replace(/\s+/g,'_')}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
