@@ -469,7 +469,7 @@
     /* Summary */
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: .9rem; margin: 1.4rem 0;
     }
     .sum-item {
@@ -1740,22 +1740,27 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     const slot = document.getElementById('drop' + prob + '-' + pos);
     if (!tag || !slot) return;
 
-    // se o slot já tem uma tag, devolve ela para a source
+    // Se a tag veio de outro slot, guarda referência e limpa depois de movê-la
+    const prevSlot = (tag.parentElement && tag.parentElement.classList.contains('order-drop'))
+      ? tag.parentElement : null;
+
+    // Se o slot de destino já tem uma tag diferente, devolve para a source ANTES de qualquer DOM change
     const existing = slot.querySelector('.order-tag');
-    if (existing) {
+    if (existing && existing !== tag) {
       document.getElementById('src' + prob).appendChild(existing);
     }
-    // se a tag veio de outro slot, limpa aquele slot
-    if (tag.parentElement && tag.parentElement.classList.contains('order-drop')) {
-      tag.parentElement.innerHTML = '';
-      tag.parentElement.classList.remove('filled');
-      tag.parentElement.textContent = 'arraste aqui';
-    }
-    // coloca a tag no slot
+
+    // Move a tag para o slot de destino
     slot.textContent = '';
     slot.appendChild(tag);
     slot.classList.add('filled');
-    slot.classList.remove('correct-slot','wrong-slot','drag-over');
+    slot.classList.remove('correct-slot', 'wrong-slot', 'drag-over');
+
+    // Limpa o slot anterior (já esvaziado — a tag foi movida)
+    if (prevSlot && prevSlot !== slot) {
+      prevSlot.textContent = 'arraste aqui';
+      prevSlot.classList.remove('filled', 'correct-slot', 'wrong-slot');
+    }
   }
 
   function checkOrder(prob) {
@@ -1781,26 +1786,32 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
       msg.textContent = '✅ Perfeito! Todos os passos estão na ordem correta.';
       msg.className = 'order-result-msg show ok';
     } else {
-      msg.textContent = `❌ ${acertos} de ${n} passos corretos. Os itens em vermelho estão fora de lugar — tente reorganizá-los.`;
+      msg.textContent = '❌ ' + acertos + ' de ' + n + ' passos corretos. Os itens em vermelho estão fora de lugar — tente reorganizá-los.';
       msg.className = 'order-result-msg show err';
     }
   }
 
   function resetOrder(prob) {
     const src = document.getElementById('src' + prob);
-    const answer = ORDER_ANSWER[prob];
-    const n = answer.length;
+    const n = ORDER_ANSWER[prob].length;
     for (let i = 1; i <= n; i++) {
       const slot = document.getElementById('drop' + prob + '-' + i);
       const tag = slot.querySelector('.order-tag');
-      if (tag) { tag.classList.remove('selected'); src.appendChild(tag); }
-      slot.classList.remove('filled','correct-slot','wrong-slot');
+      // Mover a tag para a source ANTES de limpar o slot
+      if (tag) {
+        tag.classList.remove('selected');
+        src.appendChild(tag);   // move o nó — slot fica vazio automaticamente
+      }
+      slot.classList.remove('filled', 'correct-slot', 'wrong-slot');
       slot.textContent = 'arraste aqui';
     }
     const msg = document.getElementById('res' + prob);
     msg.className = 'order-result-msg';
     msg.textContent = '';
-    if (orderSelected[prob]) { orderSelected[prob].classList.remove('selected'); orderSelected[prob] = null; }
+    if (orderSelected[prob]) {
+      orderSelected[prob].classList.remove('selected');
+      orderSelected[prob] = null;
+    }
   }
   const GABARITO = {
     q1:{ ans:'b', exp:'Algoritmo é uma sequência lógica e finita de instruções. Um programa é o algoritmo escrito em linguagem de programação.' },
@@ -1922,7 +1933,6 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     const quizFeito = resultEl.classList.contains('show');
     const quizScore = quizFeito ? document.getElementById('r-score').textContent : '—';
     const quizSub   = quizFeito ? document.getElementById('r-sub').textContent   : 'Quiz não finalizado';
-    const quizTotal = 8;
 
     const QUIZ_ENUNCIADOS = [
       'Definição correta de algoritmo',
@@ -1936,12 +1946,12 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     ];
 
     const quizLinhas = [1,2,3,4,5,6,7,8].map(i => {
-      const sel = document.querySelector(`input[name="q${i}"]:checked`);
+      const sel = document.querySelector('input[name="q' + i + '"]:checked');
       const lbl = sel ? sel.closest('.q-opt').textContent.trim() : '(não respondida)';
-      const correto = document.querySelector(`input[name="q${i}"].correct`) ||
-                      (sel && sel.closest('.q-opt').classList.contains('correct'));
-      const status = !sel ? '— Não respondida' : correto ? '✅ Correta' : '❌ Errada';
-      return `<tr><td>${i}</td><td>${QUIZ_ENUNCIADOS[i-1]}</td><td>${lbl}</td><td>${status}</td></tr>`;
+      const okEl = document.querySelector('input[name="q' + i + '"].correct') ||
+                   (sel && sel.closest('.q-opt').classList.contains('correct'));
+      const status = !sel ? '— Não respondida' : okEl ? '✅ Correta' : '❌ Errada';
+      return '<tr><td>' + i + '</td><td>' + QUIZ_ENUNCIADOS[i-1] + '</td><td>' + lbl + '</td><td>' + status + '</td></tr>';
     }).join('');
 
     /* ── Ordenação ─────────────────────────────────────────── */
@@ -1959,33 +1969,29 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     };
 
     function getOrderRows(prob) {
-      const n = ORDER_ANS[prob].length;
+      const ans = ORDER_ANS[prob];
       let rows = '', acertos = 0;
-      for (let i = 1; i <= n; i++) {
+      for (let i = 1; i <= ans.length; i++) {
         const slot = document.getElementById('drop' + prob + '-' + i);
         const tag  = slot ? slot.querySelector('.order-tag') : null;
         const texto = tag ? tag.textContent.trim() : '(vazio)';
-        const ok    = tag && tag.id === ORDER_ANS[prob][i-1];
+        const ok    = tag && tag.id === ans[i-1];
         if (ok) acertos++;
         const cor = !tag ? '#888' : ok ? '#1e7145' : '#c0392b';
         const icn = !tag ? '—' : ok ? '✅' : '❌';
-        rows += `<tr><td style="text-align:center;">${i}</td><td>${texto}</td><td style="text-align:center;color:${cor}">${icn}</td></tr>`;
+        rows += '<tr><td style="text-align:center;">' + i + '</td><td>' + texto + '</td><td style="text-align:center;color:' + cor + '">' + icn + '</td></tr>';
       }
-      return { rows, acertos, n };
+      return { rows, acertos, n: ans.length };
     }
 
     let ordenacaoHTML = '';
     for (const [prob, info] of Object.entries(ORDER_PROBS)) {
       const { rows, acertos, n } = getOrderRows(prob);
       const status = acertos === n
-        ? `<span style="color:#1e7145;font-weight:600;">✅ ${acertos}/${n} — Correto!</span>`
-        : `<span style="color:#c0392b;font-weight:600;">❌ ${acertos}/${n} — Revisar</span>`;
-      ordenacaoHTML += `
-      <p style="font-weight:600;font-size:12px;margin:12px 0 6px;">${prob}. ${info.titulo} — ${status}</p>
-      <table>
-        <tr><th>#</th><th>Passo colocado pelo aluno</th><th>Resultado</th></tr>
-        ${rows}
-      </table>`;
+        ? '<span style="color:#1e7145;font-weight:600;">✅ ' + acertos + '/' + n + ' — Correto!</span>'
+        : '<span style="color:#c0392b;font-weight:600;">❌ ' + acertos + '/' + n + ' — Revisar</span>';
+      ordenacaoHTML += '<p style="font-weight:600;font-size:12px;margin:12px 0 6px;">' + prob + '. ' + info.titulo + ' — ' + status + '</p>'
+        + '<table><tr><th>#</th><th>Passo colocado pelo aluno</th><th>Resultado</th></tr>' + rows + '</table>';
     }
 
     /* ── Códigos entregues ─────────────────────────────────── */
@@ -1998,109 +2004,62 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     const ref1 = textareas[0] ? escHtml(textareas[0].value.trim() || '(sem resposta)') : '(sem resposta)';
     const ref2 = textareas[1] ? escHtml(textareas[1].value.trim() || '(sem resposta)') : '(sem resposta)';
 
-    /* ── HTML gerado ───────────────────────────────────────── */
-    const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Resultado — ${nome}</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Inter',sans-serif;color:#1c2b3a;background:#fff;padding:40px 48px;font-size:13px;line-height:1.7;}
-  .header{border-bottom:3px solid #1a2e4a;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;}
-  .header h1{font-size:20px;font-weight:700;color:#1a2e4a;}
-  .header p{font-size:11px;color:#5a6a7a;}
-  .student{background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:12px 16px;margin-bottom:24px;}
-  .student strong{font-size:15px;color:#1a2e4a;}
-  .student span{font-size:11px;color:#5a6a7a;display:block;margin-bottom:2px;}
-  .section{margin-bottom:28px;}
-  .section-title{font-size:11px;font-weight:700;color:#2c6fad;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #e8f1f9;}
-  .score-box{display:inline-block;background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:8px 20px;font-size:26px;font-weight:700;color:#1a2e4a;margin-bottom:6px;}
-  .score-label{font-size:11px;color:#5a6a7a;display:block;margin-bottom:10px;}
-  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:12px;}
-  th{background:#1a2e4a;color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:11px;}
-  td{padding:6px 10px;border-bottom:1px solid #eef1f5;vertical-align:top;}
-  tr:nth-child(even) td{background:#f5f7fa;}
-  .answer-box{background:#f5f7fa;border:1px solid #dde3ea;border-radius:6px;padding:10px 12px;white-space:pre-wrap;font-size:12px;color:#1c2b3a;margin-top:4px;min-height:36px;}
-  .code-box{background:#1e2d3d;border-radius:6px;padding:12px 14px;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe2f3;margin-top:4px;min-height:36px;}
-  .badge-ok{display:inline-block;background:#e8f5ee;color:#1e7145;border:1px solid #9fd4b8;border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700;}
-  .badge-err{display:inline-block;background:#fdecea;color:#c0392b;border:1px solid #e8b0aa;border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700;}
-  .footer{margin-top:32px;padding-top:12px;border-top:1px solid #dde3ea;font-size:10px;color:#5a6a7a;text-align:center;}
-  @media print{body{padding:20px 28px;}}
-</style>
-</head>
-<body>
-
-<div class="header">
-  <div>
-    <h1>💻 Lab PC1 — Aula 02</h1>
-    <p>Introdução aos Algoritmos · CEFET-MG Campus Contagem</p>
-  </div>
-  <div style="text-align:right">
-    <p>${now}</p>
-    <p>1º Período · Engenharia Química</p>
-  </div>
-</div>
-
-<div class="student">
-  <span>Aluno(a)</span>
-  <strong>${nome}</strong>
-</div>
-
-<!-- 1. TAREFA -->
-<div class="section">
-  <div class="section-title">Atividade Prática — Converter Celsius para Kelvin</div>
-  <p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:</p>
-  <div class="code-box">${codTemp}</div>
-</div>
-
-<!-- 2. DESAFIO SOMA -->
-<div class="section">
-  <div class="section-title">Desafio — Somar dois números</div>
-  <p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:</p>
-  <div class="code-box">${codSoma}</div>
-</div>
-
-<!-- 3. ORDENAÇÃO -->
-<div class="section">
-  <div class="section-title">Ordene os Passos do Algoritmo</div>
-  ${ordenacaoHTML}
-</div>
-
-<!-- 4. QUIZ -->
-<div class="section">
-  <div class="section-title">Quiz — Introdução aos Algoritmos</div>
-  <div class="score-box">${quizScore}</div>
-  <span class="score-label">${quizSub}</span>
-  <table>
-    <tr><th>#</th><th>Questão</th><th>Resposta do aluno</th><th>Resultado</th></tr>
-    ${quizLinhas}
-  </table>
-</div>
-
-<!-- 5. REFLEXÃO -->
-<div class="section">
-  <div class="section-title">Reflexão em Grupo</div>
-  <p style="font-weight:600;margin-bottom:4px;font-size:12px;">1. Descreva um processo da Engenharia Química como algoritmo (E-P-S):</p>
-  <div class="answer-box">${ref1}</div>
-  <p style="font-weight:600;margin:14px 0 4px;font-size:12px;">2. Por que o computador executa o que está escrito e não o que o programador quis dizer?</p>
-  <div class="answer-box">${ref2}</div>
-</div>
-
-<div class="footer">
-  Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
-</div>
-</body>
-</html>`;
+    const html = buildResultadoHTML(nome, now, codTemp, codSoma, ordenacaoHTML, quizScore, quizSub, quizLinhas, ref1, ref2);
 
     const blob = new Blob([html], { type:'text/html' });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href = url;
-    a.download = `LabPC1_Aula02_${nome.replace(/\s+/g,'_')}.html`;
+    a.download = 'LabPC1_Aula02_' + nome.replace(/\s+/g,'_') + '.html';
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  // Monta o HTML do resultado sem expor tags de fechamento que quebrariam o parser
+  function buildResultadoHTML(nome, now, codTemp, codSoma, ordenacaoHTML, quizScore, quizSub, quizLinhas, ref1, ref2) {
+    const close = (tag) => '</' + tag + '>';
+    return [
+      '<!DOCTYPE html>',
+      '<html lang="pt-BR">',
+      '<head>',
+      '<meta charset="UTF-8">',
+      `<title>Resultado — ${nome}${close('title')}`,
+      '<style>',
+      `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');`,
+      `*{margin:0;padding:0;box-sizing:border-box;}`,
+      `body{font-family:'Inter',sans-serif;color:#1c2b3a;background:#fff;padding:40px 48px;font-size:13px;line-height:1.7;}`,
+      `.header{border-bottom:3px solid #1a2e4a;padding-bottom:16px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;}`,
+      `.header h1{font-size:20px;font-weight:700;color:#1a2e4a;}`,
+      `.header p{font-size:11px;color:#5a6a7a;}`,
+      `.student{background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:12px 16px;margin-bottom:24px;}`,
+      `.student strong{font-size:15px;color:#1a2e4a;}`,
+      `.student span{font-size:11px;color:#5a6a7a;display:block;margin-bottom:2px;}`,
+      `.section{margin-bottom:28px;}`,
+      `.section-title{font-size:11px;font-weight:700;color:#2c6fad;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #e8f1f9;}`,
+      `.score-box{display:inline-block;background:#e8f1f9;border:1px solid #b8d0e8;border-radius:8px;padding:8px 20px;font-size:26px;font-weight:700;color:#1a2e4a;margin-bottom:6px;}`,
+      `.score-label{font-size:11px;color:#5a6a7a;display:block;margin-bottom:10px;}`,
+      `table{width:100%;border-collapse:collapse;margin-top:6px;font-size:12px;}`,
+      `th{background:#1a2e4a;color:#fff;padding:6px 10px;text-align:left;font-weight:600;font-size:11px;}`,
+      `td{padding:6px 10px;border-bottom:1px solid #eef1f5;vertical-align:top;}`,
+      `tr:nth-child(even) td{background:#f5f7fa;}`,
+      `.answer-box{background:#f5f7fa;border:1px solid #dde3ea;border-radius:6px;padding:10px 12px;white-space:pre-wrap;font-size:12px;color:#1c2b3a;margin-top:4px;min-height:36px;}`,
+      `.code-box{background:#1e2d3d;border-radius:6px;padding:12px 14px;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#cfe2f3;margin-top:4px;min-height:36px;}`,
+      `.footer{margin-top:32px;padding-top:12px;border-top:1px solid #dde3ea;font-size:10px;color:#5a6a7a;text-align:center;}`,
+      `@media print{body{padding:20px 28px;}}`,
+      close('style'),
+      close('head'),
+      '<body>',
+      `<div class="header"><div><h1>💻 Lab PC1 — Aula 02${close('h1')}<p>Introdução aos Algoritmos · CEFET-MG Campus Contagem${close('p')}${close('div')}<div style="text-align:right"><p>${now}${close('p')}<p>1º Período · Engenharia Química${close('p')}${close('div')}${close('div')}`,
+      `<div class="student"><span>Aluno(a)${close('span')}<strong>${nome}${close('strong')}${close('div')}`,
+      `<div class="section"><div class="section-title">Atividade Prática — Converter Celsius para Kelvin${close('div')}<p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:${close('p')}<div class="code-box">${codTemp}${close('div')}${close('div')}`,
+      `<div class="section"><div class="section-title">Desafio — Somar dois números${close('div')}<p style="font-size:12px;color:#5a6a7a;margin-bottom:6px;">Código entregue pelo aluno:${close('p')}<div class="code-box">${codSoma}${close('div')}${close('div')}`,
+      `<div class="section"><div class="section-title">Ordene os Passos do Algoritmo${close('div')}${ordenacaoHTML}${close('div')}`,
+      `<div class="section"><div class="section-title">Quiz — Introdução aos Algoritmos${close('div')}<div class="score-box">${quizScore}${close('div')}<span class="score-label">${quizSub}${close('span')}<table><tr><th>#${close('th')}<th>Questão${close('th')}<th>Resposta do aluno${close('th')}<th>Resultado${close('th')}${close('tr')}${quizLinhas}${close('table')}${close('div')}`,
+      `<div class="section"><div class="section-title">Reflexão em Grupo${close('div')}<p style="font-weight:600;margin-bottom:4px;font-size:12px;">1. Descreva um processo da Engenharia Química como algoritmo (E-P-S):${close('p')}<div class="answer-box">${ref1}${close('div')}<p style="font-weight:600;margin:14px 0 4px;font-size:12px;">2. Por que o computador executa o que está escrito e não o que o programador quis dizer?${close('p')}<div class="answer-box">${ref2}${close('div')}${close('div')}`,
+      `<div class="footer">Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026${close('div')}`,
+      close('body'),
+      close('html'),
+    ].join('\n');
   }
 </script>
 </body>
