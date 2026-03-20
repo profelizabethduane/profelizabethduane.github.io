@@ -67,7 +67,7 @@
   /* ── HERO ── */
   .hero {
     padding: 3.5rem 2rem 2rem;
-    max-width: 900px; margin: 0 auto;
+    max-width: 1200px; margin: 0 auto;
   }
   .hero-label {
     font-family: var(--mono); font-size: 0.72rem;
@@ -87,7 +87,7 @@
 
   /* ── FILTER TABS ── */
   .filters {
-    max-width: 900px; margin: 0 auto;
+    max-width: 1200px; margin: 0 auto;
     padding: 1.5rem 2rem 0.5rem;
     display: flex; gap: 0.5rem; flex-wrap: wrap;
   }
@@ -107,10 +107,10 @@
 
   /* ── GRID ── */
   .grid {
-    max-width: 900px; margin: 1.5rem auto 0;
+    max-width: 1200px; margin: 1.5rem auto 0;
     padding: 0 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
@@ -186,6 +186,12 @@
     box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
   }
   .demo textarea { resize: vertical; min-height: 72px; }
+  .demo select {
+    appearance: auto;
+    -webkit-appearance: auto;
+    height: 2.2rem;
+    cursor: pointer;
+  }
   .demo select option { background: var(--card); }
 
   .demo-radio-group,
@@ -275,7 +281,7 @@
 
   /* ── COUNTER ── */
   .counter {
-    max-width: 900px; margin: 0 auto;
+    max-width: 1200px; margin: 0 auto;
     padding: 0 2rem 0.5rem;
     font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
   }
@@ -283,7 +289,7 @@
 
   /* ── FOOTER ── */
   footer {
-    max-width: 900px; margin: 3rem auto 0;
+    max-width: 1200px; margin: 3rem auto 0;
     padding: 1.5rem 2rem;
     border-top: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
@@ -554,8 +560,8 @@ const INPUTS = [
     rawSnippet: `<input type="hidden" name="token_csrf" value="a3f9c...">`,
     render(id) {
       return `<div class="demo-hidden-note">
-        &lt;input type="hidden" name="token" value="<span style="color:var(--green)">a3f9c2b1</span>"&gt;<br>
-        <span style="color:var(--amber)">↳ invisível no formulário — enviado no submit</span><br><br>
+        &lt;input type="hidden" name="token" value="<span style='color:var(--green)'>a3f9c2b1</span>"&gt;<br>
+        <span style='color:var(--amber)'>↳ invisível no formulário — enviado no submit</span><br><br>
         <span class="csrf-term" tabindex="0">O que é um token CSRF?
           <span class="csrf-tooltip">
             <strong>CSRF — Cross-Site Request Forgery</strong><br><br>
@@ -563,7 +569,7 @@ const INPUTS = [
             <strong>Exemplo:</strong> Você está logado no seu banco. Uma página maliciosa faz seu browser enviar um POST para transferir dinheiro — sem você saber.<br><br>
             <strong>Como o token protege:</strong><br>
             O servidor gera um valor secreto único por sessão e o insere num campo hidden. No submit, verifica se o valor bate. Um atacante externo não consegue saber o token, então a requisição forjada é rejeitada.<br><br>
-            <code>$_SESSION['csrf'] === $_POST['token_csrf']</code>
+            <code>$_SESSION[&#39;csrf&#39;] === $_POST[&#39;token_csrf&#39;]</code>
           </span>
         </span>
       </div>`;
@@ -578,7 +584,6 @@ const INPUTS = [
     snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"submit"</span>
       <span class="at">value</span>=<span class="vl">"Enviar Cadastro"</span>&gt;
 
-<span style="color:var(--muted)">// ou usando &lt;button&gt;:</span>
 &lt;<span class="tg">button</span> <span class="at">type</span>=<span class="vl">"submit"</span>&gt;
   Enviar Cadastro
 &lt;/<span class="tg">button</span>&gt;`,
@@ -664,8 +669,16 @@ function buildCard(input, index) {
     } else if (input.type === 'radio') {
       wrap.querySelectorAll('input[type="radio"]').forEach(el => el.addEventListener('change', show));
     } else if (input.type === 'select') {
-      const el = wrap.querySelector('select');
-      if (el) el.addEventListener('change', show);
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', () => {
+        if (!out) return;
+        if (el.value) {
+          out.textContent = `$_POST["estado"] = "${el.value}"`;
+          out.classList.add('visible');
+        } else {
+          out.classList.remove('visible');
+        }
+      });
     } else if (input.type === 'hidden') {
       // static — nothing
     } else {
