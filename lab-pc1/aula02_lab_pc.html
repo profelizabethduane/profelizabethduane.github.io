@@ -749,10 +749,9 @@
   <a href="#conceitos">Conceitos</a>
   <a href="#linguagem">Linguagem</a>
   <a href="#tipos">Tipos de Algoritmo</a>
-  <a href="#pratica">Prática</a>
   <a href="#ordenar">Ordenar Passos</a>
+  <a href="#pratica">Prática</a>
   <a href="#quiz">Quiz</a>
-  <a href="#discussao">Discussão</a>
 </nav>
 
 <header class="hero">
@@ -1011,27 +1010,9 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
       </div>
     </div>
 
-    <h3 style="margin-top:1.75rem;">Análise do problema — Celsius para Kelvin</h3>
-    <p style="font-size:.9rem;">Antes de escrever o algoritmo, identifique: entrada, processamento e saída.</p>
-
-    <table class="analysis-table">
-      <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável / Fórmula</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge badge-in">Entrada</span></td><td>Temperatura fornecida pelo usuário</td><td><code>tempC</code> (número real)</td></tr>
-        <tr><td><span class="badge badge-proc">Processamento</span></td><td>Aplicar a fórmula de conversão</td><td><code>tempK = tempC + 273,15</code></td></tr>
-        <tr><td><span class="badge badge-out">Saída</span></td><td>Temperatura em Kelvin exibida na tela</td><td><code>tempK</code></td></tr>
-      </tbody>
-    </table>
-
-    <div class="callout info">
-      <div class="callout-icon">⚗️</div>
-      <div><strong>Por que Kelvin na Engenharia Química?</strong> A escala Kelvin é a escala absoluta de temperatura. Equações como a dos gases ideais (<em>PV = nRT</em>) exigem T em Kelvin. O zero absoluto (0 K = −273,15 °C) é o ponto de energia cinética mínima das moléculas.</div>
-    </div>
-
-    <details style="margin-top:1.25rem;">
-      <summary>Principais símbolos do fluxograma</summary>
-      <div class="details-body">
-        <div class="card-grid" style="margin-top:.75rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+    <div style="margin-top:1.25rem;">
+      <h3 style="margin-bottom:.75rem;">Principais símbolos do fluxograma</h3>
+      <div class="card-grid" style="margin-top:.75rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
           <div class="card" style="padding:.9rem;text-align:center;">
             <div class="fc-oval" style="display:inline-block;font-size:.76rem;margin-bottom:.5rem;">início / fim</div>
             <p style="font-size:.78rem;color:var(--text-muted);">Oval — início e fim</p>
@@ -1051,304 +1032,6 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
             <p style="font-size:.78rem;color:var(--text-muted);">Losango — condição</p>
           </div>
         </div>
-      </div>
-    </details>
-  </div>
-</section>
-
-<!-- 4 — PRÁTICA -->
-<section id="pratica">
-  <div class="container">
-    <div class="section-label">Atividade Prática</div>
-    <h2>Implementando no Portugol</h2>
-    <p class="lead">Siga os passos abaixo para implementar e testar o algoritmo de conversão de temperatura.</p>
-
-    <div class="task-wrap">
-      <div class="task-head">
-        <h3>🌡️ Tarefa: Converter Celsius para Kelvin</h3>
-      </div>
-      <div class="task-body">
-        <p style="font-size:.9rem;"><strong>Objetivo:</strong> escrever, executar e testar um algoritmo em Portugol que leia uma temperatura em graus Celsius e mostre o equivalente em Kelvin.</p>
-
-        <ul class="task-steps">
-          <li>
-            <div class="ts-num">1</div>
-            <div>Acesse <a href="https://portugol.dev/" target="_blank" style="color:var(--blue);font-weight:600;">portugol.dev</a> no navegador e clique em <strong>"Novo arquivo"</strong>.</div>
-          </li>
-          <li>
-            <div class="ts-num">2</div>
-            <div>Apague o código de exemplo e digite o pseudocódigo abaixo:</div>
-          </li>
-        </ul>
-
-        <div class="code-block">
-<pre><span class="kw">programa</span> {
-  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
-
-    <span class="cm">// Declaração das variáveis</span>
-    <span class="kw">real</span> tempC, tempK
-
-    <span class="cm">// Entrada de dados</span>
-    <span class="fn">escreva</span>(<span class="str">"Digite a temperatura em Celsius: "</span>)
-    <span class="fn">leia</span>(tempC)
-
-    <span class="cm">// Processamento</span>
-    tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
-
-    <span class="cm">// Saída</span>
-    <span class="fn">escreva</span>(<span class="str">"Temperatura em Kelvin: "</span>, tempK, <span class="str">"\n"</span>)
-
-  }
-}</pre>
-        </div>
-
-        <ul class="task-steps">
-          <li>
-            <div class="ts-num">3</div>
-            <div>Clique no botão <strong>▶ Executar</strong> e insira um valor quando solicitado.</div>
-          </li>
-          <li>
-            <div class="ts-num">4</div>
-            <div>
-              Teste com os valores abaixo e verifique se os resultados estão corretos:
-              <table class="analysis-table" style="margin-top:.7rem;">
-                <thead><tr><th>Entrada (°C)</th><th>Resultado esperado (K)</th></tr></thead>
-                <tbody>
-                  <tr><td>0</td><td>273,15 — ponto de fusão da água</td></tr>
-                  <tr><td>100</td><td>373,15 — ponto de ebulição da água</td></tr>
-                  <tr><td>−273,15</td><td>0 — zero absoluto</td></tr>
-                  <tr><td>25</td><td>298,15 — temperatura ambiente padrão</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </li>
-          <li>
-            <div class="ts-num">5</div>
-            <div>Execute e confira os resultados. Quando tiver o programa funcionando, passe para o desafio abaixo.</div>
-          </li>
-        </ul>
-
-        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
-      </div>
-    </div>
-
-    <details>
-      <summary>💡 Erros mais comuns ao executar no Portugol</summary>
-      <div class="details-body">
-        <ul style="padding-left:1.1rem;font-size:.87rem;line-height:2.1;">
-          <li>O código deve estar dentro de <code>funcao inicio() { ... }</code></li>
-          <li>Use ponto como separador decimal: <code>273.15</code>, não <code>273,15</code></li>
-          <li>Variáveis com casas decimais devem ser declaradas como <code>real</code></li>
-          <li>O operador de atribuição é <code>=</code> e o de soma é <code>+</code></li>
-        </ul>
-      </div>
-    </details>
-
-    <details style="margin-top:.6rem;">
-      <summary>📊 Identificando Entrada, Processamento e Saída no código</summary>
-      <div class="details-body">
-        <table class="analysis-table" style="margin-top:.7rem;">
-          <thead><tr><th>Etapa</th><th>Linha do código</th><th>Explicação</th></tr></thead>
-          <tbody>
-            <tr><td><span class="badge badge-in">Entrada</span></td><td><code>leia(tempC)</code></td><td>Recebe o valor digitado e armazena em <code>tempC</code></td></tr>
-            <tr><td><span class="badge badge-proc">Processamento</span></td><td><code>tempK = tempC + 273.15</code></td><td>Realiza o cálculo e armazena em <code>tempK</code></td></tr>
-            <tr><td><span class="badge badge-out">Saída</span></td><td><code>escreva(..., tempK, ...)</code></td><td>Exibe o valor de <code>tempK</code> na tela</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </details>
-
-    <!-- Desafio — mensagem completa -->
-    <div class="task-wrap" style="margin-top:1.75rem;">
-      <div class="task-head" style="background:var(--navy-light);">
-        <h3>🌡️ Desafio: Exibir mensagem completa</h3>
-      </div>
-      <div class="task-body">
-        <p style="font-size:.9rem;margin-bottom:.9rem;">
-          Modifique o programa para exibir uma mensagem completa, por exemplo:<br>
-          <em style="font-size:.88rem;">"A temperatura de 25.0 °C equivale a 298.15 K"</em><br><br>
-          Quando terminar, cole seu código no campo abaixo e clique em <strong>Enviar código</strong>.
-        </p>
-
-        <div class="callout tip" style="margin-bottom:1rem;">
-          <div class="callout-icon">💡</div>
-          <div>Use o <code>escreva()</code> com vários argumentos separados por vírgula: texto, variável, texto, variável — o Portugol imprime tudo em sequência na mesma linha.</div>
-        </div>
-
-        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
-
-        <div style="margin-top:1.5rem;">
-          <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--navy);">📎 Cole seu código aqui:</label>
-          <textarea id="codigo-temp" placeholder="Cole aqui o código Portugol do desafio..." style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:.82rem;"></textarea>
-          <button id="btn-enviar-temp" onclick="enviarCodigoTemp()" style="margin-top:.65rem;background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;padding:.55rem 1.3rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .18s;">
-            ✅ Enviar código
-          </button>
-
-          <div id="resposta-temp" style="display:none;margin-top:1.1rem;">
-            <div class="callout info" style="margin-bottom:1rem;">
-              <div class="callout-icon">🎉</div>
-              <div><strong>Código recebido!</strong> Veja abaixo a solução de referência e compare com o seu.</div>
-            </div>
-            <details open>
-              <summary>✅ Solução — Portugol</summary>
-              <div class="details-body" style="padding-top:.75rem;">
-                <div class="code-block">
-<pre><span class="kw">programa</span> {
-  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
-
-    <span class="kw">real</span> tempC, tempK
-
-    <span class="fn">escreva</span>(<span class="str">"Digite a temperatura em Celsius: "</span>)
-    <span class="fn">leia</span>(tempC)
-
-    tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
-
-    <span class="fn">escreva</span>(<span class="str">"A temperatura de "</span>, tempC, <span class="str">" °C equivale a "</span>, tempK, <span class="str">" K\n"</span>)
-
-  }
-}</pre>
-                </div>
-                <div class="callout tip" style="margin-top:.75rem;">
-                  <div class="callout-icon">🔍</div>
-                  <div style="font-size:.85rem;">O segredo está em passar vários argumentos separados por vírgula dentro do <code>escreva()</code>: texto, variável, texto, variável — o Portugol imprime tudo em sequência na mesma linha.</div>
-                </div>
-              </div>
-            </details>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Desafio —  soma de dois números -->
-    <div class="task-wrap" style="margin-top:1.75rem;">
-      <div class="task-head" style="background:var(--navy-light);">
-        <h3>⚡ Desafio: Somar dois números</h3>
-      </div>
-      <div class="task-body">
-        <p style="font-size:.9rem;margin-bottom:.9rem;">
-          Agora que você já implementou a conversão de temperatura, tente escrever sozinho um algoritmo que
-          <strong>leia dois números inteiros e mostre a soma</strong>. Use o fluxograma abaixo como guia
-          e implemente o código no Portugol.
-        </p>
-
-        <!-- Fluxograma SVG -->
-        <h3 style="margin-bottom:.75rem;">Fluxograma — Soma de dois números</h3>
-        <div style="display:flex;justify-content:center;margin:1rem 0 1.25rem;">
-          <svg width="220" height="430" viewBox="0 0 220 430" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif" font-size="11">
-            <!-- início -->
-            <ellipse cx="110" cy="28" rx="52" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
-            <text x="110" y="32" text-anchor="middle" font-weight="600" fill="#1c2b3a">início</text>
-            <!-- seta -->
-            <line x1="110" y1="48" x2="110" y2="68" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
-            <!-- leia valor1 -->
-            <polygon points="20,68 200,68 192,96 12,96" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
-            <text x="110" y="86" text-anchor="middle" fill="#1c2b3a">Leia valor1</text>
-            <!-- seta -->
-            <line x1="110" y1="96" x2="110" y2="116" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
-            <!-- leia valor2 -->
-            <polygon points="20,116 200,116 192,144 12,144" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
-            <text x="110" y="134" text-anchor="middle" fill="#1c2b3a">Leia valor2</text>
-            <!-- seta -->
-            <line x1="110" y1="144" x2="110" y2="164" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
-            <!-- processamento -->
-            <rect x="30" y="164" width="160" height="36" rx="5" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
-            <text x="110" y="186" text-anchor="middle" fill="#1c2b3a">resultado = valor1 + valor2</text>
-            <!-- seta -->
-            <line x1="110" y1="200" x2="110" y2="220" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
-            <!-- mostre resultado -->
-            <polygon points="20,220 200,220 192,248 12,248" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
-            <text x="110" y="238" text-anchor="middle" fill="#1c2b3a">Mostre resultado</text>
-            <!-- seta -->
-            <line x1="110" y1="248" x2="110" y2="268" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
-            <!-- fim -->
-            <ellipse cx="110" cy="288" rx="52" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
-            <text x="110" y="292" text-anchor="middle" font-weight="600" fill="#1c2b3a">fim</text>
-            <!-- legenda -->
-            <!-- oval -->
-            <ellipse cx="30" cy="340" rx="22" ry="12" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.2"/>
-            <text x="58" y="344" fill="#5a6a7a" font-size="10">início / fim</text>
-            <!-- paralelo -->
-            <polygon points="4,362 68,362 62,376 -2,376" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
-            <text x="76" y="372" fill="#5a6a7a" font-size="10">entrada / saída</text>
-            <!-- rect -->
-            <rect x="4" y="390" width="60" height="20" rx="3" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
-            <text x="76" y="404" fill="#5a6a7a" font-size="10">processamento</text>
-            <!-- defs -->
-            <defs>
-              <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="#8ab8de"/>
-              </marker>
-            </defs>
-          </svg>
-        </div>
-
-        <div class="callout tip" style="margin-bottom:1rem;">
-          <div class="callout-icon">💡</div>
-          <div>Implemente o algoritmo no Portugol seguindo o fluxograma. Quando terminar, cole seu código abaixo e clique em <strong>Enviar código</strong>.</div>
-        </div>
-
-        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
-
-        <!-- Entrega do desafio de soma -->
-        <div style="margin-top:1.5rem;">
-          <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--navy);">📎 Cole seu código aqui:</label>
-          <textarea id="codigo-soma" placeholder="Cole aqui o código Portugol do desafio da soma..." style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:.82rem;"></textarea>
-          <button id="btn-enviar-soma" onclick="enviarCodigoSoma()" style="margin-top:.65rem;background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;padding:.55rem 1.3rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .18s;">
-            ✅ Enviar código
-          </button>
-
-          <div id="resposta-soma" style="display:none;margin-top:1.1rem;">
-            <div class="callout info" style="margin-bottom:1rem;">
-              <div class="callout-icon">🎉</div>
-              <div><strong>Código recebido!</strong> Veja abaixo a solução de referência e compare com o seu.</div>
-            </div>
-            <details open>
-              <summary>✅ Solução — Portugol</summary>
-              <div class="details-body" style="padding-top:.75rem;">
-                <p style="font-size:.86rem;margin-bottom:.75rem;"><strong>Análise:</strong></p>
-                <table class="analysis-table" style="margin-bottom:1rem;">
-                  <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável</th></tr></thead>
-                  <tbody>
-                    <tr><td><span class="badge badge-in">Entrada</span></td><td>Dois números fornecidos pelo usuário</td><td><code>valor1</code>, <code>valor2</code></td></tr>
-                    <tr><td><span class="badge badge-proc">Processamento</span></td><td>Somar os dois valores</td><td><code>resultado = valor1 + valor2</code></td></tr>
-                    <tr><td><span class="badge badge-out">Saída</span></td><td>Exibir o resultado da soma</td><td><code>resultado</code></td></tr>
-                  </tbody>
-                </table>
-                <div class="code-block">
-<pre><span class="kw">programa</span> {
-  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
-
-    <span class="cm">// Declaração das variáveis</span>
-    <span class="kw">inteiro</span> valor1, valor2, resultado
-
-    <span class="cm">// Entrada de dados</span>
-    <span class="fn">escreva</span>(<span class="str">"Digite o primeiro número: "</span>)
-    <span class="fn">leia</span>(valor1)
-
-    <span class="fn">escreva</span>(<span class="str">"Digite o segundo número: "</span>)
-    <span class="fn">leia</span>(valor2)
-
-    <span class="cm">// Processamento</span>
-    resultado <span class="op">=</span> valor1 <span class="op">+</span> valor2
-
-    <span class="cm">// Saída</span>
-    <span class="fn">escreva</span>(<span class="str">"Soma = "</span>, resultado, <span class="str">"\n"</span>)
-
-  }
-}</pre>
-                </div>
-                <div class="callout info" style="margin-top:.75rem;">
-                  <div class="callout-icon">🔍</div>
-                  <div style="font-size:.85rem;">
-                    <strong>Atenção ao tipo:</strong> como os valores são números sem casas decimais, usamos <code>inteiro</code>
-                    em vez de <code>real</code>. Se quiser somar números como 3,5 e 1,2, troque para <code>real</code>.
-                  </div>
-                </div>
-              </div>
-            </details>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -1475,6 +1158,265 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
   </div>
 </section>
 
+
+<!-- 4 — PRÁTICA -->
+<section id="pratica">
+  <div class="container">
+    <div class="section-label">Atividade Prática</div>
+    <h2>Implementando no Portugol</h2>
+    <p class="lead">Siga os passos abaixo para implementar e testar o algoritmo de conversão de temperatura.</p>
+
+    <div class="task-wrap">
+      <div class="task-head">
+        <h3>🌡️ Tarefa: Converter Celsius para Kelvin</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;"><strong>Objetivo:</strong> escrever, executar e testar um algoritmo em Portugol que leia uma temperatura em graus Celsius e mostre o equivalente em Kelvin.</p>
+
+        <h3 style="margin-top:1.25rem;">Análise do problema — Celsius para Kelvin</h3>
+        <p style="font-size:.9rem;">Antes de escrever o algoritmo, identifique: entrada, processamento e saída.</p>
+
+        <table class="analysis-table">
+          <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável / Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td>Temperatura fornecida pelo usuário</td><td><code>tempC</code> (número real)</td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td>Aplicar a fórmula de conversão</td><td><code>tempK = tempC + 273,15</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td>Temperatura em Kelvin exibida na tela</td><td><code>tempK</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout info" style="margin-bottom:1rem;">
+          <div class="callout-icon">⚗️</div>
+          <div><strong>Por que Kelvin na Engenharia Química?</strong> A escala Kelvin é a escala absoluta de temperatura. Equações como a dos gases ideais (<em>PV = nRT</em>) exigem T em Kelvin. O zero absoluto (0 K = −273,15 °C) é o ponto de energia cinética mínima das moléculas.</div>
+        </div>
+
+        <ul class="task-steps">
+          <li>
+            <div class="ts-num">1</div>
+            <div>Acesse <a href="https://portugol.dev/" target="_blank" style="color:var(--blue);font-weight:600;">portugol.dev</a> no navegador e clique em <strong>"Novo arquivo"</strong>.</div>
+          </li>
+          <li>
+            <div class="ts-num">2</div>
+            <div>Apague o código de exemplo e digite o pseudocódigo abaixo:</div>
+          </li>
+        </ul>
+
+        <div class="code-block">
+<pre><span class="kw">programa</span> {
+  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
+
+    <span class="cm">// Declaração das variáveis</span>
+    <span class="kw">real</span> tempC, tempK
+
+    <span class="cm">// Entrada de dados</span>
+    <span class="fn">escreva</span>(<span class="str">"Digite a temperatura em Celsius: "</span>)
+    <span class="fn">leia</span>(tempC)
+
+    <span class="cm">// Processamento</span>
+    tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm">273.15</span>
+
+    <span class="cm">// Saída</span>
+    <span class="fn">escreva</span>(<span class="str">"Temperatura em Kelvin: "</span>, tempK, <span class="str">"\n"</span>)
+
+  }
+}</pre>
+        </div>
+
+        <ul class="task-steps">
+          <li>
+            <div class="ts-num">3</div>
+            <div>Clique no botão <strong>▶ Executar</strong> e insira um valor quando solicitado.</div>
+          </li>
+          <li>
+            <div class="ts-num">4</div>
+            <div>
+              Teste com os valores abaixo e verifique se os resultados estão corretos:
+              <table class="analysis-table" style="margin-top:.7rem;">
+                <thead><tr><th>Entrada (°C)</th><th>Resultado esperado (K)</th></tr></thead>
+                <tbody>
+                  <tr><td>0</td><td>273,15 — ponto de fusão da água</td></tr>
+                  <tr><td>100</td><td>373,15 — ponto de ebulição da água</td></tr>
+                  <tr><td>−273,15</td><td>0 — zero absoluto</td></tr>
+                  <tr><td>25</td><td>298,15 — temperatura ambiente padrão</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
+          <li>
+            <div class="ts-num">5</div>
+            <div>Execute e confira os resultados. Quando tiver o programa funcionando, passe para o desafio abaixo.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <details style="margin-top:.6rem;">
+      <summary>📊 Identificando Entrada, Processamento e Saída no código</summary>
+      <div class="details-body">
+        <table class="analysis-table" style="margin-top:.7rem;">
+          <thead><tr><th>Etapa</th><th>Linha do código</th><th>Explicação</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td><code>leia(tempC)</code></td><td>Recebe o valor digitado e armazena em <code>tempC</code></td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td><code>tempK = tempC + 273.15</code></td><td>Realiza o cálculo e armazena em <code>tempK</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td><code>escreva(..., tempK, ...)</code></td><td>Exibe o valor de <code>tempK</code> na tela</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- Desafio —  soma de dois números -->
+    <div class="task-wrap" style="margin-top:1.75rem;">
+      <div class="task-head" style="background:var(--navy-light);">
+        <h3>⚡ Desafio: Somar dois números</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:.9rem;">
+          Agora que você já implementou a conversão de temperatura, tente escrever sozinho um algoritmo que
+          <strong>leia dois números inteiros e mostre a soma</strong>. Use o fluxograma abaixo como guia
+          e implemente o código no Portugol.
+        </p>
+
+        <!-- Fluxograma SVG -->
+        <h3 style="margin-bottom:.75rem;">Fluxograma — Soma de dois números</h3>
+        <div style="display:flex;justify-content:center;margin:1rem 0 1.25rem;">
+          <svg width="260" height="720" viewBox="0 0 260 720" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif" font-size="11">
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#8ab8de"/>
+              </marker>
+            </defs>
+
+            <!-- início -->
+            <ellipse cx="130" cy="28" rx="58" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
+            <text x="130" y="33" text-anchor="middle" font-weight="600" fill="#1c2b3a">início</text>
+            <line x1="130" y1="48" x2="130" y2="68" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- declare variáveis — retângulo (processamento) -->
+            <rect x="20" y="68" width="220" height="36" rx="5" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="82" text-anchor="middle" fill="#1c2b3a">declare valor1,</text>
+            <text x="130" y="96" text-anchor="middle" fill="#1c2b3a">valor2 e resultado</text>
+            <line x1="130" y1="104" x2="130" y2="124" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- escreva "Digite o primeiro número" — paralelogramo -->
+            <polygon points="15,124 245,124 237,152 7,152" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="138" text-anchor="middle" fill="#1c2b3a">Escreva "Digite o</text>
+            <text x="130" y="150" text-anchor="middle" fill="#1c2b3a">primeiro número: "</text>
+            <line x1="130" y1="152" x2="130" y2="172" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- leia valor1 — paralelogramo -->
+            <polygon points="15,172 245,172 237,200 7,200" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="190" text-anchor="middle" fill="#1c2b3a">Leia valor1</text>
+            <line x1="130" y1="200" x2="130" y2="220" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- escreva "Digite o segundo número" — paralelogramo -->
+            <polygon points="15,220 245,220 237,248 7,248" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="234" text-anchor="middle" fill="#1c2b3a">Escreva "Digite o</text>
+            <text x="130" y="246" text-anchor="middle" fill="#1c2b3a">segundo número: "</text>
+            <line x1="130" y1="248" x2="130" y2="268" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- leia valor2 — paralelogramo -->
+            <polygon points="15,268 245,268 237,296 7,296" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="286" text-anchor="middle" fill="#1c2b3a">Leia valor2</text>
+            <line x1="130" y1="296" x2="130" y2="316" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- processamento — retângulo -->
+            <rect x="20" y="316" width="220" height="36" rx="5" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="330" text-anchor="middle" fill="#1c2b3a">resultado =</text>
+            <text x="130" y="344" text-anchor="middle" fill="#1c2b3a">valor1 + valor2</text>
+            <line x1="130" y1="352" x2="130" y2="372" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- mostre resultado — paralelogramo -->
+            <polygon points="15,372 245,372 237,400 7,400" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.5"/>
+            <text x="130" y="390" text-anchor="middle" fill="#1c2b3a">Mostre resultado</text>
+            <line x1="130" y1="400" x2="130" y2="420" stroke="#8ab8de" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- fim -->
+            <ellipse cx="130" cy="440" rx="58" ry="20" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.5"/>
+            <text x="130" y="445" text-anchor="middle" font-weight="600" fill="#1c2b3a">fim</text>
+
+            <!-- legenda -->
+            <ellipse cx="36" cy="495" rx="26" ry="13" fill="#e8e4f8" stroke="#9b8fe8" stroke-width="1.2"/>
+            <text x="68" y="499" fill="#5a6a7a" font-size="10">início / fim</text>
+
+            <polygon points="6,522 84,522 78,536 0,536" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
+            <text x="90" y="532" fill="#5a6a7a" font-size="10">entrada / saída</text>
+
+            <rect x="6" y="552" width="72" height="20" rx="3" fill="#e8f1f9" stroke="#8ab8de" stroke-width="1.2"/>
+            <text x="86" y="566" fill="#5a6a7a" font-size="10">processamento</text>
+          </svg>
+        </div>
+
+        <div class="callout tip" style="margin-bottom:1rem;">
+          <div class="callout-icon">💡</div>
+          <div>Implemente o algoritmo no Portugol seguindo o fluxograma. Quando terminar, cole seu código abaixo e clique em <strong>Enviar código</strong>.</div>
+        </div>
+
+        <a class="btn-link" href="https://portugol.dev/" target="_blank">🔗 Abrir Portugol.dev</a>
+
+        <!-- Entrega do desafio de soma -->
+        <div style="margin-top:1.5rem;">
+          <label style="display:block;font-weight:600;font-size:.9rem;margin-bottom:.5rem;color:var(--navy);">📎 Cole seu código aqui:</label>
+          <textarea id="codigo-soma" placeholder="Cole aqui o código Portugol do desafio da soma..." style="min-height:140px;font-family:'JetBrains Mono',monospace;font-size:.82rem;"></textarea>
+          <button id="btn-enviar-soma" onclick="enviarCodigoSoma()" style="margin-top:.65rem;background:var(--navy);color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;padding:.55rem 1.3rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .18s;">
+            ✅ Enviar código
+          </button>
+
+          <div id="resposta-soma" style="display:none;margin-top:1.1rem;">
+            <div class="callout info" style="margin-bottom:1rem;">
+              <div class="callout-icon">🎉</div>
+              <div><strong>Código recebido!</strong> Veja abaixo a solução de referência e compare com o seu.</div>
+            </div>
+            <details open>
+              <summary>✅ Solução — Portugol</summary>
+              <div class="details-body" style="padding-top:.75rem;">
+                <p style="font-size:.86rem;margin-bottom:.75rem;"><strong>Análise:</strong></p>
+                <table class="analysis-table" style="margin-bottom:1rem;">
+                  <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="badge badge-in">Entrada</span></td><td>Dois números fornecidos pelo usuário</td><td><code>valor1</code>, <code>valor2</code></td></tr>
+                    <tr><td><span class="badge badge-proc">Processamento</span></td><td>Somar os dois valores</td><td><code>resultado = valor1 + valor2</code></td></tr>
+                    <tr><td><span class="badge badge-out">Saída</span></td><td>Exibir o resultado da soma</td><td><code>resultado</code></td></tr>
+                  </tbody>
+                </table>
+                <div class="code-block">
+<pre><span class="kw">programa</span> {
+  <span class="kw">funcao</span> <span class="fn">inicio</span>() {
+
+    <span class="cm">// Declaração das variáveis</span>
+    <span class="kw">inteiro</span> valor1, valor2, resultado
+
+    <span class="cm">// Entrada de dados</span>
+    <span class="fn">escreva</span>(<span class="str">"Digite o primeiro número: "</span>)
+    <span class="fn">leia</span>(valor1)
+
+    <span class="fn">escreva</span>(<span class="str">"Digite o segundo número: "</span>)
+    <span class="fn">leia</span>(valor2)
+
+    <span class="cm">// Processamento</span>
+    resultado <span class="op">=</span> valor1 <span class="op">+</span> valor2
+
+    <span class="cm">// Saída</span>
+    <span class="fn">escreva</span>(<span class="str">"Soma = "</span>, resultado, <span class="str">"\n"</span>)
+
+  }
+}</pre>
+                </div>
+                <div class="callout info" style="margin-top:.75rem;">
+                  <div class="callout-icon">🔍</div>
+                  <div style="font-size:.85rem;">
+                    <strong>Atenção ao tipo:</strong> como os valores são números sem casas decimais, usamos <code>inteiro</code>
+                    em vez de <code>real</code>. Se quiser somar números como 3,5 e 1,2, troque para <code>real</code>.
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- 5 — QUIZ -->
 <section id="quiz">
   <div class="container">
@@ -1485,7 +1427,7 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     <div class="quiz-progress"><div class="quiz-progress-bar" id="q-bar" style="width:0%"></div></div>
 
     <div class="q-block">
-      <div class="q-num">Questão 1 de 8</div>
+      <div class="q-num">Questão 1 de 7</div>
       <div class="q-text">Qual das afirmativas define corretamente um <strong>algoritmo</strong>?</div>
       <div class="q-options">
         <label class="q-opt"><input type="radio" name="q1" value="a"> Um programa escrito em linguagem C.</label>
@@ -1497,7 +1439,7 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 2 de 8</div>
+      <div class="q-num">Questão 2 de 7</div>
       <div class="q-text">Um professor pediu: <em>"Calcule a média das duas notas."</em> Esta frase é um exemplo de:</div>
       <div class="q-options">
         <label class="q-opt"><input type="radio" name="q2" value="a"> Algoritmo completo.</label>
@@ -1509,7 +1451,7 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 3 de 8</div>
+      <div class="q-num">Questão 3 de 7</div>
       <div class="q-text">Qual é a ordem correta do ciclo de funcionamento de um programa?</div>
       <div class="q-options">
         <label class="q-opt"><input type="radio" name="q3" value="a"> Processamento → Entrada → Saída</label>
@@ -1521,7 +1463,7 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 4 de 8</div>
+      <div class="q-num">Questão 4 de 7</div>
       <div class="q-text">No algoritmo de conversão, a linha <code>tempK = tempC + 273.15</code> representa qual etapa?</div>
       <div class="q-options">
         <label class="q-opt"><input type="radio" name="q4" value="a"> Entrada de dados</label>
@@ -1533,7 +1475,7 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 5 de 8</div>
+      <div class="q-num">Questão 5 de 7</div>
       <div class="q-text">A principal diferença entre linguagem natural e linguagem formal de programação é:</div>
       <div class="q-options">
         <label class="q-opt"><input type="radio" name="q5" value="a"> A linguagem formal é usada apenas por profissionais de TI.</label>
@@ -1545,39 +1487,27 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 6 de 8</div>
-      <div class="q-text">No fluxograma, qual símbolo representa uma <strong>decisão</strong> (estrutura se/senão)?</div>
+      <div class="q-num">Questão 6 de 7</div>
+      <div class="q-text">Na tarefa Converter Celsius para Kelvin, em Portugol, ao executar o algoritmo com entrada <strong>150 °C</strong>, qual será a saída correta?</div>
       <div class="q-options">
-        <label class="q-opt"><input type="radio" name="q6" value="a"> Oval</label>
-        <label class="q-opt"><input type="radio" name="q6" value="b"> Retângulo</label>
-        <label class="q-opt"><input type="radio" name="q6" value="c"> Paralelogramo</label>
-        <label class="q-opt"><input type="radio" name="q6" value="d"> Losango</label>
+        <label class="q-opt"><input type="radio" name="q6" value="a"> 150.00 K</label>
+        <label class="q-opt"><input type="radio" name="q6" value="b"> 273.15 K</label>
+        <label class="q-opt"><input type="radio" name="q6" value="c"> 423.15 K</label>
+        <label class="q-opt"><input type="radio" name="q6" value="d"> 123.15 K</label>
       </div>
       <div class="q-feedback" id="fb6"></div>
     </div>
 
     <div class="q-block">
-      <div class="q-num">Questão 7 de 8</div>
-      <div class="q-text">No Portugol, ao executar o algoritmo com entrada <strong>100 °C</strong>, qual será a saída correta?</div>
-      <div class="q-options">
-        <label class="q-opt"><input type="radio" name="q7" value="a"> 100.00 K</label>
-        <label class="q-opt"><input type="radio" name="q7" value="b"> 273.15 K</label>
-        <label class="q-opt"><input type="radio" name="q7" value="c"> 373.15 K</label>
-        <label class="q-opt"><input type="radio" name="q7" value="d"> −173.15 K</label>
-      </div>
-      <div class="q-feedback" id="fb7"></div>
-    </div>
-
-    <div class="q-block">
-      <div class="q-num">Questão 8 de 8</div>
+      <div class="q-num">Questão 7 de 7</div>
       <div class="q-text">Qual das opções abaixo é um exemplo de <strong>programa</strong>, conforme o conceito desta aula?</div>
       <div class="q-options">
-        <label class="q-opt"><input type="radio" name="q8" value="a"> Uma lista de passos escritos em português para calcular uma média.</label>
-        <label class="q-opt"><input type="radio" name="q8" value="b"> Um fluxograma desenhado à mão em papel.</label>
-        <label class="q-opt"><input type="radio" name="q8" value="c"> Um algoritmo implementado em Portugol e executado no portugol.dev.</label>
-        <label class="q-opt"><input type="radio" name="q8" value="d"> Um diagrama de blocos sem código.</label>
+        <label class="q-opt"><input type="radio" name="q7" value="a"> Uma lista de passos escritos em português para calcular uma média.</label>
+        <label class="q-opt"><input type="radio" name="q7" value="b"> Um fluxograma desenhado à mão em papel.</label>
+        <label class="q-opt"><input type="radio" name="q7" value="c"> Um algoritmo implementado em Portugol e executado no portugol.dev.</label>
+        <label class="q-opt"><input type="radio" name="q7" value="d"> Um diagrama de blocos sem código.</label>
       </div>
-      <div class="q-feedback" id="fb8"></div>
+      <div class="q-feedback" id="fb7"></div>
     </div>
 
     <button id="quiz-btn" onclick="corrigirQuiz()">Ver minha pontuação</button>
@@ -1588,47 +1518,6 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
       <div class="result-msg" id="r-msg"></div>
       <button id="quiz-retry" onclick="resetQuiz()">↺ Tentar novamente</button>
     </div>
-  </div>
-</section>
-
-<!-- 6 — DISCUSSÃO -->
-<section id="discussao">
-  <div class="container">
-    <div class="section-label">Discussão</div>
-    <h2>Reflexão em Grupo</h2>
-    <p class="lead">Leia as questões, escreva sua resposta e depois discuta com os colegas. Não há resposta única — o objetivo é consolidar o raciocínio.</p>
-
-    <div class="disc-q">
-      <p>1. Pense em um processo do cotidiano da Engenharia Química (ex.: preparar uma solução, medir um pH, ajustar uma temperatura). Descreva esse processo como um algoritmo em descrição narrativa, identificando entrada, processamento e saída.</p>
-      <textarea placeholder="Escreva seu algoritmo aqui..."></textarea>
-      <details style="margin-top:.65rem;">
-        <summary>💡 Ver sugestão de resposta</summary>
-        <div class="details-body">
-          <strong>Exemplo — Preparar uma solução aquosa:</strong><br><br>
-          <span class="badge badge-in">Entrada</span> Massa do soluto (g) e volume da solução (L)<br><br>
-          Passo 1 — Leia a massa do soluto em gramas<br>
-          Passo 2 — Leia o volume desejado em litros<br>
-          Passo 3 — Calcule a concentração: C = massa ÷ volume<br>
-          Passo 4 — Mostre a concentração em g/L<br><br>
-          <span class="badge badge-out">Saída</span> Concentração mássica da solução
-        </div>
-      </details>
-    </div>
-
-    <div class="disc-q">
-      <p>2. Por que o computador executa exatamente o que está escrito — e não o que o programador <em>quis dizer</em>? Dê um exemplo de instrução ambígua em português e como ela poderia causar erro em um programa.</p>
-      <textarea placeholder="Escreva sua reflexão aqui..."></textarea>
-      <details style="margin-top:.65rem;">
-        <summary>💡 Ver sugestão de resposta</summary>
-        <div class="details-body">
-          O computador executa instruções binárias com precisão absoluta, sem inferência de contexto.<br><br>
-          <strong>Exemplo ambíguo:</strong> "Adicione um pouco de calor ao reator."<br>
-          Para um programa, "um pouco" não tem significado preciso. A versão formal seria:<br>
-          <code>temperatura = temperatura + 5.0</code>
-        </div>
-      </details>
-    </div>
-
   </div>
 </section>
 
@@ -1819,9 +1708,8 @@ tempK <span class="op">=</span> tempC <span class="op">+</span> <span class="nm"
     q3:{ ans:'c', exp:'O ciclo correto é sempre: Entrada → Processamento → Saída.' },
     q4:{ ans:'c', exp:'tempK = tempC + 273.15 é processamento: realiza o cálculo e armazena o resultado.' },
     q5:{ ans:'b', exp:'A linguagem natural é ambígua. A linguagem formal é precisa — cada instrução tem um único significado.' },
-    q6:{ ans:'d', exp:'O losango representa decisão. Oval = início/fim, retângulo = processamento, paralelogramo = entrada/saída.' },
-    q7:{ ans:'c', exp:'100 + 273.15 = 373.15 K — ponto de ebulição da água ao nível do mar.' },
-    q8:{ ans:'c', exp:'Um programa é o algoritmo implementado e executável. O Portugol é uma linguagem, e o portugol.dev o executa.' },
+    q6:{ ans:'c', exp:'150 + 273.15 = 423.15 K. A fórmula é sempre tempK = tempC + 273.15.' },
+    q7:{ ans:'c', exp:'Um programa é o algoritmo implementado e executável. O Portugol é uma linguagem, e o portugol.dev o executa.' },
   };
 
   function corrigirQuiz() {
