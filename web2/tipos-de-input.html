@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipos de Input HTML — Aplicações para WEB2</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #f8fafc;
+    --surface:  #f1f5f9;
+    --card:     #ffffff;
+    --border:   #e2e8f0;
+    --accent:   #2563eb;
+    --accent2:  #3b82f6;
+    --green:    #16a34a;
+    --amber:    #d97706;
+    --red:      #dc2626;
+    --purple:   #7c3aed;
+    --ink:      #0f172a;
+    --muted:    #64748b;
+    --tag-bg:   #dbeafe;
+    --tag-text: #1d4ed8;
+    --code-bg:  #f1f5f9;
+    --radius:   10px;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Sora', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 4rem;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,250,252,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.9rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  header .logo {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+  }
+  header h1 {
+    font-size: 0.95rem; font-weight: 600; color: var(--ink);
+  }
+  header span { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 3.5rem 2rem 2rem;
+    max-width: 900px; margin: 0 auto;
+  }
+  .hero-label {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 0.7rem;
+  }
+  .hero h2 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; line-height: 1.15;
+    color: var(--ink); margin-bottom: 0.8rem;
+  }
+  .hero h2 em { font-style: normal; color: var(--accent2); }
+  .hero p {
+    font-size: 0.95rem; color: var(--muted); max-width: 520px;
+    line-height: 1.7;
+  }
+
+  /* ── FILTER TABS ── */
+  .filters {
+    max-width: 900px; margin: 0 auto;
+    padding: 1.5rem 2rem 0.5rem;
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--muted); background: var(--card);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 0.35rem 0.85rem; cursor: pointer;
+    transition: all 0.2s; font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .filter-btn.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    max-width: 900px; margin: 1.5rem auto 0;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    animation: fadeIn 0.35s ease both;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 28px rgba(37,99,235,0.10);
+  }
+  .card.hidden { display: none; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-head {
+    padding: 0.9rem 1rem 0.7rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .type-badge {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 600;
+    color: var(--tag-text); background: var(--tag-bg);
+    padding: 0.22rem 0.6rem; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .card-title {
+    font-size: 0.82rem; font-weight: 600; color: var(--ink);
+  }
+  .card-cat {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 0.65rem;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  .card-body { padding: 0.9rem 1rem; }
+
+  .card-desc {
+    font-size: 0.82rem; color: var(--muted);
+    line-height: 1.6; margin-bottom: 1rem;
+  }
+
+  /* ── DEMO AREA ── */
+  .demo-label {
+    font-family: var(--mono); font-size: 0.65rem;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 0.45rem;
+  }
+
+  .demo input,
+  .demo select,
+  .demo textarea {
+    font-family: var(--sans); font-size: 0.82rem;
+    background: #ffffff; color: var(--ink);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.45rem 0.7rem; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .demo input:focus,
+  .demo select:focus,
+  .demo textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+  .demo textarea { resize: vertical; min-height: 72px; }
+  .demo select option { background: var(--card); }
+
+  .demo-radio-group,
+  .demo-check-group {
+    display: flex; flex-direction: column; gap: 0.45rem;
+  }
+  .demo-radio-group label,
+  .demo-check-group label {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.82rem; color: var(--ink); cursor: pointer;
+  }
+  .demo-radio-group input,
+  .demo-check-group input {
+    width: 15px; height: 15px; flex-shrink: 0;
+    accent-color: var(--accent);
+  }
+
+  .demo-submit button {
+    font-family: var(--sans); font-size: 0.8rem; font-weight: 600;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 6px;
+    padding: 0.45rem 1.1rem; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .demo-submit button:hover {
+    background: var(--accent2); transform: scale(1.03);
+  }
+  .demo-submit button:active { transform: scale(0.98); }
+
+  .demo-hidden-note {
+    font-size: 0.78rem; color: var(--muted);
+    font-family: var(--mono);
+    background: #f8fafc; border-radius: 5px;
+    padding: 0.4rem 0.7rem;
+    border: 1px dashed var(--border);
+  }
+
+  /* ── OUTPUT ── */
+  .output {
+    margin-top: 0.8rem;
+    font-family: var(--mono); font-size: 0.75rem;
+    background: #f0fdf4; border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    border-left: 3px solid var(--green);
+    color: var(--green);
+    min-height: 2rem;
+    word-break: break-all;
+    display: none;
+  }
+  .output.visible { display: block; }
+
+  /* ── CODE SNIPPET ── */
+  .snippet {
+    margin-top: 1rem;
+    background: var(--code-bg);
+    border-radius: 6px; border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .snippet-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.35rem 0.7rem;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .snippet-lang {
+    font-family: var(--mono); font-size: 0.65rem;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .copy-btn {
+    font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+    color: var(--muted); background: none; border: none;
+    cursor: pointer; padding: 0.1rem 0.3rem;
+    border-radius: 3px; transition: color 0.2s;
+  }
+  .copy-btn:hover { color: var(--accent2); }
+  .copy-btn.copied { color: var(--green); }
+
+  .snippet pre {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: #475569; padding: 0.7rem 0.9rem;
+    overflow-x: auto; line-height: 1.6;
+    white-space: pre;
+  }
+  .snippet pre .kw  { color: #2563eb; }
+  .snippet pre .at  { color: #7c3aed; }
+  .snippet pre .vl  { color: #16a34a; }
+  .snippet pre .tg  { color: #d97706; }
+
+  /* ── COUNTER ── */
+  .counter {
+    max-width: 900px; margin: 0 auto;
+    padding: 0 2rem 0.5rem;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+  }
+  .counter span { color: var(--accent2); font-weight: 600; }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 900px; margin: 3rem auto 0;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  footer p { font-size: 0.78rem; color: var(--muted); }
+  footer a {
+    font-size: 0.78rem; color: var(--accent);
+    text-decoration: none;
+  }
+  footer a:hover { text-decoration: underline; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  /* ── CSRF TOOLTIP ── */
+  .csrf-term {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    border-bottom: 1px dashed var(--accent);
+    cursor: help;
+    position: relative;
+  }
+  .csrf-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    width: 300px;
+    background: var(--ink);
+    color: #e2e8f0;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    line-height: 1.65;
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    z-index: 200;
+    pointer-events: none;
+  }
+  .csrf-tooltip strong { color: #fff; font-weight: 600; }
+  .csrf-tooltip code {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    background: rgba(255,255,255,0.08);
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+    color: #86efac;
+  }
+  /* arrow */
+  .csrf-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 16px;
+    border: 6px solid transparent;
+    border-top-color: var(--ink);
+  }
+  .csrf-term:hover .csrf-tooltip,
+  .csrf-term:focus .csrf-tooltip { display: block; }
+
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">WEB2</span>
+  <h1>Tipos de Input HTML</h1>
+  <span id="header-count"></span>
+</header>
+
+<section class="hero">
+  <p class="hero-label">Aplicações para WEB2 — Formulários HTML</p>
+  <h2>Explore os <em>10 tipos</em> de input interativamente</h2>
+  <p>Teste cada campo, veja o valor capturado em tempo real e copie o trecho de código HTML pronto para usar.</p>
+</section>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-filter="all">Todos</button>
+  <button class="filter-btn" data-filter="texto">Texto</button>
+  <button class="filter-btn" data-filter="numero">Número</button>
+  <button class="filter-btn" data-filter="selecao">Seleção</button>
+  <button class="filter-btn" data-filter="acao">Ação</button>
+</div>
+
+<p class="counter">Exibindo <span id="count">10</span> de 10 tipos</p>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <a href="https://www-w3schools-com.translate.goog/html/html_form_input_types.asp?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt&_x_tr_pto=tc" target="_blank">
+    📖 Referência completa — W3Schools PT
+  </a>
+</footer>
+
+<script>
+const INPUTS = [
+  {
+    type: "text",
+    title: "Texto Livre",
+    cat: "texto",
+    desc: "Campo de texto simples de uma linha. Aceita qualquer caractere. Base de quase todos os formulários.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"text"</span>
+      <span class="at">name</span>=<span class="vl">"nome"</span>
+      <span class="at">placeholder</span>=<span class="vl">"Ex: João Silva"</span>
+      <span class="at">required</span>&gt;`,
+    rawSnippet: `<input type="text" name="nome" placeholder="Ex: João Silva" required>`,
+    render(id) {
+      return `<input type="text" id="${id}" placeholder="Ex: João Silva">`;
+    },
+    getValue(id) {
+      return document.getElementById(id).value;
+    }
+  },
+  {
+    type: "email",
+    title: "E-mail",
+    cat: "texto",
+    desc: "Validado automaticamente pelo browser. Exige formato nome@dominio.ext. No mobile abre teclado otimizado.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"email"</span>
+      <span class="at">name</span>=<span class="vl">"email"</span>
+      <span class="at">placeholder</span>=<span class="vl">"voce@exemplo.com"</span>&gt;`,
+    rawSnippet: `<input type="email" name="email" placeholder="voce@exemplo.com">`,
+    render(id) {
+      return `<input type="email" id="${id}" placeholder="voce@exemplo.com">`;
+    },
+    getValue(id) { return document.getElementById(id).value; }
+  },
+  {
+    type: "number",
+    title: "Número",
+    cat: "numero",
+    desc: "Aceita apenas valores numéricos. Suporta os atributos min, max e step para restringir o intervalo.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"number"</span>
+      <span class="at">name</span>=<span class="vl">"idade"</span>
+      <span class="at">min</span>=<span class="vl">"0"</span>
+      <span class="at">max</span>=<span class="vl">"120"</span>
+      <span class="at">step</span>=<span class="vl">"1"</span>&gt;`,
+    rawSnippet: `<input type="number" name="idade" min="0" max="120" step="1">`,
+    render(id) {
+      return `<input type="number" id="${id}" min="0" max="120" step="1" placeholder="0 – 120">`;
+    },
+    getValue(id) { return document.getElementById(id).value; }
+  },
+  {
+    type: "password",
+    title: "Senha",
+    cat: "texto",
+    desc: "Oculta os caracteres digitados com ●. Nunca armazene senhas sem hash no servidor.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"password"</span>
+      <span class="at">name</span>=<span class="vl">"senha"</span>
+      <span class="at">minlength</span>=<span class="vl">"8"</span>
+      <span class="at">required</span>&gt;`,
+    rawSnippet: `<input type="password" name="senha" minlength="8" required>`,
+    render(id) {
+      return `<input type="password" id="${id}" placeholder="Mín. 8 caracteres">`;
+    },
+    getValue(id) {
+      const v = document.getElementById(id).value;
+      return v ? '●'.repeat(v.length) + ` (${v.length} chars)` : '';
+    }
+  },
+  {
+    type: "checkbox",
+    title: "Checkbox",
+    cat: "selecao",
+    desc: "Seleção múltipla. Use name=\"campo[]\" para receber um array no PHP. Cada item tem seu próprio value.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"checkbox"</span>
+      <span class="at">name</span>=<span class="vl">"skills[]"</span>
+      <span class="at">value</span>=<span class="vl">"php"</span>&gt; PHP
+&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"checkbox"</span>
+      <span class="at">name</span>=<span class="vl">"skills[]"</span>
+      <span class="at">value</span>=<span class="vl">"js"</span>&gt; JavaScript`,
+    rawSnippet: `<input type="checkbox" name="skills[]" value="php"> PHP\n<input type="checkbox" name="skills[]" value="js"> JavaScript\n<input type="checkbox" name="skills[]" value="python"> Python`,
+    render(id) {
+      return `<div class="demo-check-group">
+        <label><input type="checkbox" class="${id}" value="php"> PHP</label>
+        <label><input type="checkbox" class="${id}" value="js"> JavaScript</label>
+        <label><input type="checkbox" class="${id}" value="python"> Python</label>
+      </div>`;
+    },
+    getValue(id) {
+      const checked = [...document.querySelectorAll(`.${id}:checked`)].map(el => el.value);
+      return checked.length ? checked.join(', ') : '';
+    }
+  },
+  {
+    type: "radio",
+    title: "Radio",
+    cat: "selecao",
+    desc: "Seleção única dentro de um grupo com mesmo name. Ao selecionar um, os outros são desmarcados automaticamente.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"radio"</span>
+      <span class="at">name</span>=<span class="vl">"turno"</span>
+      <span class="at">value</span>=<span class="vl">"manha"</span>&gt; Manhã
+&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"radio"</span>
+      <span class="at">name</span>=<span class="vl">"turno"</span>
+      <span class="at">value</span>=<span class="vl">"tarde"</span>&gt; Tarde`,
+    rawSnippet: `<input type="radio" name="turno" value="manha"> Manhã\n<input type="radio" name="turno" value="tarde"> Tarde\n<input type="radio" name="turno" value="noite"> Noite`,
+    render(id) {
+      return `<div class="demo-radio-group">
+        <label><input type="radio" name="${id}" value="manha"> Manhã</label>
+        <label><input type="radio" name="${id}" value="tarde"> Tarde</label>
+        <label><input type="radio" name="${id}" value="noite"> Noite</label>
+      </div>`;
+    },
+    getValue(id) {
+      const el = document.querySelector(`input[name="${id}"]:checked`);
+      return el ? el.value : '';
+    }
+  },
+  {
+    type: "select",
+    title: "Lista Suspensa",
+    cat: "selecao",
+    desc: "Elemento <select> com opções pré-definidas. Adicione multiple para seleção múltipla.",
+    snippet: `&lt;<span class="tg">select</span> <span class="at">name</span>=<span class="vl">"estado"</span>&gt;
+  &lt;<span class="tg">option</span> <span class="at">value</span>=<span class="vl">""</span>&gt;Escolha...&lt;/<span class="tg">option</span>&gt;
+  &lt;<span class="tg">option</span> <span class="at">value</span>=<span class="vl">"mg"</span>&gt;Minas Gerais&lt;/<span class="tg">option</span>&gt;
+  &lt;<span class="tg">option</span> <span class="at">value</span>=<span class="vl">"sp"</span>&gt;São Paulo&lt;/<span class="tg">option</span>&gt;
+&lt;/<span class="tg">select</span>&gt;`,
+    rawSnippet: `<select name="estado">\n  <option value="">Escolha...</option>\n  <option value="mg">Minas Gerais</option>\n  <option value="sp">São Paulo</option>\n  <option value="rj">Rio de Janeiro</option>\n</select>`,
+    render(id) {
+      return `<select id="${id}" name="estado">
+        <option value="">Escolha um estado...</option>
+        <option value="mg">Minas Gerais</option>
+        <option value="sp">São Paulo</option>
+        <option value="rj">Rio de Janeiro</option>
+        <option value="ba">Bahia</option>
+      </select>`;
+    },
+    getValue(id) {
+      const el = document.getElementById(id);
+      return el ? el.value : '';
+    }
+  },
+  {
+    type: "textarea",
+    title: "Texto Multilinha",
+    cat: "texto",
+    desc: "Área de texto expansível. Use rows e cols para definir tamanho inicial. Ideal para comentários e mensagens.",
+    snippet: `&lt;<span class="tg">textarea</span>
+  <span class="at">name</span>=<span class="vl">"mensagem"</span>
+  <span class="at">rows</span>=<span class="vl">"4"</span>
+  <span class="at">placeholder</span>=<span class="vl">"Sua mensagem..."</span>&gt;
+&lt;/<span class="tg">textarea</span>&gt;`,
+    rawSnippet: `<textarea name="mensagem" rows="4" placeholder="Sua mensagem..."></textarea>`,
+    render(id) {
+      return `<textarea id="${id}" rows="3" placeholder="Digite sua mensagem aqui..."></textarea>`;
+    },
+    getValue(id) {
+      const v = document.getElementById(id).value;
+      return v ? `${v.length} caracteres` : '';
+    }
+  },
+  {
+    type: "hidden",
+    title: "Campo Oculto",
+    cat: "acao",
+    desc: "Invisível para o usuário, mas enviado no submit. Usado para passar tokens CSRF, IDs de registro, estado de página.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"hidden"</span>
+      <span class="at">name</span>=<span class="vl">"token_csrf"</span>
+      <span class="at">value</span>=<span class="vl">"a3f9c..."</span>&gt;`,
+    rawSnippet: `<input type="hidden" name="token_csrf" value="a3f9c...">`,
+    render(id) {
+      return `<div class="demo-hidden-note">
+        &lt;input type="hidden" name="token" value="<span style="color:var(--green)">a3f9c2b1</span>"&gt;<br>
+        <span style="color:var(--amber)">↳ invisível no formulário — enviado no submit</span><br><br>
+        <span class="csrf-term" tabindex="0">O que é um token CSRF?
+          <span class="csrf-tooltip">
+            <strong>CSRF — Cross-Site Request Forgery</strong><br><br>
+            Um ataque onde um site malicioso força o browser do usuário autenticado a enviar uma requisição indesejada para outro site.<br><br>
+            <strong>Exemplo:</strong> Você está logado no seu banco. Uma página maliciosa faz seu browser enviar um POST para transferir dinheiro — sem você saber.<br><br>
+            <strong>Como o token protege:</strong><br>
+            O servidor gera um valor secreto único por sessão e o insere num campo hidden. No submit, verifica se o valor bate. Um atacante externo não consegue saber o token, então a requisição forjada é rejeitada.<br><br>
+            <code>$_SESSION['csrf'] === $_POST['token_csrf']</code>
+          </span>
+        </span>
+      </div>`;
+    },
+    getValue(id) { return 'a3f9c2b1 (valor fixo no HTML)'; }
+  },
+  {
+    type: "submit",
+    title: "Botão de Envio",
+    cat: "acao",
+    desc: "Dispara o envio do formulário para o action definido no <form>. O atributo value define o texto do botão.",
+    snippet: `&lt;<span class="tg">input</span> <span class="at">type</span>=<span class="vl">"submit"</span>
+      <span class="at">value</span>=<span class="vl">"Enviar Cadastro"</span>&gt;
+
+<span style="color:var(--muted)">// ou usando &lt;button&gt;:</span>
+&lt;<span class="tg">button</span> <span class="at">type</span>=<span class="vl">"submit"</span>&gt;
+  Enviar Cadastro
+&lt;/<span class="tg">button</span>&gt;`,
+    rawSnippet: `<input type="submit" value="Enviar Cadastro">`,
+    render(id) {
+      return `<div class="demo-submit">
+        <button type="button" id="${id}">Enviar Cadastro</button>
+      </div>`;
+    },
+    getValue(id) { return 'submit disparado!'; }
+  },
+];
+
+function buildCard(input, index) {
+  const id = `demo-${input.type}-${index}`;
+  const isHidden = input.type === 'hidden';
+  const isSubmit = input.type === 'submit';
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.cat = input.cat;
+  card.style.animationDelay = `${index * 0.04}s`;
+
+  card.innerHTML = `
+    <div class="card-head">
+      <span class="type-badge">${input.type}</span>
+      <span class="card-title">${input.title}</span>
+      <span class="card-cat">${input.cat}</span>
+    </div>
+    <div class="card-body">
+      <p class="card-desc">${input.desc}</p>
+
+      <p class="demo-label">▸ demo ao vivo</p>
+      <div class="demo" id="demo-wrap-${id}">
+        ${input.render(id)}
+      </div>
+
+      ${!isHidden ? `<div class="output" id="out-${id}"></div>` : ''}
+
+      <div class="snippet">
+        <div class="snippet-header">
+          <span class="snippet-lang">HTML</span>
+          <button class="copy-btn" data-code="${encodeURIComponent(input.rawSnippet)}">copiar</button>
+        </div>
+        <pre>${input.snippet}</pre>
+      </div>
+    </div>
+  `;
+
+  // live value listener
+  setTimeout(() => {
+    const wrap = document.getElementById(`demo-wrap-${id}`);
+    const out  = document.getElementById(`out-${id}`);
+    if (!wrap) return;
+
+    const show = () => {
+      if (!out) return;
+      const val = input.getValue(id);
+      if (val) {
+        out.textContent = `$_POST["${input.type === 'select' ? 'estado' : input.type}"] = "${val}"`;
+        out.classList.add('visible');
+      } else {
+        out.classList.remove('visible');
+      }
+    };
+
+    if (isSubmit) {
+      const btn = wrap.querySelector('button');
+      if (btn) btn.addEventListener('click', () => {
+        if (!out) return;
+        out.textContent = `$_POST["submit"] disparado ✓`;
+        out.classList.add('visible');
+        btn.textContent = '✓ Enviado!';
+        btn.style.background = 'var(--green)';
+        setTimeout(() => {
+          btn.textContent = 'Enviar Cadastro';
+          btn.style.background = '';
+          out.classList.remove('visible');
+        }, 2000);
+      });
+    } else if (input.type === 'checkbox') {
+      wrap.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', show));
+    } else if (input.type === 'radio') {
+      wrap.querySelectorAll('input[type="radio"]').forEach(el => el.addEventListener('change', show));
+    } else if (input.type === 'select') {
+      const el = wrap.querySelector('select');
+      if (el) el.addEventListener('change', show);
+    } else if (input.type === 'hidden') {
+      // static — nothing
+    } else {
+      const el = wrap.querySelector('input, textarea');
+      if (el) el.addEventListener('input', show);
+    }
+  }, 50);
+
+  return card;
+}
+
+// ── RENDER ──
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const headerCount = document.getElementById('header-count');
+
+INPUTS.forEach((inp, i) => grid.appendChild(buildCard(inp, i)));
+
+// ── COPY BUTTONS ──
+document.addEventListener('click', e => {
+  if (!e.target.classList.contains('copy-btn')) return;
+  const code = decodeURIComponent(e.target.dataset.code);
+  navigator.clipboard.writeText(code).then(() => {
+    e.target.textContent = '✓ copiado';
+    e.target.classList.add('copied');
+    setTimeout(() => {
+      e.target.textContent = 'copiar';
+      e.target.classList.remove('copied');
+    }, 1800);
+  });
+});
+
+// ── FILTERS ──
+document.getElementById('filters').addEventListener('click', e => {
+  if (!e.target.classList.contains('filter-btn')) return;
+  const filter = e.target.dataset.filter;
+
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+
+  const cards = document.querySelectorAll('.card');
+  let visible = 0;
+  cards.forEach(card => {
+    const match = filter === 'all' || card.dataset.cat === filter;
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  countEl.textContent = visible;
+  headerCount.textContent = `${visible} / 10 tipos`;
+});
+
+headerCount.textContent = `10 / 10 tipos`;
+</script>
+</body>
+</html>
