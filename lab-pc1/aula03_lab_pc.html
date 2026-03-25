@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab PC1 — Aula 03: Introdução à Linguagem C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #1a2e4a;
+      --navy-light:  #243d5c;
+      --blue:        #2c6fad;
+      --blue-light:  #3a82c4;
+      --blue-pale:   #e8f1f9;
+      --white:       #ffffff;
+      --bg:          #f5f7fa;
+      --surface:     #ffffff;
+      --border:      #dde3ea;
+      --border-light:#eef1f5;
+      --text:        #1c2b3a;
+      --text-muted:  #5a6a7a;
+      --green:       #1e7145;
+      --green-pale:  #e8f5ee;
+      --amber:       #8a5c00;
+      --amber-pale:  #fef7e6;
+      --red:         #c0392b;
+      --red-pale:    #fdecea;
+      --purple:      #5c2d91;
+      --purple-pale: #f2eafa;
+      --code-bg:     #1e2d3d;
+      --code-text:   #cfe2f3;
+      --radius:      8px;
+      --radius-lg:   12px;
+      --shadow-sm:   0 1px 4px rgba(26,46,74,.08);
+      --shadow:      0 2px 10px rgba(26,46,74,.10);
+      --shadow-md:   0 4px 20px rgba(26,46,74,.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--navy);
+      display: flex; align-items: center;
+      padding: 0 2rem; height: 52px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.2);
+      gap: .25rem;
+    }
+    .nav-brand {
+      font-size: .875rem; font-weight: 700; color: #fff;
+      padding-right: 1.25rem;
+      border-right: 1px solid rgba(255,255,255,.18);
+      margin-right: .5rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    nav a {
+      color: rgba(255,255,255,.72);
+      text-decoration: none;
+      font-size: .75rem; font-weight: 500;
+      padding: 0 .6rem; line-height: 52px;
+      border-bottom: 2px solid transparent;
+      transition: color .18s, border-color .18s;
+      white-space: nowrap;
+    }
+    nav a:hover { color: #fff; border-bottom-color: rgba(255,255,255,.5); }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--navy);
+      color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      font-weight: 700; line-height: 1.2;
+      margin-bottom: .6rem;
+    }
+    .hero h1 span { color: #7dbfef; }
+    .hero p {
+      font-size: .975rem; color: rgba(255,255,255,.7);
+      max-width: 860px; margin: 0 auto 2rem;
+    }
+    .hero-meta {
+      display: flex; justify-content: center;
+      gap: 1.25rem; flex-wrap: wrap;
+      font-size: .75rem; color: rgba(255,255,255,.5);
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 3rem 0 2.5rem; }
+    section + section { border-top: 1px solid var(--border-light); }
+
+    .section-label {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: .65rem;
+    }
+    h2 {
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      font-weight: 700; color: var(--navy);
+      line-height: 1.25; margin-bottom: .6rem;
+    }
+    .lead {
+      font-size: .95rem; color: var(--text-muted);
+      max-width: 960px; margin-bottom: 2rem; line-height: 1.7;
+    }
+    h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: .45rem; }
+    p  { margin-bottom: .8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-icon { font-size: 1.4rem; margin-bottom: .55rem; display: block; }
+    .card-tag {
+      display: inline-block;
+      font-size: .62rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: .18rem .55rem; border-radius: 50px;
+      margin-bottom: .45rem;
+    }
+    .tag-blue   { background: var(--blue-pale);   color: var(--blue); }
+    .tag-navy   { background: #e6eaf0;             color: var(--navy); }
+    .tag-green  { background: var(--green-pale);   color: var(--green); }
+    .tag-amber  { background: var(--amber-pale);   color: var(--amber); }
+    .tag-purple { background: var(--purple-pale);  color: var(--purple); }
+
+    /* ── Callout ── */
+    .callout {
+      display: flex; gap: .9rem; align-items: flex-start;
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      margin: 1.1rem 0;
+      font-size: .88rem; line-height: 1.6;
+      border: 1px solid transparent;
+    }
+    .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+    .callout.tip  { background: var(--blue-pale);   border-color: #c0d8f0; color: #1a3a5c; }
+    .callout.info { background: var(--green-pale);  border-color: #b2ddc8; color: #133d29; }
+    .callout.warn { background: var(--amber-pale);  border-color: #f0d898; color: #5a3e00; }
+    .callout.err  { background: var(--red-pale);    border-color: #e8b0aa; color: #7a1a14; }
+
+    /* ── Concept box ── */
+    .concept-box {
+      background: var(--surface);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.1rem 1.35rem;
+      margin: 1.1rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .concept-box.green  { border-color: #2e9e63; }
+    .concept-box.amber  { border-color: #c8860a; }
+    .concept-box.purple { border-color: var(--purple); }
+
+    /* ── Code ── */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      margin: .9rem 0; overflow-x: auto;
+      position: relative;
+    }
+    .code-block pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; line-height: 1.85;
+      color: var(--code-text);
+    }
+    .kw  { color: #79d4ff; }
+    .fn  { color: #f8c555; }
+    .str { color: #95dba4; }
+    .cm  { color: #5e8a9e; font-style: italic; }
+    .nm  { color: #ffb87a; }
+    .op  { color: #ff9e9e; }
+    .pp  { color: #c792ea; }
+    .fmt { color: #f78c6c; }
+
+    .code-label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; font-weight: 500;
+      color: rgba(255,255,255,.35);
+      margin-bottom: .4rem;
+      letter-spacing: .05em;
+    }
+
+    /* ── Steps ── */
+    .steps { list-style: none; margin: 1.1rem 0; }
+    .steps li {
+      display: flex; gap: .85rem; align-items: flex-start;
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: .9rem;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .step-num {
+      min-width: 24px; height: 24px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+
+    /* ── Details ── */
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: .65rem 0;
+    }
+    summary {
+      cursor: pointer;
+      padding: .8rem 1rem;
+      font-weight: 600; font-size: .86rem;
+      color: var(--blue);
+      user-select: none; list-style: none;
+    }
+    summary::before { content: '▶  '; font-size: .65rem; }
+    details[open] summary::before { content: '▼  '; }
+    details[open] { border-color: var(--blue); }
+    .details-body { padding: .15rem 1rem .9rem; font-size: .88rem; }
+
+    /* ── Table ── */
+    .ref-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.1rem 0; font-size: .85rem;
+    }
+    .ref-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left;
+      font-weight: 600; font-size: .8rem;
+    }
+    .ref-table td {
+      padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    .ref-table tr:nth-child(even) td { background: var(--bg); }
+    .ref-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; font-weight: 500;
+      color: var(--blue);
+    }
+    .badge {
+      display: inline-block;
+      font-size: .66rem; font-weight: 700;
+      padding: .12rem .45rem; border-radius: 50px;
+    }
+    .badge-soon { background: #eee; color: #999; }
+    .badge-ok   { background: var(--green-pale); color: var(--green); }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      background: #e8f1f9; color: var(--navy);
+      padding: .1rem .35rem; border-radius: 4px;
+    }
+
+    /* ── Flow ── */
+    .flow {
+      display: flex; align-items: stretch; gap: 0;
+      flex-wrap: wrap; margin: 1.5rem 0;
+    }
+    .flow-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.1rem;
+      text-align: center; min-width: 110px;
+      box-shadow: var(--shadow-sm); flex: 1;
+    }
+    .flow-box .ficon  { font-size: 1.3rem; display: block; margin-bottom: .3rem; }
+    .flow-box .ftitle { font-weight: 600; font-size: .82rem; color: var(--navy); }
+    .flow-box .fsub   { font-size: .7rem; color: var(--text-muted); margin-top: .15rem; }
+    .flow-box.hl { border-color: var(--blue); background: var(--blue-pale); }
+    .flow-arrow {
+      display: flex; align-items: center; padding: 0 .4rem;
+      color: var(--blue); font-size: 1.1rem; font-weight: 600; flex-shrink: 0;
+    }
+
+    /* ── Annotated code ── */
+    .annotated {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin: 1.25rem 0;
+    }
+    .ann-code { background: var(--code-bg); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
+    .ann-code pre { font-family: 'JetBrains Mono', monospace; font-size: .77rem; line-height: 2; color: var(--code-text); }
+    .ann-desc { display: flex; flex-direction: column; gap: .55rem; }
+    .ann-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: .6rem .85rem;
+      font-size: .82rem;
+    }
+    .ann-item strong { color: var(--navy); font-family: 'JetBrains Mono', monospace; font-size: .75rem; display: block; margin-bottom: .2rem; }
+
+    /* ══════════════════════════════════
+       ATIVIDADE A — Drag linguagem natural
+       ══════════════════════════════════ */
+    .activity-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .activity-head {
+      background: var(--navy); color: #fff;
+      padding: .9rem 1.3rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .activity-head h3 { color: #fff; font-size: 1rem; margin: 0; }
+    .activity-body { background: var(--surface); padding: 1.4rem; }
+
+    /* pool */
+    .drag-pool {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      min-height: 54px;
+      background: var(--bg);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: .75rem;
+      margin-bottom: 1.25rem;
+      transition: border-color .2s;
+    }
+    .drag-pool.drag-over { border-color: var(--blue); background: var(--blue-pale); }
+
+    /* slots */
+    .slots { display: flex; flex-direction: column; gap: .55rem; margin-bottom: 1.25rem; }
+    .slot-row { display: flex; align-items: center; gap: .65rem; }
+    .slot-num {
+      min-width: 26px; height: 26px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .slot {
+      flex: 1; min-height: 42px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      display: flex; align-items: center;
+      padding: .4rem .75rem;
+      transition: border-color .2s, background .2s;
+      font-size: .86rem; color: var(--text-muted);
+    }
+    .slot.drag-over { border-color: var(--blue); background: var(--blue-pale); }
+    .slot.has-item  { border-style: solid; background: var(--surface); color: var(--text); }
+    .slot.correct   { border-color: var(--green); background: var(--green-pale); }
+    .slot.wrong     { border-color: var(--red);   background: var(--red-pale); }
+
+    /* draggable item */
+    .drag-item {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: .45rem .85rem;
+      font-size: .84rem; font-weight: 500;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .drag-item:hover { box-shadow: var(--shadow); border-color: #b0c0d0; }
+    .drag-item:active { cursor: grabbing; }
+    .drag-item.correct { border-color: var(--green); background: var(--green-pale); color: var(--green); cursor: default; }
+    .drag-item.wrong   { border-color: var(--red);   background: var(--red-pale);   color: var(--red);   cursor: default; }
+
+    /* activity buttons */
+    .act-btn-row { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: .5rem; }
+    .btn-check {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .6rem 1.4rem; border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    .btn-check:hover { background: var(--blue); }
+    .btn-reset {
+      background: transparent; color: var(--text-muted);
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .6rem 1.2rem; border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      cursor: pointer; transition: border-color .18s, color .18s;
+    }
+    .btn-reset:hover { border-color: var(--navy); color: var(--navy); }
+
+    /* feedback geral */
+    .act-feedback {
+      display: none; margin-top: 1rem;
+      padding: .8rem 1.1rem; border-radius: var(--radius);
+      font-size: .88rem; font-weight: 600;
+    }
+    .act-feedback.show { display: block; }
+    .act-feedback.ok   { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .act-feedback.err  { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+
+    /* ── Reveal panel (código C associado) ── */
+    .reveal-panel {
+      display: none;
+      margin-top: 1.4rem;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.3rem;
+    }
+    .reveal-panel.show { display: block; }
+    .mapping-title {
+      font-size: .88rem; font-weight: 700; color: var(--navy);
+      margin-bottom: 1rem;
+    }
+    .mapping-rows { display: flex; flex-direction: column; gap: .55rem; }
+    .map-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: .65rem;
+    }
+    .map-natural {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .55rem .85rem;
+      font-size: .82rem; color: var(--text-muted);
+    }
+    .map-arrow { color: var(--blue); font-size: 1rem; font-weight: 700; flex-shrink: 0; text-align:center; }
+    .map-code {
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: .55rem .85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .76rem; color: var(--code-text);
+    }
+    .copy-hint {
+      font-size: .78rem; color: var(--text-muted);
+      margin-top: 1rem; font-style: italic;
+    }
+
+    /* ══════════════════════════════════
+       ATIVIDADE B — Drag código C
+       ══════════════════════════════════ */
+    .drag-item.code-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      background: #1e2d3d;
+      border-color: #2d4a6a;
+      color: var(--code-text);
+    }
+    .drag-item.code-item:hover { border-color: #4a7aaa; }
+    .slot.code-slot {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      background: #141f2d;
+      border-color: #2d4a6a;
+      color: #4a6a8a;
+    }
+    .slot.code-slot.has-item { background: #1e2d3d; color: var(--code-text); }
+    .slot.code-slot.correct  { border-color: #2e9e63; background: #0d2a1a; color: #7adba4; }
+    .slot.code-slot.wrong    { border-color: var(--red); background: #2a0d0d; color: #e88a80; }
+
+    /* ══════════════════════════════════
+       ATIVIDADE C — Digitar código
+       ══════════════════════════════════ */
+    .task-steps { list-style: none; margin: .9rem 0; }
+    .task-steps li {
+      display: flex; gap: .7rem; align-items: flex-start;
+      padding: .55rem 0;
+      border-bottom: 1px dashed var(--border-light);
+      font-size: .88rem;
+    }
+    .task-steps li:last-child { border: none; }
+    .ts-num {
+      min-width: 22px; height: 22px;
+      background: var(--blue); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+    .analysis-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.1rem 0; font-size: .85rem;
+    }
+    .analysis-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left;
+      font-weight: 600; font-size: .8rem;
+    }
+    .analysis-table td {
+      padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    .analysis-table tr:nth-child(even) td { background: var(--bg); }
+    .badge-in   { background: var(--blue-pale);  color: var(--blue); }
+    .badge-proc { background: var(--green-pale);  color: var(--green); }
+    .badge-out  { background: var(--amber-pale);  color: var(--amber); }
+
+    /* ── Quiz ── */
+    #quiz { background: var(--bg); }
+    .quiz-progress {
+      background: var(--border); border-radius: 50px;
+      height: 5px; margin-bottom: 1.75rem; overflow: hidden;
+    }
+    .quiz-progress-bar { height: 100%; background: var(--blue); border-radius: 50px; transition: width .35s ease; }
+    .q-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.35rem; margin-bottom: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .q-num { font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: .4rem; }
+    .q-text { font-weight: 600; margin-bottom: .9rem; font-size: .92rem; line-height: 1.5; }
+    .q-options { display: flex; flex-direction: column; gap: .45rem; }
+    .q-opt {
+      display: flex; align-items: flex-start; gap: .7rem;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: .65rem .85rem;
+      cursor: pointer; font-size: .87rem; line-height: 1.45;
+      transition: border-color .15s, background .15s; user-select: none;
+    }
+    .q-opt:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+    .q-opt input[type="radio"] { accent-color: var(--blue); margin-top: .25rem; flex-shrink: 0; }
+    .q-opt.correct { border-color: #2e9e63; background: var(--green-pale); }
+    .q-opt.wrong   { border-color: var(--red); background: var(--red-pale); }
+    .q-feedback { margin-top: .8rem; font-size: .83rem; padding: .65rem .9rem; border-radius: var(--radius); display: none; line-height: 1.55; }
+    .q-feedback.show { display: block; }
+    .q-feedback.ok  { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .q-feedback.err { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+    #quiz-btn {
+      display: block; width: 100%; max-width: 280px;
+      margin: 1.4rem auto 0;
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .9rem;
+      padding: .8rem 2rem; border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    #quiz-btn:hover { background: var(--blue); }
+    #quiz-result {
+      display: none; text-align: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2rem;
+      margin-top: 1.4rem; box-shadow: var(--shadow);
+    }
+    #quiz-result.show { display: block; }
+    .result-score { font-size: 3rem; font-weight: 700; color: var(--navy); }
+    .result-sub   { font-size: .9rem; color: var(--text-muted); margin: .4rem 0 1rem; }
+    .result-msg   { font-size: .9rem; margin-bottom: 1.1rem; }
+    #quiz-retry {
+      background: var(--blue); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      padding: .6rem 1.6rem; border-radius: var(--radius); border: none;
+      cursor: pointer; font-size: .86rem; transition: background .18s;
+    }
+    #quiz-retry:hover { background: var(--navy); }
+
+    /* ── Summary ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: .9rem; margin: 1.4rem 0;
+    }
+    .sum-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: 3px solid var(--blue);
+      border-radius: var(--radius-lg);
+      padding: 1rem; box-shadow: var(--shadow-sm);
+    }
+    .sum-item.g { border-top-color: #2e9e63; }
+    .sum-item.a { border-top-color: #c8860a; }
+    .sum-item.r { border-top-color: var(--red); }
+    .sum-item.p { border-top-color: var(--purple); }
+    .sum-item .si-title { font-weight: 600; font-size: .88rem; color: var(--navy); margin-bottom: .35rem; }
+    .sum-item p { font-size: .8rem; color: var(--text-muted); }
+
+    /* ── Download ── */
+    .download-area { text-align: center; padding: 1.5rem 0 .5rem; }
+    .download-area p { color: var(--text-muted); font-size: .83rem; margin-bottom: .85rem; }
+    .download-row { display: flex; gap: .65rem; justify-content: center; flex-wrap: wrap; }
+    .download-row input[type="text"] {
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: .55rem .85rem; font-family: 'Inter', sans-serif;
+      font-size: .85rem; width: 240px; background: var(--surface);
+      transition: border-color .18s;
+    }
+    .download-row input:focus { outline: none; border-color: var(--blue); }
+    #btn-download {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600;
+      padding: .55rem 1.4rem; border-radius: var(--radius); border: none;
+      cursor: pointer; font-size: .85rem;
+      display: inline-flex; align-items: center; gap: .4rem;
+      transition: background .18s;
+    }
+    #btn-download:hover { background: var(--blue); }
+
+    /* ── Tooltip ── */
+    .tip-word {
+      border-bottom: 1px dashed var(--blue);
+      cursor: help;
+      position: relative;
+      display: inline-block;
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .tip-word .tip-box {
+      visibility: hidden; opacity: 0;
+      background: var(--navy);
+      color: #fff;
+      font-size: .78rem; font-weight: 400;
+      line-height: 1.55;
+      border-radius: var(--radius);
+      padding: .65rem .9rem;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%; transform: translateX(-50%);
+      width: 240px;
+      box-shadow: var(--shadow-md);
+      z-index: 100;
+      transition: opacity .18s;
+      pointer-events: none;
+      text-align: left;
+    }
+    .tip-word .tip-box::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--navy);
+    }
+    .tip-word:hover .tip-box { visibility: visible; opacity: 1; }
+
+    /* ── Conceitos Básicos ── */
+    .basics-list {
+      list-style: none; margin: 1.25rem 0;
+      display: flex; flex-direction: column; gap: .55rem;
+    }
+    .basics-list li {
+      display: flex; gap: .85rem; align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: .75rem 1rem;
+      font-size: .88rem; line-height: 1.6;
+      box-shadow: var(--shadow-sm);
+    }
+    .basics-list li strong { color: var(--navy); }
+    .basics-flow {
+      display: flex; align-items: center; gap: .4rem;
+      flex-wrap: wrap;
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: .9rem 1.2rem;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      color: var(--code-text);
+    }
+    .basics-flow .bf-box {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 5px;
+      padding: .3rem .7rem;
+      white-space: nowrap;
+    }
+    .basics-flow .bf-arrow { color: #79d4ff; font-weight: 700; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--navy); color: rgba(255,255,255,.5);
+      text-align: center; font-size: .75rem; padding: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+      nav a { display: none; }
+      .annotated { grid-template-columns: 1fr; }
+      .map-row { grid-template-columns: 1fr; }
+      .map-arrow { transform: rotate(90deg); }
+      .flow { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); align-self: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">💻 Lab PC1</div>
+  <a href="#basicos">Conceitos</a>
+  <a href="#estrutura">Estrutura</a>
+  <a href="#variaveis">Variáveis</a>
+  <a href="#io">printf / scanf</a>
+  <a href="#atv-a">Atividade A</a>
+  <a href="#atv-b">Atividade B</a>
+  <a href="#atv-c">Atividade C</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">Laboratório de PC 1 · Aula 03 · CEFET-MG Contagem</div>
+  <h1>Introdução à <span>Linguagem C</span></h1>
+  <p>Estrutura de um programa, variáveis <code style="background:rgba(255,255,255,.12);color:#7dbfef;font-family:'JetBrains Mono',monospace;padding:.1rem .4rem;border-radius:4px;">int</code> e <code style="background:rgba(255,255,255,.12);color:#7dbfef;font-family:'JetBrains Mono',monospace;padding:.1rem .4rem;border-radius:4px;">float</code>, leitura e escrita de dados.</p>
+  <div class="hero-meta">
+    <span>⚗️ Engenharia Química · 1º Período</span>
+    <span>👩‍🏫 Profª. Elizabeth Duane</span>
+    <span>🛠️ Dev-C++</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     0 — CONCEITOS BÁSICOS
+     ══════════════════════════════════════ -->
+<section id="basicos">
+  <div class="container">
+    <div class="section-label">Conceitos Básicos</div>
+    <h2>Antes de programar: entenda os termos</h2>
+    <p class="lead">Para começar a trabalhar com a linguagem C, é importante conhecer alguns conceitos fundamentais sobre programação e o processo de criação de programas.</p>
+
+    <ul class="basics-list">
+      <li><div><strong>Código de Programa:</strong> texto escrito com os comandos de uma determinada linguagem de programação.</div></li>
+      <li><div><strong>Programa:</strong> arquivo binário (executável) que executa os comandos do código de programa em linguagem de máquina.</div></li>
+      <li><div><strong>Linguagem C:</strong> linguagem de alto nível para criação de código de programas. Os arquivos do código em C devem ser salvos com o tipo <code>.c</code>.</div></li>
+      <li><div><strong>Compilação:</strong> processo em que se verificam erros de escrita no código. Se tudo estiver correto, é gerado um arquivo objeto (<code>.o</code>) do programa para a fase de linkedição.</div></li>
+      <li><div><strong>Linkedição:</strong> junção dos arquivos objetos e das bibliotecas utilizadas no código para geração final do programa executável.</div></li>
+    </ul>
+
+    <p style="font-size:.9rem;margin-top:1.25rem;margin-bottom:.5rem;">O fluxo completo desde o código até o programa executável:</p>
+    <div class="basics-flow">
+      <span class="bf-box">código (.c)</span>
+      <span class="bf-arrow">→</span>
+      <span>compilação</span>
+      <span class="bf-arrow">→</span>
+      <span class="bf-box">(.o)</span>
+      <span class="bf-arrow">→</span>
+      <span>linkedição</span>
+      <span class="bf-arrow">→</span>
+      <span class="bf-box">programa executável (.exe)</span>
+    </div>
+
+    <p style="font-size:.9rem;margin-top:1.25rem;">Para auxiliar nesse processo, utilizamos programas de edição e compilação. Para programação em C temos várias opções: <strong>DevC++</strong>, CodeBlocks, Eclipse, Netbeans, Visual Studio. Neste curso utilizaremos o <strong>Dev-C++</strong>.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     1 — ESTRUTURA DO PROGRAMA
+     ══════════════════════════════════════ -->
+<section id="estrutura">
+  <div class="container">
+    <div class="section-label">Conceito 1</div>
+    <h2>Estrutura básica de um programa em C</h2>
+    <p class="lead">Todo programa em C segue o mesmo esqueleto. Antes de escrever qualquer cálculo, você precisa conhecer cada parte desse esqueleto e o que ela faz.</p>
+
+    <div class="annotated">
+      <div class="ann-code">
+        <div class="code-label">esqueleto.c</div>
+        <pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// Declaração de variáveis</span>
+
+    <span class="cm">// Bloco de comandos</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+      </div>
+      <div class="ann-desc">
+        <div class="ann-item">
+          <strong>#include &lt;stdio.h&gt;</strong>
+          Importa a <span class="tip-word">biblioteca<span class="tip-box">📦 Biblioteca: conjunto de funções prontas que você pode usar no seu programa. A <code>stdio.h</code> (Standard Input/Output) fornece funções de entrada e saída como <code>printf</code> e <code>scanf</code>.</span></span> de entrada e saída. Sem ela, <code>printf</code> e <code>scanf</code> não funcionam. Sempre na primeira linha.
+        </div>
+        <div class="ann-item">
+          <strong>int main() { }</strong>
+          Função principal — ponto de partida de todo programa C. A execução começa aqui.
+        </div>
+        <div class="ann-item">
+          <strong>// comentário</strong>
+          Texto explicativo que o compilador ignora. Fundamental para organizar o código.
+        </div>
+        <div class="ann-item">
+          <strong>return 0;</strong>
+          Informa ao sistema operacional que o programa terminou com sucesso.
+        </div>
+        <div class="ann-item">
+          <strong>{ } e ;</strong>
+          Chaves delimitam blocos de código. Ponto-e-vírgula encerra cada instrução — nunca esqueça!
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>C diferencia maiúsculas de minúsculas.</strong> <code>Printf</code>, <code>PRINTF</code> e <span class="tip-word">printf<span class="tip-box">🖨️ printf: função que exibe texto e valores na tela. Vem de "print formatted". Exemplo: <code>printf("Ola!");</code> exibe o texto <em>Ola!</em> na tela.</span></span> são coisas diferentes para o compilador. Todos os comandos da linguagem são escritos em letras minúsculas.</div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Do código ao programa executável</h3>
+
+    <div class="concept-box" style="margin-bottom:1rem;">
+      <h3>O que é o Dev-C++?</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">O <strong>Dev-C++</strong> é um ambiente de desenvolvimento integrado (IDE) gratuito para a linguagem C e C++. Ele reúne em um único programa: um editor de texto para digitar o código, um compilador (GCC/MinGW) para transformar o código em executável, e uma janela de saída para ver os resultados. É amplamente utilizado no ensino por ser simples e leve.</p>
+    </div>
+
+    <p style="font-size:.9rem;">No Dev-C++, as etapas de compilação e linkedição acontecem com um clique. Mas é importante entender o que ocorre por baixo:</p>
+
+    <div class="flow">
+      <div class="flow-box">
+        <span class="ficon">✍️</span>
+        <div class="ftitle">Código fonte</div>
+        <div class="fsub">arquivo <code>.c</code></div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <span class="ficon">🔍</span>
+        <div class="ftitle">Compilação</div>
+        <div class="fsub">verifica erros → <code>.o</code></div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <span class="ficon">🔗</span>
+        <div class="ftitle">Linkedição</div>
+        <div class="fsub">une bibliotecas</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box hl">
+        <span class="ficon">▶️</span>
+        <div class="ftitle">Executável</div>
+        <div class="fsub">arquivo <code>.exe</code></div>
+      </div>
+    </div>
+
+    <details>
+      <summary>🛠️ Primeiros passos no Dev-C++</summary>
+      <div class="details-body" style="padding-top:.75rem;">
+        <ul class="steps">
+          <li><div class="step-num">1</div><div>Abra o Dev-C++ e clique em <strong>Arquivo → Novo → Arquivo Fonte</strong>.</div></li>
+          <li><div class="step-num">2</div><div>Digite o esqueleto acima e salve com <strong>Ctrl+S</strong>. Escolha um nome terminado em <code>.c</code> (ex.: <code>aula03.c</code>).</div></li>
+          <li><div class="step-num">3</div><div>Para compilar e executar: pressione <strong>F11</strong> (ou menu <strong>Executar → Compilar &amp; Executar</strong>).</div></li>
+          <li><div class="step-num">4</div><div>Se aparecer um painel com erros em vermelho, leia a mensagem — ela indica a linha com problema.</div></li>
+        </ul>
+        <div class="callout tip" style="margin-top:.75rem;">
+          <div class="callout-icon">💡</div>
+          <div>Salve o arquivo <strong>antes</strong> de compilar. O Dev-C++ não compila versões não salvas.</div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Exemplo Ola Mundo -->
+    <div style="margin-top:2rem;">
+      <h3>✍️ Pratique: seu primeiro programa</h3>
+      <p style="font-size:.9rem;margin-top:.5rem;">Agora é sua vez! Digite o programa abaixo no Dev-C++, salve, compile com <strong>F11</strong> e verifique a saída. Depois entregue o arquivo <code>.c</code> no Moodle.</p>
+
+      <div class="annotated" style="margin-top:1rem;">
+        <div class="ann-code">
+          <div class="code-label">ola_mundo.c</div>
+          <pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">printf</span>(<span class="str">"Ola, Mundo!\n"</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <div class="ann-desc">
+          <div class="ann-item">
+            <strong>#include &lt;stdio.h&gt;</strong>
+            Biblioteca para entrada e saída — necessária para usar <code>printf</code>.
+          </div>
+          <div class="ann-item">
+            <strong>int main()</strong>
+            Função principal — ponto de entrada do programa.
+          </div>
+          <div class="ann-item">
+            <strong>printf()</strong>
+            Função para imprimir texto na tela.
+          </div>
+          <div class="ann-item">
+            <strong>\n</strong>
+            Caractere especial que representa uma quebra de linha (nova linha).
+          </div>
+          <div class="ann-item">
+            <strong>return 0;</strong>
+            Retorna o valor 0 para o sistema operacional, indicando que o programa terminou com sucesso.
+          </div>
+          <div class="ann-item">
+            <strong>{ }</strong>
+            Delimitam blocos de código.
+          </div>
+          <div class="ann-item">
+            <strong>;</strong>
+            Finaliza instruções — nunca esqueça!
+          </div>
+        </div>
+      </div>
+
+      <div class="callout info" style="margin-top:1rem;">
+        <div class="callout-icon">📤</div>
+        <div><strong>Entrega no Moodle:</strong> salve o arquivo como <code>ola_mundo.c</code>, compile com <strong>F11</strong>, verifique que a saída exibe <em>Ola, Mundo!</em> e envie o arquivo <code>.c</code> diretamente no Moodle — sem compactar.</div>
+      </div>
+    </div>
+
+    <!-- Quiz Conceito 1 -->
+    <div style="margin-top:2.5rem;">
+      <div class="section-label" style="margin-bottom:.5rem;">Quiz — Conceito 1</div>
+      <h3 style="margin-bottom:1rem;">Verifique seu entendimento</h3>
+
+      <div class="q-block">
+        <div class="q-num">Questão 1 de 3</div>
+        <div class="q-text">Qual é a finalidade do <code>#include &lt;stdio.h&gt;</code> no início de um programa em C?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc1_1" value="a"> Declarar a função <code>main()</code></label>
+          <label class="q-opt"><input type="radio" name="qc1_1" value="b"> Importar a biblioteca de entrada e saída, habilitando <code>printf</code> e <code>scanf</code></label>
+          <label class="q-opt"><input type="radio" name="qc1_1" value="c"> Iniciar a compilação do programa</label>
+          <label class="q-opt"><input type="radio" name="qc1_1" value="d"> Definir o tipo de retorno do programa</label>
+        </div>
+        <div class="q-feedback" id="fbc1_1"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 2 de 3</div>
+        <div class="q-text">O que o caractere <code>\n</code> representa dentro de uma string no <code>printf</code>?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc1_2" value="a"> A letra "n" maiúscula</label>
+          <label class="q-opt"><input type="radio" name="qc1_2" value="b"> O fim do programa</label>
+          <label class="q-opt"><input type="radio" name="qc1_2" value="c"> Uma quebra de linha (nova linha)</label>
+          <label class="q-opt"><input type="radio" name="qc1_2" value="d"> Um espaço em branco</label>
+        </div>
+        <div class="q-feedback" id="fbc1_2"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 3 de 3</div>
+        <div class="q-text">Para que serve o <code>return 0;</code> no final da função <code>main()</code>?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc1_3" value="a"> Para imprimir o valor 0 na tela</label>
+          <label class="q-opt"><input type="radio" name="qc1_3" value="b"> Para reiniciar o programa do início</label>
+          <label class="q-opt"><input type="radio" name="qc1_3" value="c"> Para informar ao sistema operacional que o programa terminou com sucesso</label>
+          <label class="q-opt"><input type="radio" name="qc1_3" value="d"> Para fechar o Dev-C++</label>
+        </div>
+        <div class="q-feedback" id="fbc1_3"></div>
+      </div>
+
+      <button class="btn-check" onclick="corrigirQuizC1()" id="quiz-c1-btn" style="display:block;width:100%;max-width:280px;margin:1.2rem auto 0;">Ver pontuação</button>
+      <div id="quiz-c1-result" style="display:none;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);">
+        <div class="result-score" id="rc1-score"></div>
+        <div class="result-sub" id="rc1-sub"></div>
+        <button style="background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.6rem;border-radius:var(--radius);border:none;cursor:pointer;font-size:.86rem;margin-top:.75rem;" onclick="resetQuizC1()">↺ Tentar novamente</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     2 — VARIÁVEIS
+     ══════════════════════════════════════ -->
+<section id="variaveis">
+  <div class="container">
+    <div class="section-label">Conceito 2</div>
+    <h2>Variáveis: guardando valores na memória</h2>
+    <p class="lead">Uma variável é um espaço reservado na memória RAM com um nome e um tipo. Em C, toda variável precisa ser <strong>declarada antes de ser usada</strong>.</p>
+
+    <div class="concept-box">
+      <h3>O que é declarar uma variável?</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">Declarar é informar ao compilador: "reserve um espaço na memória com este nome e este tipo". O compilador então sabe quanto espaço alocar e como interpretar os dados armazenados.</p>
+    </div>
+    
+    <h3 style="margin-top:1.5rem;">Os dois tipos desta aula</h3>
+    <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="card">
+        <span class="card-icon">🔢</span>
+        <div class="card-tag tag-navy">int</div>
+        <h3>Número inteiro</h3>
+        <p style="font-size:.86rem;">Armazena números <strong>sem casas decimais</strong>. Ocupa 4 bytes (32 bits) na memória.</p>
+        <div class="code-block" style="margin-top:.75rem;padding:.8rem 1rem;">
+<pre><span class="kw">int</span> nota1;
+<span class="kw">int</span> nota2;
+<span class="kw">int</span> nota1, nota2; <span class="cm">// ou assim</span></pre>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">Exemplos de valores: <code>0</code> &nbsp;<code>7</code> &nbsp;<code>-3</code> &nbsp;<code>100</code></p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📐</span>
+        <div class="card-tag tag-blue">float</div>
+        <h3>Número decimal</h3>
+        <p style="font-size:.86rem;">Armazena números <strong>com casas decimais</strong>. Ocupa 4 bytes com <span class="tip-word">precisão simples<span class="tip-box">🔢 Precisão simples (single precision): formato de 32 bits (4 bytes) para representar números decimais. Permite cerca de 7 dígitos significativos. Ex.: 3.1415927. Para maior precisão use <code>double</code> (64 bits) — veremos em aulas futuras.</span></span>.</p>
+        <div class="code-block" style="margin-top:.75rem;padding:.8rem 1rem;">
+<pre><span class="kw">float</span> tempC;
+<span class="kw">float</span> tempK;
+<span class="kw">float</span> tempC, tempK; <span class="cm">// ou assim</span></pre>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);">Exemplos de valores: <code>3.14</code> &nbsp;<code>273.15</code> &nbsp;<code>-0.5</code></p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Separador decimal em C é o ponto, nunca a vírgula.</strong> Escreva <code>273.15</code> — não <code>273,15</code>. A vírgula tem outro significado na linguagem.</div>
+    </div>
+
+    <h3 style="margin-top:1.75rem;">Regras para nomear variáveis</h3>
+    <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top:.75rem;">
+      <div class="card" style="border-top: 3px solid var(--green);">
+        <div class="card-tag tag-green">✅ Permitido</div>
+        <div class="code-block" style="margin-top:.6rem;padding:.7rem .9rem;">
+<pre><span class="cm">// letras, números e _</span>
+nota1
+temp_celsius
+mediaFinal
+n</pre>
+        </div>
+      </div>
+      <div class="card" style="border-top: 3px solid var(--red);">
+        <div class="card-tag" style="background:var(--red-pale);color:var(--red);">❌ Proibido</div>
+        <div class="code-block" style="margin-top:.6rem;padding:.7rem .9rem;">
+<pre><span class="cm">// inválidos:</span>
+1nota      <span class="cm">// começa com número</span>
+nota final <span class="cm">// espaço no nome</span>
+média      <span class="cm">// acento</span>
+float      <span class="cm">// palavra reservada</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div><strong>Boas práticas:</strong> use nomes descritivos (<code>tempCelsius</code> em vez de <code>x</code>) e declare todas as variáveis <strong>no início</strong> de <code>main()</code>, antes dos comandos.</div>
+    </div>
+
+    <!-- Quiz Conceito 2 -->
+    <div style="margin-top:2.5rem;">
+      <div class="section-label" style="margin-bottom:.5rem;">Quiz — Conceito 2</div>
+      <h3 style="margin-bottom:1rem;">Verifique seu entendimento</h3>
+
+      <div class="q-block">
+        <div class="q-num">Questão 1 de 3</div>
+        <div class="q-text">Qual tipo de variável em C é adequado para armazenar a nota <strong>8.5</strong>?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc2_1" value="a"> <code>int</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_1" value="b"> <code>float</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_1" value="c"> <code>texto</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_1" value="d"> <code>real</code></label>
+        </div>
+        <div class="q-feedback" id="fbc2_1"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 2 de 3</div>
+        <div class="q-text">Qual das declarações abaixo está <strong>correta</strong> em C?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc2_2" value="a"> <code>int 2nota;</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_2" value="b"> <code>float média;</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_2" value="c"> <code>int nota1, nota2;</code></label>
+          <label class="q-opt"><input type="radio" name="qc2_2" value="d"> <code>float nota final;</code></label>
+        </div>
+        <div class="q-feedback" id="fbc2_2"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 3 de 3</div>
+        <div class="q-text">Quantos bytes um <code>float</code> ocupa na memória em C?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc2_3" value="a"> 1 byte</label>
+          <label class="q-opt"><input type="radio" name="qc2_3" value="b"> 2 bytes</label>
+          <label class="q-opt"><input type="radio" name="qc2_3" value="c"> 4 bytes</label>
+          <label class="q-opt"><input type="radio" name="qc2_3" value="d"> 8 bytes</label>
+        </div>
+        <div class="q-feedback" id="fbc2_3"></div>
+      </div>
+
+      <button class="btn-check" onclick="corrigirQuizC2()" id="quiz-c2-btn" style="display:block;width:100%;max-width:280px;margin:1.2rem auto 0;">Ver pontuação</button>
+      <div id="quiz-c2-result" style="display:none;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);">
+        <div class="result-score" id="rc2-score"></div>
+        <div class="result-sub" id="rc2-sub"></div>
+        <button style="background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.6rem;border-radius:var(--radius);border:none;cursor:pointer;font-size:.86rem;margin-top:.75rem;" onclick="resetQuizC2()">↺ Tentar novamente</button>
+      </div>
+    </div>
+
+    <!-- Atividade: Associar nomes de variáveis -->
+    <div style="margin-top:2.5rem;">
+      <div class="section-label" style="margin-bottom:.5rem;">Atividade — Conceito 2</div>
+      <h3 style="margin-bottom:.4rem;">Associe: nome de variável × classificação</h3>
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1.25rem;">Clique em um nome de variável e depois clique na classificação correta para associar. Acerte todos para ver o resultado! <strong>Dica:</strong> o caractere <code>_</code> (underscore) é permitido em qualquer posição do nome.</p>
+
+      <div id="assoc-activity" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem;box-shadow:var(--shadow-sm);">
+        <!-- Nomes de variáveis (lado esquerdo) -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+          <div>
+            <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.75rem;">Nomes de variáveis</p>
+            <div id="assoc-names" style="display:flex;flex-direction:column;gap:.5rem;"></div>
+          </div>
+          <div>
+            <p style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.75rem;">Classificação</p>
+            <div id="assoc-cats" style="display:flex;flex-direction:column;gap:.5rem;"></div>
+          </div>
+        </div>
+        <div class="act-btn-row" style="margin-top:1.25rem;">
+          <button class="btn-check" onclick="checkAssoc()">✅ Verificar</button>
+          <button class="btn-reset" onclick="resetAssoc()">↺ Recomeçar</button>
+        </div>
+        <div class="act-feedback" id="assoc-feedback"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     3 — printf / scanf
+     ══════════════════════════════════════ -->
+<section id="io">
+  <div class="container">
+    <div class="section-label">Conceito 3</div>
+    <h2>Escrita e leitura: printf e scanf</h2>
+    <p class="lead">Com variáveis declaradas, você precisa de dois comandos essenciais: um para <strong>mostrar valores na tela</strong> e outro para <strong>ler o que o usuário digita</strong>.</p>
+
+    <!-- printf -->
+    <div class="concept-box">
+      <h3>printf — exibir na tela</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">Imprime texto e/ou valores de variáveis no console. Os <strong>especificadores de formato</strong> (<code>%d</code>, <code>%f</code>…) são "buracos" onde os valores das variáveis são inseridos.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">printf — exemplos</div>
+<pre><span class="cm">// Só texto:</span>
+<span class="fn">printf</span>(<span class="str">"Ola, Mundo!\n"</span>);
+
+<span class="cm">// Texto + variável inteira:</span>
+<span class="kw">int</span> nota <span class="op">=</span> <span class="nm">8</span>;
+<span class="fn">printf</span>(<span class="str">"Nota: %d\n"</span>, nota);
+
+<span class="cm">// Texto + variável decimal:</span>
+<span class="kw">float</span> media <span class="op">=</span> <span class="nm">7.5</span>;
+<span class="fn">printf</span>(<span class="str">"Media: %.2f\n"</span>, media);  <span class="cm">// .2 = 2 casas decimais</span>
+
+<span class="cm">// Duas variáveis na mesma linha:</span>
+<span class="fn">printf</span>(<span class="str">"Nota: %d  Media: %.1f\n"</span>, nota, media);</pre>
+    </div>
+
+    <!-- scanf -->
+    <div class="concept-box" style="margin-top:1.5rem;">
+      <h3>scanf — ler do teclado</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">Aguarda o usuário digitar um valor e o armazena em uma variável. Atenção: o nome da variável deve ser precedido por <strong>&amp;</strong> (endereço de memória).</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">scanf — exemplos</div>
+<pre><span class="kw">int</span> nota;
+<span class="kw">float</span> tempC;
+
+<span class="cm">// Ler um inteiro:</span>
+<span class="fn">printf</span>(<span class="str">"Digite a nota: "</span>);
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>nota);
+
+<span class="cm">// Ler um decimal:</span>
+<span class="fn">printf</span>(<span class="str">"Digite a temperatura em Celsius: "</span>);
+<span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>tempC);</pre>
+    </div>
+
+    <div class="callout err">
+      <div class="callout-icon">🚨</div>
+      <div><strong>Erro comum:</strong> esquecer o <code>&amp;</code> no <code>scanf</code>. Sem ele, o programa compila mas pode travar ou gerar valores incorretos. O <code>&amp;</code> diz ao <code>scanf</code> <em>onde</em> na memória guardar o valor digitado.</div>
+    </div>
+
+    <!-- tabela especificadores -->
+    <h3 style="margin-top:1.75rem;">Especificadores de formato</h3>
+    <p style="font-size:.9rem;">Usados tanto no <code>printf</code> quanto no <code>scanf</code> para indicar o tipo do dado:</p>
+
+    <table class="ref-table">
+      <thead>
+        <tr><th>Especificador</th><th>Tipo</th><th>Exemplo de uso</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>%d</td>
+          <td>Inteiro (<code>int</code>)</td>
+          <td><code>printf("%d", nota);</code></td>
+          <td><span class="badge badge-ok">Esta aula</span></td>
+        </tr>
+        <tr>
+          <td>%i</td>
+          <td>Inteiro (<code>int</code>) — alternativo ao %d</td>
+          <td><code>printf("%i", nota);</code></td>
+          <td><span class="badge badge-ok">Esta aula</span></td>
+        </tr>
+        <tr>
+          <td>%f</td>
+          <td>Decimal (<code>float</code>)</td>
+          <td><code>printf("%.2f", media);</code></td>
+          <td><span class="badge badge-ok">Esta aula</span></td>
+        </tr>
+        <tr>
+          <td>%s</td>
+          <td>Texto (<code>char[]</code>)</td>
+          <td><code>printf("%s", nome);</code></td>
+          <td><span class="badge badge-soon">Próximas aulas</span></td>
+        </tr>
+        <tr>
+          <td>%c</td>
+          <td>Caractere único (<code>char</code>)</td>
+          <td><code>printf("%c", letra);</code></td>
+          <td><span class="badge badge-soon">Próximas aulas</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div><strong>Formatando casas decimais:</strong> use <code>%.2f</code> para exibir 2 casas decimais, <code>%.4f</code> para 4 casas, e assim por diante. Sem o ponto, o <code>printf</code> exibe 6 casas por padrão.</div>
+    </div>
+
+    <!-- exemplo completo -->
+    <div class="activity-wrap" style="margin-top:2rem;">
+      <div class="activity-head" style="background:#1e3a5c;">
+        <span style="font-size:1.2rem;">📊</span>
+        <h3>Programa completo — exemplo_media.c</h3>
+      </div>
+      <div class="activity-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Observe como as três etapas (Entrada → Processamento → Saída) aparecem organizadas no código:</p>
+
+        <div class="code-block">
+          <div class="code-label">exemplo_media.c</div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// ── Declaração de variáveis ──────────────────</span>
+    <span class="kw">int</span>   nota1, nota2;
+    <span class="kw">float</span> media;
+
+    <span class="cm">// ── ENTRADA ──────────────────────────────────</span>
+    <span class="fn">printf</span>(<span class="str">"Digite a nota 1: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>nota1);
+
+    <span class="fn">printf</span>(<span class="str">"Digite a nota 2: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>nota2);
+
+    <span class="cm">// ── PROCESSAMENTO ────────────────────────────</span>
+    media <span class="op">=</span> (nota1 <span class="op">+</span> nota2) <span class="op">/</span> <span class="nm">2.0</span>;
+
+    <span class="cm">// ── SAÍDA ────────────────────────────────────</span>
+    <span class="fn">printf</span>(<span class="str">"Media final: %.2f\n"</span>, media);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+
+        <div class="callout info" style="margin-top:1rem;">
+          <div class="callout-icon">⚗️</div>
+          <div><strong>Por que dividir por <code>2.0</code> e não por <code>2</code>?</strong> Em C, a divisão entre dois inteiros resulta em inteiro: <code>7 / 2 = 3</code>, não <code>3.5</code>. Usar <code>2.0</code> força a divisão em ponto flutuante, preservando as casas decimais.</div>
+        </div>
+
+        <div class="callout tip" style="margin-top:.75rem;">
+          <div class="callout-icon">🔄</div>
+          <div><strong>Padrão E·P·S:</strong> declare variáveis → leia com <code>scanf</code> (Entrada) → calcule (Processamento) → exiba com <code>printf</code> (Saída).</div>
+        </div>
+
+        <h3 style="margin-top:1.25rem;">Instruções de entrega</h3>
+        <ul class="task-steps">
+          <li><div class="ts-num">1</div><div>Copie o código acima e cole no Dev-C++.</div></li>
+          <li><div class="ts-num">2</div><div>Salve o arquivo como <strong><code>exemplo_media.c</code></strong>.</div></li>
+          <li><div class="ts-num">3</div><div>Compile e execute com <strong>F11</strong>.</div></li>
+          <li><div class="ts-num">4</div><div>Teste com os valores da tabela abaixo e verifique os resultados.</div></li>
+          <li><div class="ts-num">5</div><div>Entregue o arquivo <code>exemplo_media.c</code> diretamente no Moodle — <strong>sem compactar</strong> (sem .zip ou .rar).</div></li>
+        </ul>
+
+        <table class="analysis-table" style="margin-top:.75rem;">
+          <thead><tr><th>Nota 1</th><th>Nota 2</th><th>Média esperada</th></tr></thead>
+          <tbody>
+            <tr><td>8</td><td>6</td><td>7.00</td></tr>
+            <tr><td>10</td><td>9</td><td>9.50</td></tr>
+            <tr><td>5</td><td>5</td><td>5.00</td></tr>
+            <tr><td>3</td><td>7</td><td>5.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quiz Conceito 3 -->
+    <div style="margin-top:2.5rem;">
+      <div class="section-label" style="margin-bottom:.5rem;">Quiz — Conceito 3</div>
+      <h3 style="margin-bottom:1rem;">Verifique seu entendimento</h3>
+
+      <div class="q-block">
+        <div class="q-num">Questão 1 de 3</div>
+        <div class="q-text">O que acontece se você esquecer o <code>&amp;</code> no <code>scanf</code>?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc3_1" value="a"> O programa não compila</label>
+          <label class="q-opt"><input type="radio" name="qc3_1" value="b"> O programa compila mas pode travar ou gravar o valor no lugar errado da memória</label>
+          <label class="q-opt"><input type="radio" name="qc3_1" value="c"> O valor é lido normalmente, sem problemas</label>
+          <label class="q-opt"><input type="radio" name="qc3_1" value="d"> O <code>printf</code> deixa de funcionar</label>
+        </div>
+        <div class="q-feedback" id="fbc3_1"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 2 de 3</div>
+        <div class="q-text">Qual especificador de formato é usado para ler e exibir um valor <code>float</code>?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc3_2" value="a"> <code>%d</code></label>
+          <label class="q-opt"><input type="radio" name="qc3_2" value="b"> <code>%i</code></label>
+          <label class="q-opt"><input type="radio" name="qc3_2" value="c"> <code>%f</code></label>
+          <label class="q-opt"><input type="radio" name="qc3_2" value="d"> <code>%s</code></label>
+        </div>
+        <div class="q-feedback" id="fbc3_2"></div>
+      </div>
+
+      <div class="q-block">
+        <div class="q-num">Questão 3 de 3</div>
+        <div class="q-text">No padrão E·P·S, qual é a ordem correta das etapas em um programa C?</div>
+        <div class="q-options">
+          <label class="q-opt"><input type="radio" name="qc3_3" value="a"> Saída → Processamento → Entrada</label>
+          <label class="q-opt"><input type="radio" name="qc3_3" value="b"> Processamento → Entrada → Saída</label>
+          <label class="q-opt"><input type="radio" name="qc3_3" value="c"> Entrada → Saída → Processamento</label>
+          <label class="q-opt"><input type="radio" name="qc3_3" value="d"> Entrada → Processamento → Saída</label>
+        </div>
+        <div class="q-feedback" id="fbc3_3"></div>
+      </div>
+
+      <button class="btn-check" onclick="corrigirQuizC3()" id="quiz-c3-btn" style="display:block;width:100%;max-width:280px;margin:1.2rem auto 0;">Ver pontuação</button>
+      <div id="quiz-c3-result" style="display:none;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1rem;box-shadow:var(--shadow);">
+        <div class="result-score" id="rc3-score"></div>
+        <div class="result-sub" id="rc3-sub"></div>
+        <button style="background:var(--blue);color:#fff;font-family:'Inter',sans-serif;font-weight:600;padding:.6rem 1.6rem;border-radius:var(--radius);border:none;cursor:pointer;font-size:.86rem;margin-top:.75rem;" onclick="resetQuizC3()">↺ Tentar novamente</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ATIVIDADE A — Drag linguagem natural
+     ══════════════════════════════════════ -->
+<section id="atv-a">
+  <div class="container">
+    <div class="section-label">Atividade A</div>
+    <h2>Ordenar e traduzir para C</h2>
+    <p class="lead">Primeiro, organize os passos do algoritmo em <strong>linguagem natural</strong>. Depois, veja como cada passo se traduz em código C e copie o programa no Dev-C++.</p>
+
+    <div class="activity-wrap">
+      <div class="activity-head">
+        <span style="font-size:1.2rem;">📊</span>
+        <h3>Problema: Calcular a média de duas notas inteiras</h3>
+      </div>
+      <div class="activity-body">
+
+        <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Contexto:</strong> um aluno recebeu duas notas inteiras (de 0 a 10). Escreva um algoritmo que leia as duas notas e calcule a média.</p>
+
+        <p style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.5rem;">Passos embaralhados — arraste para a ordem correta:</p>
+
+        <!-- POOL A -->
+        <div class="drag-pool" id="poolA"
+             ondragover="poolOver(event,'poolA')"
+             ondrop="dropToPool(event,'poolA')"
+             onclick="poolClick('poolA')">
+          <!-- items inseridos pelo JS -->
+        </div>
+
+        <!-- SLOTS A -->
+        <div class="slots" id="slotsA"></div>
+
+        <div class="act-btn-row">
+          <button class="btn-check" onclick="checkActivity('A')">✅ Verificar ordem</button>
+          <button class="btn-reset" onclick="resetActivity('A')">↺ Recomeçar</button>
+        </div>
+
+        <div class="act-feedback" id="feedbackA"></div>
+
+        <!-- Mapeamento linguagem natural → código C -->
+        <div class="reveal-panel" id="revealA">
+          <div class="mapping-title">🔗 Cada passo em linguagem natural → código C correspondente</div>
+          <div class="mapping-rows" id="mappingA"></div>
+
+          <h3 style="margin-top:1.5rem;margin-bottom:.75rem;">Programa completo — copie no Dev-C++</h3>
+          <div class="code-block">
+            <div class="code-label">media_notas.c</div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// Declaração de variáveis</span>
+    <span class="kw">int</span>   nota1, nota2;
+    <span class="kw">float</span> media;
+
+    <span class="cm">// ENTRADA</span>
+    <span class="fn">printf</span>(<span class="str">"Digite a nota 1 (0 a 10): "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>nota1);
+
+    <span class="fn">printf</span>(<span class="str">"Digite a nota 2 (0 a 10): "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>nota2);
+
+    <span class="cm">// PROCESSAMENTO</span>
+    media <span class="op">=</span> (nota1 <span class="op">+</span> nota2) <span class="op">/</span> <span class="nm">2.0</span>;
+
+    <span class="cm">// SAÍDA</span>
+    <span class="fn">printf</span>(<span class="str">"Media = %.2f\n"</span>, media);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+          </div>
+
+          <p class="copy-hint">📋 Cole no Dev-C++, salve como <code>media_notas.c</code>, compile com <strong>F11</strong> e teste com os valores da tabela abaixo. Envie o arquivo <code>.c</code> diretamente no Moodle — sem compactar.</p>
+
+          <table class="analysis-table" style="margin-top:1rem;">
+            <thead><tr><th>Nota 1</th><th>Nota 2</th><th>Média esperada</th></tr></thead>
+            <tbody>
+              <tr><td>8</td><td>6</td><td>7.00</td></tr>
+              <tr><td>10</td><td>9</td><td>9.50</td></tr>
+              <tr><td>5</td><td>5</td><td>5.00</td></tr>
+              <tr><td>3</td><td>7</td><td>5.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ATIVIDADE B — Drag código C
+     ══════════════════════════════════════ -->
+<section id="atv-b">
+  <div class="container">
+    <div class="section-label">Atividade B</div>
+    <h2>Ordenar o código C</h2>
+    <p class="lead">Agora as peças são linhas de <strong>código C</strong>. Organize-as na ordem correta para formar um programa funcionando.</p>
+
+    <div class="activity-wrap">
+      <div class="activity-head" style="background: var(--navy-light);">
+        <span style="font-size:1.2rem;">📐</span>
+        <h3>Problema: Calcular a área de um retângulo</h3>
+      </div>
+      <div class="activity-body">
+
+        <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Contexto:</strong> leia a base e a altura de um retângulo (valores decimais) e calcule a área (base × altura). Organize as linhas de código na ordem correta.</p>
+
+        <p style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.5rem;">Linhas embaralhadas — arraste para a ordem correta:</p>
+
+        <!-- POOL B -->
+        <div class="drag-pool" id="poolB"
+             style="background:#141f2d;border-color:#2d4a6a;"
+             ondragover="poolOver(event,'poolB')"
+             ondrop="dropToPool(event,'poolB')"
+             onclick="poolClick('poolB')">
+        </div>
+
+        <!-- SLOTS B -->
+        <div class="slots" id="slotsB"></div>
+
+        <div class="act-btn-row">
+          <button class="btn-check" onclick="checkActivity('B')">✅ Verificar código</button>
+          <button class="btn-reset" onclick="resetActivity('B')">↺ Recomeçar</button>
+        </div>
+
+        <div class="act-feedback" id="feedbackB"></div>
+
+        <!-- Reveal B -->
+        <div class="reveal-panel" id="revealB">
+          <h3 style="margin-bottom:.75rem;">Programa completo — copie no Dev-C++</h3>
+          <div class="code-block">
+            <div class="code-label">area_retangulo.c</div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">float</span> base, altura, area;
+
+    <span class="fn">printf</span>(<span class="str">"Digite a base (m): "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>base);
+
+    <span class="fn">printf</span>(<span class="str">"Digite a altura (m): "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>altura);
+
+    area <span class="op">=</span> base <span class="op">*</span> altura;
+
+    <span class="fn">printf</span>(<span class="str">"Area = %.2f m2\n"</span>, area);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+          </div>
+
+          <p class="copy-hint">📋 Cole no Dev-C++, salve como <code>area_retangulo.c</code>, compile com <strong>F11</strong> e teste. Envie o arquivo <code>.c</code> diretamente no Moodle — sem compactar.</p>
+
+          <table class="analysis-table" style="margin-top:.85rem;">
+            <thead><tr><th>Base (m)</th><th>Altura (m)</th><th>Área esperada (m²)</th></tr></thead>
+            <tbody>
+              <tr><td>5.0</td><td>3.0</td><td>15.00</td></tr>
+              <tr><td>2.5</td><td>4.0</td><td>10.00</td></tr>
+              <tr><td>1.2</td><td>1.2</td><td>1.44</td></tr>
+            </tbody>
+          </table>
+
+          <details style="margin-top:1rem;">
+            <summary>🔍 Analisando a entrada, processamento e saída deste programa</summary>
+            <div class="details-body">
+              <table class="analysis-table" style="margin-top:.7rem;">
+                <thead><tr><th>Etapa</th><th>Linha do código</th><th>Explicação</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="badge badge-in">Entrada</span></td><td><code>scanf("%f", &amp;base)</code><br><code>scanf("%f", &amp;altura)</code></td><td>Lê os dois valores do teclado</td></tr>
+                  <tr><td><span class="badge badge-proc">Processamento</span></td><td><code>area = base * altura</code></td><td>Multiplica e armazena em <code>area</code></td></tr>
+                  <tr><td><span class="badge badge-out">Saída</span></td><td><code>printf("Area = %.2f…", area)</code></td><td>Exibe o resultado com 2 casas decimais</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     ATIVIDADE C — Digitar código
+     ══════════════════════════════════════ -->
+<section id="atv-c">
+  <div class="container">
+    <div class="section-label">Atividade C — Entrega no Moodle</div>
+    <h2>Escreva o programa você mesmo</h2>
+    <p class="lead">Agora sem peças pré-prontas. Leia o problema, analise, escreva o código no Dev-C++ e entregue o arquivo <code>.c</code> no Moodle.</p>
+
+    <div class="activity-wrap">
+      <div class="activity-head" style="background:#1e4a3a;">
+        <span style="font-size:1.2rem;">🌡️</span>
+        <h3>Problema: Converter temperatura de Celsius para Kelvin</h3>
+      </div>
+      <div class="activity-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">
+          Escreva um programa em C que leia uma temperatura em graus Celsius (<code>float</code>), calcule o equivalente em Kelvin e exiba o resultado.
+          Use a fórmula: <strong>K = °C + 273.15</strong>
+        </p>
+
+        <h3 style="margin-top:1.25rem;">Análise do problema — preencha mentalmente antes de codar</h3>
+        <table class="analysis-table">
+          <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável / Fórmula</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td>Temperatura fornecida pelo usuário</td><td><code>tempC</code> — tipo <code>float</code></td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td>Aplicar a fórmula de conversão</td><td><code>tempK = tempC + 273.15</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td>Temperatura em Kelvin na tela</td><td><code>tempK</code> — tipo <code>float</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="margin-top:1.25rem;">Instruções de entrega</h3>
+        <ul class="task-steps">
+          <li><div class="ts-num">1</div><div>Abra o Dev-C++ e crie um novo arquivo fonte.</div></li>
+          <li><div class="ts-num">2</div><div>
+            No início do arquivo, escreva um comentário com seu <strong>nome</strong>, a <strong>data</strong> e a <strong>descrição</strong> do programa. Exemplo:
+            <div class="code-block" style="margin-top:.65rem;padding:.85rem 1rem;">
+<pre><span class="cm">/*
+  Autor: Maria da Silva
+  Data:  25/03/2026
+  Descricao: Programa que converte temperatura de Celsius para Kelvin
+*/</span></pre>
+            </div>
+          </div></li>
+          <li><div class="ts-num">3</div><div>Escreva o programa completo: <code>#include</code>, <code>main()</code>, declaração de variáveis, entrada, processamento e saída.</div></li>
+          <li><div class="ts-num">4</div><div>Salve o arquivo como <strong><code>celsius_kelvin.c</code></strong>.</div></li>
+          <li><div class="ts-num">5</div><div>Compile e teste com os valores da tabela abaixo. Verifique se os resultados estão corretos.</div></li>
+          <li><div class="ts-num">6</div><div>Entregue o arquivo <code>celsius_kelvin.c</code> diretamente no Moodle — <strong>sem compactar</strong> (sem .zip ou .rar).</div></li>
+        </ul>
+
+        <div class="callout tip" style="margin-top:1rem;">
+          <div class="callout-icon">🧠</div>
+          <div><strong>Onde ficam as variáveis na execução?</strong> As variáveis declaradas dentro de <code>main()</code> são armazenadas na <strong>memória RAM</strong> (mais especificamente na pilha de execução do programa) durante a execução. Quando o programa termina, esses valores são apagados da memória.</div>
+        </div>
+
+        <table class="analysis-table" style="margin-top:1rem;">
+          <thead><tr><th>Entrada (°C)</th><th>Resultado esperado (K)</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>273.15</td><td>Ponto de fusão da água</td></tr>
+            <tr><td>100</td><td>373.15</td><td>Ponto de ebulição da água</td></tr>
+            <tr><td>-273.15</td><td>0.00</td><td>Zero absoluto</td></tr>
+            <tr><td>25</td><td>298.15</td><td>Temperatura ambiente padrão</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn" style="margin-top:1rem;">
+          <div class="callout-icon">⚠️</div>
+          <div><strong>Atenção:</strong> não copie o código das atividades anteriores. O objetivo é você escrever o programa do zero aplicando o que aprendeu hoje.</div>
+        </div>
+
+        <details style="margin-top:1rem;">
+          <summary>💡 Dicas se você travar</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <ul style="padding-left:1.1rem;font-size:.87rem;line-height:2.2;">
+              <li>Comece sempre pelo <code>#include &lt;stdio.h&gt;</code> e pela estrutura de <code>main()</code></li>
+              <li>Declare as duas variáveis como <code>float</code> — a temperatura tem casas decimais</li>
+              <li>Lembre-se do <code>&amp;</code> no <code>scanf</code></li>
+              <li>Use <code>%f</code> para ler e exibir valores <code>float</code></li>
+              <li>Teste com 0°C primeiro — o resultado 273.15 é fácil de verificar</li>
+            </ul>
+          </div>
+        </details>
+
+        <details style="margin-top:.65rem;">
+          <summary>✅ Ver estrutura esperada (apenas esqueleto, sem o código completo)</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <div class="code-block">
+<pre><span class="cm">/*
+  Autor: [SEU NOME]
+  Data:  [DATA]
+  Descricao: [DESCRICAO]
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// declare suas variáveis aqui</span>
+
+    <span class="cm">// entrada: peça a temperatura ao usuário</span>
+
+    <span class="cm">// processamento: aplique a fórmula</span>
+
+    <span class="cm">// saída: exiba o resultado</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     QUIZ
+     ══════════════════════════════════════ -->
+<section id="quiz">
+  <div class="container">
+    <div class="section-label">Quiz</div>
+    <h2>Confirme seu Conhecimento</h2>
+    <p class="lead">Responda todas as questões e clique em <strong>Ver minha pontuação</strong>.</p>
+
+    <div class="quiz-progress"><div class="quiz-progress-bar" id="q-bar" style="width:0%"></div></div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 1 de 8</div>
+      <div class="q-text">Qual diretiva é necessária para usar <code>printf</code> e <code>scanf</code> em C?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q1" value="a"> <code>#include &lt;math.h&gt;</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="b"> <code>#include &lt;stdio.h&gt;</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="c"> <code>#include &lt;stdlib.h&gt;</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="d"> Não precisa de nenhuma diretiva.</label>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 2 de 8</div>
+      <div class="q-text">Para armazenar a nota <strong>7.5</strong> em C, qual é o tipo correto?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q2" value="a"> <code>int</code></label>
+        <label class="q-opt"><input type="radio" name="q2" value="b"> <code>float</code></label>
+        <label class="q-opt"><input type="radio" name="q2" value="c"> <code>texto</code></label>
+        <label class="q-opt"><input type="radio" name="q2" value="d"> <code>real</code></label>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 3 de 8</div>
+      <div class="q-text">Qual das opções abaixo é um nome de variável <strong>inválido</strong> em C?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q3" value="a"> <code>mediaFinal</code></label>
+        <label class="q-opt"><input type="radio" name="q3" value="b"> <code>nota_1</code></label>
+        <label class="q-opt"><input type="radio" name="q3" value="c"> <code>2nota</code></label>
+        <label class="q-opt"><input type="radio" name="q3" value="d"> <code>n</code></label>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 4 de 8</div>
+      <div class="q-text">O código abaixo está correto para ler um número inteiro? <br><code>scanf("%d", nota);</code></div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q4" value="a"> Sim, está correto.</label>
+        <label class="q-opt"><input type="radio" name="q4" value="b"> Não — o especificador deveria ser <code>%f</code>.</label>
+        <label class="q-opt"><input type="radio" name="q4" value="c"> Não — falta o <code>&amp;</code> antes de <code>nota</code>.</label>
+        <label class="q-opt"><input type="radio" name="q4" value="d"> Não — falta o ponto-e-vírgula.</label>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 5 de 8</div>
+      <div class="q-text">Qual especificador de formato exibe um valor <code>float</code> com 2 casas decimais?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q5" value="a"> <code>%d</code></label>
+        <label class="q-opt"><input type="radio" name="q5" value="b"> <code>%f</code></label>
+        <label class="q-opt"><input type="radio" name="q5" value="c"> <code>%.2f</code></label>
+        <label class="q-opt"><input type="radio" name="q5" value="d"> <code>%2d</code></label>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 6 de 8</div>
+      <div class="q-text">Em C, qual é o resultado de <code>7 / 2</code> quando ambos são inteiros?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q6" value="a"> 3.5</label>
+        <label class="q-opt"><input type="radio" name="q6" value="b"> 3</label>
+        <label class="q-opt"><input type="radio" name="q6" value="c"> 4</label>
+        <label class="q-opt"><input type="radio" name="q6" value="d"> Erro de compilação</label>
+      </div>
+      <div class="q-feedback" id="fb6"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 7 de 8</div>
+      <div class="q-text">Onde as variáveis declaradas em <code>main()</code> ficam armazenadas durante a execução do programa?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q7" value="a"> No HD/SSD</label>
+        <label class="q-opt"><input type="radio" name="q7" value="b"> Na memória RAM</label>
+        <label class="q-opt"><input type="radio" name="q7" value="c"> No arquivo <code>.c</code></label>
+        <label class="q-opt"><input type="radio" name="q7" value="d"> Na GPU</label>
+      </div>
+      <div class="q-feedback" id="fb7"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 8 de 8</div>
+      <div class="q-text">Qual é a saída do programa abaixo?<br>
+        <code style="display:block;margin-top:.5rem;white-space:pre;font-size:.8rem;line-height:1.8;">int x = 5;
+float y = 2.0;
+y = x / y;
+printf("%.1f", y);</code>
+      </div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q8" value="a"> 2.0</label>
+        <label class="q-opt"><input type="radio" name="q8" value="b"> 2.5</label>
+        <label class="q-opt"><input type="radio" name="q8" value="c"> 3.0</label>
+        <label class="q-opt"><input type="radio" name="q8" value="d"> Erro</label>
+      </div>
+      <div class="q-feedback" id="fb8"></div>
+    </div>
+
+    <button id="quiz-btn" onclick="corrigirQuiz()">Ver minha pontuação</button>
+
+    <div id="quiz-result">
+      <div class="result-score" id="r-score"></div>
+      <div class="result-sub"   id="r-sub"></div>
+      <div class="result-msg"   id="r-msg"></div>
+      <button id="quiz-retry" onclick="resetQuiz()">↺ Tentar novamente</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     RESUMO
+     ══════════════════════════════════════ -->
+<section id="resumo">
+  <div class="container">
+    <div class="section-label">Resumo</div>
+    <h2>O que você aprendeu hoje</h2>
+
+    <div class="summary-grid">
+      <div class="sum-item">
+        <div class="si-title">🏗️ Estrutura do programa</div>
+        <p><code>#include</code>, <code>int main()</code>, chaves, <code>return 0</code> e ponto-e-vírgula em cada instrução.</p>
+      </div>
+      <div class="sum-item g">
+        <div class="si-title">🔢 int</div>
+        <p>Tipo para números inteiros. Declaração: <code>int nome;</code>. Formato: <code>%d</code>.</p>
+      </div>
+      <div class="sum-item a">
+        <div class="si-title">📐 float</div>
+        <p>Tipo para números decimais. Declaração: <code>float nome;</code>. Formato: <code>%f</code> ou <code>%.2f</code>.</p>
+      </div>
+      <div class="sum-item r">
+        <div class="si-title">🖨️ printf</div>
+        <p>Exibe texto e valores na tela. Use especificadores de formato para variáveis.</p>
+      </div>
+      <div class="sum-item p">
+        <div class="si-title">⌨️ scanf</div>
+        <p>Lê valores do teclado. Sempre com <code>&amp;</code> antes do nome da variável.</p>
+      </div>
+      <div class="sum-item">
+        <div class="si-title">🔄 Padrão E·P·S</div>
+        <p>Todo programa segue: declarar variáveis → entrada (<code>scanf</code>) → processamento → saída (<code>printf</code>).</p>
+      </div>
+    </div>
+
+    <div class="callout tip" style="margin-top:1.25rem;">
+      <div class="callout-icon">🔜</div>
+      <div><strong>Próxima aula:</strong> Outros tipos de dados e operadores aritméticos.</div>
+    </div>
+
+
+
+    <!-- Download -->
+    <div class="download-area">
+      <p>Preencha seu nome e salve um registro desta atividade.</p>
+      <div class="download-row">
+        <input id="nome-aluno" type="text" placeholder="Seu nome completo" />
+        <button id="btn-download" onclick="baixarResultado()">⬇️ Baixar resultado</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  📚 Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+//  DADOS DAS ATIVIDADES
+// ─────────────────────────────────────────────
+
+const ACTIVITY_A = {
+  items: [
+    { id:'a1', text:'Declarar variáveis: duas notas inteiras e a média decimal' },
+    { id:'a2', text:'Pedir ao usuário a primeira nota' },
+    { id:'a3', text:'Ler a primeira nota do teclado' },
+    { id:'a4', text:'Pedir ao usuário a segunda nota' },
+    { id:'a5', text:'Ler a segunda nota do teclado' },
+    { id:'a6', text:'Calcular a média somando as duas notas e dividindo por 2' },
+    { id:'a7', text:'Exibir o valor da média na tela' },
+  ],
+  correct: ['a1','a2','a3','a4','a5','a6','a7'],
+  mapping: [
+    { natural:'Declarar variáveis: duas notas inteiras e a média decimal',
+      code: 'int nota1, nota2;\nfloat media;' },
+    { natural:'Pedir ao usuário a primeira nota',
+      code: 'printf("Digite a nota 1 (0 a 10): ");' },
+    { natural:'Ler a primeira nota do teclado',
+      code: 'scanf("%d", &nota1);' },
+    { natural:'Pedir ao usuário a segunda nota',
+      code: 'printf("Digite a nota 2 (0 a 10): ");' },
+    { natural:'Ler a segunda nota do teclado',
+      code: 'scanf("%d", &nota2);' },
+    { natural:'Calcular a média somando as duas notas e dividindo por 2',
+      code: 'media = (nota1 + nota2) / 2.0;' },
+    { natural:'Exibir o valor da média na tela',
+      code: 'printf("Media = %.2f\\n", media);' },
+  ]
+};
+
+const ACTIVITY_B = {
+  items: [
+    { id:'b1', text:'#include <stdio.h>',                         cls:'code-item' },
+    { id:'b2', text:'int main() {',                               cls:'code-item' },
+    { id:'b3', text:'    float base, altura, area;',              cls:'code-item' },
+    { id:'b4', text:'    printf("Digite a base (m): ");',         cls:'code-item' },
+    { id:'b5', text:'    scanf("%f", &base);',                    cls:'code-item' },
+    { id:'b6', text:'    printf("Digite a altura (m): ");',       cls:'code-item' },
+    { id:'b7', text:'    scanf("%f", &altura);',                  cls:'code-item' },
+    { id:'b8', text:'    area = base * altura;',                  cls:'code-item' },
+    { id:'b9', text:'    printf("Area = %.2f m2\\n", area);',     cls:'code-item' },
+    { id:'b10',text:'    return 0;\n}',                           cls:'code-item' },
+  ],
+  correct: ['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'],
+  slotHints: [
+    'Inclua a biblioteca de entrada e saída',
+    'Declare a função principal do programa',
+    'Declare as variáveis base, altura e area como float',
+    'Peça ao usuário que informe a base do retângulo',
+    'Leia o valor da base com scanf',
+    'Peça ao usuário que informe a altura do retângulo',
+    'Leia o valor da altura com scanf',
+    'Calcule a área multiplicando base por altura',
+    'Exiba o resultado da área na tela',
+    'Encerre a função main retornando 0',
+  ],
+};
+
+// ─────────────────────────────────────────────
+//  ESTADO GLOBAL
+// ─────────────────────────────────────────────
+const state = {
+  A: { slots: Array(7).fill(null),  pool: [...ACTIVITY_A.items.map(i=>i.id)], checked: false, selected: null },
+  B: { slots: Array(10).fill(null), pool: [...ACTIVITY_B.items.map(i=>i.id)], checked: false, selected: null },
+};
+
+// ─────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────
+function getItem(act, id) {
+  const src = act === 'A' ? ACTIVITY_A : ACTIVITY_B;
+  return src.items.find(i => i.id === id);
+}
+
+function renderActivity(act) {
+  const s     = state[act];
+  const data  = act === 'A' ? ACTIVITY_A : ACTIVITY_B;
+  const isB   = act === 'B';
+  const poolEl  = document.getElementById('pool'+act);
+  const slotsEl = document.getElementById('slots'+act);
+
+  // render pool
+  poolEl.innerHTML = '';
+  s.pool.forEach(id => {
+    const item = getItem(act, id);
+    const div = document.createElement('div');
+    div.className = 'drag-item' + (item.cls ? ' '+item.cls : '');
+    div.dataset.id  = id;
+    div.dataset.act = act;
+    div.draggable = !s.checked;
+    div.textContent = item.text;
+    if (s.selected === id) div.style.outline = '2px solid #3a82c4';
+    div.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('id', id);
+      e.dataTransfer.setData('act', act);
+      e.dataTransfer.setData('from', 'pool');
+    });
+    div.addEventListener('click', () => clickItem(act, id, 'pool'));
+    poolEl.appendChild(div);
+  });
+
+  // render slots
+  slotsEl.innerHTML = '';
+  s.slots.forEach((sid, idx) => {
+    const row = document.createElement('div');
+    row.className = 'slot-row';
+
+    const num = document.createElement('div');
+    num.className = 'slot-num';
+    num.textContent = idx + 1;
+
+    const slot = document.createElement('div');
+    slot.className = 'slot' + (isB ? ' code-slot' : '') + (sid ? ' has-item' : '');
+    if (s.checked && sid) {
+      const correct = data.correct[idx] === sid;
+      slot.classList.add(correct ? 'correct' : 'wrong');
+    }
+    slot.dataset.idx = idx;
+    slot.dataset.act = act;
+
+    if (sid) {
+      const item = getItem(act, sid);
+      const div = document.createElement('div');
+      div.className = 'drag-item' + (item.cls ? ' '+item.cls : '');
+      if (s.checked) div.classList.add(data.correct[idx] === sid ? 'correct' : 'wrong');
+      div.dataset.id  = sid;
+      div.dataset.act = act;
+      div.draggable = !s.checked;
+      div.textContent = item.text;
+      div.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('id', sid);
+        e.dataTransfer.setData('act', act);
+        e.dataTransfer.setData('from', idx);
+      });
+      div.addEventListener('click', () => clickItem(act, sid, idx));
+      slot.appendChild(div);
+    } else {
+      if (act === 'B' && data.slotHints) {
+        slot.textContent = data.slotHints[idx];
+        slot.style.fontFamily = 'Inter, sans-serif';
+        slot.style.fontSize = '.8rem';
+        slot.style.fontStyle = 'italic';
+        slot.style.color = '#4a6a8a';
+      } else {
+        slot.textContent = 'Solte aqui o passo ' + (idx+1);
+      }
+    }
+
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); dropToSlot(e, act, idx); });
+    slot.addEventListener('click', () => slotClick(act, idx));
+
+    row.appendChild(num);
+    row.appendChild(slot);
+    slotsEl.appendChild(row);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  DRAG & DROP
+// ─────────────────────────────────────────────
+function poolOver(e, act) { e.preventDefault(); document.getElementById('pool'+act).classList.add('drag-over'); }
+
+function dropToPool(e, act) {
+  e.preventDefault();
+  document.getElementById('pool'+act).classList.remove('drag-over');
+  const id   = e.dataTransfer.getData('id');
+  const from = e.dataTransfer.getData('from');
+  const s    = state[act];
+  if (s.checked) return;
+  if (from !== 'pool') {
+    const idx = parseInt(from);
+    s.slots[idx] = null;
+    if (!s.pool.includes(id)) s.pool.push(id);
+  }
+  renderActivity(act);
+}
+
+function dropToSlot(e, act, idx) {
+  const id   = e.dataTransfer.getData('id');
+  const from = e.dataTransfer.getData('from');
+  const s    = state[act];
+  if (s.checked) return;
+
+  // se já há item no slot destino, devolve ao pool ou troca
+  if (s.slots[idx]) {
+    const displaced = s.slots[idx];
+    if (from === 'pool') {
+      s.pool.push(displaced);
+    } else {
+      const fromIdx = parseInt(from);
+      s.slots[fromIdx] = displaced;
+    }
+  } else if (from !== 'pool') {
+    const fromIdx = parseInt(from);
+    s.slots[fromIdx] = null;
+  }
+
+  // remove do pool se veio de lá
+  if (from === 'pool') {
+    s.pool = s.pool.filter(p => p !== id);
+  }
+
+  s.slots[idx] = id;
+  renderActivity(act);
+}
+
+// ─────────────────────────────────────────────
+//  CLICK (mobile / acessibilidade)
+// ─────────────────────────────────────────────
+function clickItem(act, id, from) {
+  const s = state[act];
+  if (s.checked) return;
+  if (s.selected === id) { s.selected = null; renderActivity(act); return; }
+  s.selected = id;
+  s.selectedFrom = from;
+  renderActivity(act);
+}
+
+function slotClick(act, idx) {
+  const s = state[act];
+  if (s.checked) return;
+  if (s.selected === null) {
+    // selecionar item que está no slot para devolver
+    if (s.slots[idx]) {
+      s.selected = s.slots[idx];
+      s.selectedFrom = idx;
+      renderActivity(act);
+    }
+    return;
+  }
+  const id   = s.selected;
+  const from = s.selectedFrom;
+
+  if (s.slots[idx]) {
+    const displaced = s.slots[idx];
+    if (from === 'pool') {
+      s.pool.push(displaced);
+    } else {
+      s.slots[parseInt(from)] = displaced;
+    }
+  } else if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+  }
+
+  if (from === 'pool') s.pool = s.pool.filter(p => p !== id);
+  s.slots[idx] = id;
+  s.selected = null;
+  s.selectedFrom = null;
+  renderActivity(act);
+}
+
+function poolClick(poolId) {
+  const act = poolId.replace('pool','');
+  const s   = state[act];
+  if (s.checked || s.selected === null) return;
+  const id   = s.selected;
+  const from = s.selectedFrom;
+  if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+    if (!s.pool.includes(id)) s.pool.push(id);
+    s.selected = null;
+    s.selectedFrom = null;
+    renderActivity(act);
+  }
+}
+
+// ─────────────────────────────────────────────
+//  VERIFICAR
+// ─────────────────────────────────────────────
+function checkActivity(act) {
+  const s    = state[act];
+  const data = act === 'A' ? ACTIVITY_A : ACTIVITY_B;
+  const fb   = document.getElementById('feedback'+act);
+
+  if (s.pool.length > 0) {
+    fb.textContent = '⚠️ Ainda há itens na área de peças. Arraste todos para os slots antes de verificar.';
+    fb.className = 'act-feedback show err';
+    return;
+  }
+
+  let acertos = 0;
+  s.slots.forEach((sid, idx) => { if (sid === data.correct[idx]) acertos++; });
+  const total = data.correct.length;
+  s.checked = true;
+  renderActivity(act);
+
+  if (acertos === total) {
+    fb.textContent = `✅ Perfeito! Todos os ${total} passos na ordem correta. Veja abaixo a tradução para C.`;
+    fb.className = 'act-feedback show ok';
+    document.getElementById('reveal'+act).classList.add('show');
+    if (act === 'A') buildMappingA();
+  } else {
+    fb.textContent = `❌ ${acertos} de ${total} corretos. Os itens em vermelho estão na posição errada. Clique em "Recomeçar" e tente novamente.`;
+    fb.className = 'act-feedback show err';
+  }
+}
+
+function buildMappingA() {
+  const container = document.getElementById('mappingA');
+  container.innerHTML = '';
+  ACTIVITY_A.mapping.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'map-row';
+    row.innerHTML = `
+      <div class="map-natural">${m.natural}</div>
+      <div class="map-arrow">→</div>
+      <div class="map-code">${m.code.replace(/\n/g,'<br>')}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function resetActivity(act) {
+  const data = act === 'A' ? ACTIVITY_A : ACTIVITY_B;
+  state[act] = {
+    slots: Array(data.items.length).fill(null),
+    pool:  [...data.items.map(i=>i.id)],
+    checked: false,
+    selected: null,
+    selectedFrom: null,
+  };
+  document.getElementById('feedback'+act).className = 'act-feedback';
+  document.getElementById('reveal'+act).classList.remove('show');
+  // shuffle pool
+  state[act].pool = shuffle(state[act].pool);
+  renderActivity(act);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// ─────────────────────────────────────────────
+//  QUIZ
+// ─────────────────────────────────────────────
+const GABARITO = {
+  q1:{ ans:'b', exp:'A biblioteca stdio.h (Standard Input/Output) fornece printf e scanf. Sem ela, o compilador não reconhece esses comandos.' },
+  q2:{ ans:'b', exp:'7.5 tem casas decimais — deve ser declarado como float. O tipo int armazena apenas números inteiros (sem ponto).' },
+  q3:{ ans:'c', exp:'Nomes de variáveis não podem começar com número. "2nota" é inválido. Os demais são todos permitidos.' },
+  q4:{ ans:'c', exp:'Falta o & (e comercial) antes do nome da variável. O scanf precisa do & para saber o endereço de memória onde guardar o valor.' },
+  q5:{ ans:'c', exp:'%.2f exibe um float com exatamente 2 casas decimais. %f usa 6 casas por padrão; %d é para inteiros.' },
+  q6:{ ans:'b', exp:'Em C, a divisão entre dois inteiros sempre resulta em inteiro (a parte decimal é descartada). 7/2 = 3, não 3.5.' },
+  q7:{ ans:'b', exp:'Variáveis declaradas em main() ficam na memória RAM durante a execução. São apagadas quando o programa termina.' },
+  q8:{ ans:'b', exp:'x é int (5) e y é float (2.0). A divisão x/y é float (5/2.0 = 2.5). Resultado: 2.5.' },
+};
+
+function corrigirQuiz() {
+  let acertos = 0;
+  const total = Object.keys(GABARITO).length;
+  Object.entries(GABARITO).forEach(([q,{ans,exp}]) => {
+    const sel = document.querySelector(`input[name="${q}"]:checked`);
+    const fb  = document.getElementById('fb'+q.slice(1));
+    document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+      const lbl = opt.closest('.q-opt');
+      lbl.style.pointerEvents = 'none';
+      if (opt.value === ans) lbl.classList.add('correct');
+      else if (opt.checked) lbl.classList.add('wrong');
+    });
+    if (sel && sel.value === ans) {
+      acertos++;
+      fb.textContent = '✅ Correto! ' + exp;
+      fb.className = 'q-feedback show ok';
+    } else {
+      fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp;
+      fb.className = 'q-feedback show err';
+    }
+  });
+  document.getElementById('q-bar').style.width = '100%';
+  const pct = Math.round((acertos/total)*100);
+  document.getElementById('r-score').textContent = acertos+'/'+total;
+  document.getElementById('r-sub').textContent   = pct+'% de aproveitamento';
+  let msg='', color='';
+  if      (pct===100){ msg='🏆 Excelente! Domínio completo dos conceitos de hoje.';               color='var(--green)'; }
+  else if (pct>=75)  { msg='👍 Muito bom! Revise os itens marcados em vermelho.';                  color='var(--blue)'; }
+  else if (pct>=50)  { msg='📖 Bom esforço. Revise as seções de variáveis e printf/scanf.';        color='var(--amber)'; }
+  else               { msg='🔄 Recomenda-se reler o conteúdo com atenção e tentar novamente.';    color='var(--red)'; }
+  const msgEl = document.getElementById('r-msg');
+  msgEl.textContent = msg; msgEl.style.color = color;
+  const res = document.getElementById('quiz-result');
+  res.classList.add('show');
+  document.getElementById('quiz-btn').style.display = 'none';
+  res.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function resetQuiz() {
+  Object.keys(GABARITO).forEach(q => {
+    document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+      opt.checked = false;
+      const lbl = opt.closest('.q-opt');
+      lbl.classList.remove('correct','wrong');
+      lbl.style.pointerEvents = '';
+    });
+    const fb = document.getElementById('fb'+q.slice(1));
+    fb.className = 'q-feedback'; fb.textContent = '';
+  });
+  document.getElementById('quiz-result').classList.remove('show');
+  document.getElementById('quiz-btn').style.display = 'block';
+  document.getElementById('q-bar').style.width = '0%';
+  document.getElementById('quiz').scrollIntoView({ behavior:'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  if (document.getElementById('quiz-result').classList.contains('show')) return;
+  const qs   = document.getElementById('quiz');
+  const rect = qs.getBoundingClientRect();
+  const pct  = Math.min(100, Math.max(0, (-rect.top/qs.offsetHeight)*120));
+  document.getElementById('q-bar').style.width = pct+'%';
+});
+
+// ─────────────────────────────────────────────
+//  DOWNLOAD
+// ─────────────────────────────────────────────
+function baixarResultado() {
+  const nome     = document.getElementById('nome-aluno').value.trim() || 'Aluno';
+  const hoje     = new Date().toLocaleDateString('pt-BR');
+
+  // Quiz geral
+  const resultEl  = document.getElementById('quiz-result');
+  const pontuacao = resultEl.classList.contains('show')
+    ? document.getElementById('r-score').textContent + ' (' + document.getElementById('r-sub').textContent + ')'
+    : 'Quiz não finalizado';
+
+  // Mini-quizzes C1/C2/C3
+  function getMiniScore(resId) {
+    const el = document.getElementById(resId);
+    if (el && el.style.display === 'block') {
+      const s = el.querySelector('.result-score');
+      const b = el.querySelector('.result-sub');
+      return (s ? s.textContent : '?') + (b ? ' (' + b.textContent + ')' : '');
+    }
+    return 'Não finalizado';
+  }
+  const qc1 = getMiniScore('quiz-c1-result');
+  const qc2 = getMiniScore('quiz-c2-result');
+  const qc3 = getMiniScore('quiz-c3-result');
+
+  // Atividades A e B
+  function getAtv(act, data) {
+    const s = state[act];
+    if (!s.checked) return 'Não verificada';
+    let ac = 0;
+    s.slots.forEach((sid, i) => { if (sid === data.correct[i]) ac++; });
+    return ac + '/' + data.correct.length;
+  }
+  const atvA = getAtv('A', ACTIVITY_A);
+  const atvB = getAtv('B', ACTIVITY_B);
+
+  // Atividade associação C2
+  function getAssocScore() {
+    const fb = document.getElementById('assoc-feedback');
+    if (fb && fb.classList.contains('show')) return fb.textContent;
+    return 'Não verificada';
+  }
+
+  const conteudo =
+`Laboratório de Programação de Computadores I — CEFET-MG Contagem
+Aula 03: Introdução à Linguagem C
+Data: ${hoje}
+Aluno(a): ${nome}
+
+══════════════════════════════════════════════════════════
+RESULTADOS DAS ATIVIDADES INTERATIVAS
+══════════════════════════════════════════════════════════
+
+[ Conceito 1 ] Quiz — Estrutura básica ......... ${qc1}
+[ Conceito 2 ] Quiz — Variáveis ................ ${qc2}
+[ Conceito 2 ] Atividade: Associação de nomes .. ${getAssocScore()}
+[ Conceito 3 ] Quiz — printf / scanf ........... ${qc3}
+[ Atividade A ] Ordenar linguagem natural ...... ${atvA}
+[ Atividade B ] Ordenar código C ............... ${atvB}
+[ Quiz Final ] Pontuação geral ................. ${pontuacao}
+
+══════════════════════════════════════════════════════════
+ENTREGAS NO MOODLE (arquivos .c)
+══════════════════════════════════════════════════════════
+  • exemplo_media.c      — Conceito 3 (programa completo)
+  • media_notas.c        — Atividade A (média de duas notas)
+  • area_retangulo.c     — Atividade B (área do retângulo)
+  • celsius_kelvin.c     — Atividade C (escrever do zero)
+`;
+
+  const blob = new Blob([conteudo], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'aula03_' + nome.replace(/\s+/g, '_') + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+const ASSOC_ITEMS = [
+  { id:'v1',  name:'2nota',        correct:'num'    },
+  { id:'v2',  name:'nota1',        correct:'ok'     },
+  { id:'v3',  name:'média',        correct:'acento' },
+  { id:'v4',  name:'_tempInicial', correct:'ok'     },
+  { id:'v5',  name:'float',        correct:'reserv' },
+  { id:'v6',  name:'temp celsius', correct:'espaco' },
+  { id:'v7',  name:'1temp',        correct:'num'    },
+  { id:'v8',  name:'temp_kelvin',  correct:'ok'     },
+  { id:'v9',  name:'pressão',      correct:'acento' },
+  { id:'v10', name:'nota final',   correct:'espaco' },
+  { id:'v11', name:'int',          correct:'reserv' },
+  { id:'v12', name:'mediaFinal',   correct:'ok'     },
+];
+
+const ASSOC_CATS = [
+  { id:'ok',     label:'✅ Correto' },
+  { id:'num',    label:'❌ Começa com número' },
+  { id:'acento', label:'❌ Contém acento' },
+  { id:'reserv', label:'❌ Palavra reservada' },
+  { id:'espaco', label:'❌ Espaço no nome' },
+];
+
+let assocState = { selected: null, pairs: {} };
+
+(function init() {
+  state.A.pool = shuffle(state.A.pool);
+  state.B.pool = shuffle(state.B.pool);
+  renderActivity('A');
+  renderActivity('B');
+  initAssoc();
+})();
+
+// ─────────────────────────────────────────────
+//  QUIZ CONCEITO 1
+// ─────────────────────────────────────────────
+const GAB_C1 = {
+  qc1_1: { ans:'b', exp:'O #include <stdio.h> importa a biblioteca padrão de entrada e saída, que contém as funções printf e scanf. Sem ela, o compilador não as reconhece.' },
+  qc1_2: { ans:'c', exp:'O \\n é um caractere de escape que representa uma quebra de linha. Ele faz o cursor ir para a linha seguinte após o texto impresso.' },
+  qc1_3: { ans:'c', exp:'O return 0 informa ao sistema operacional que o programa terminou com sucesso (código 0 = sem erros). É uma convenção padrão da linguagem C.' },
+};
+
+function corrigirQuizC1() {
+  let ac = 0;
+  const entries = Object.entries(GAB_C1);
+  entries.forEach(([q,{ans,exp}]) => {
+    const sel = document.querySelector('input[name="'+q+'"]:checked');
+    const parts = q.split('_');
+    const fb  = document.getElementById(q.replace('q','fb'));
+    document.querySelectorAll('input[name="'+q+'"]').forEach(opt => {
+      const lbl = opt.closest('.q-opt');
+      lbl.style.pointerEvents = 'none';
+      if (opt.value === ans) lbl.classList.add('correct');
+      else if (opt.checked) lbl.classList.add('wrong');
+    });
+    if (sel && sel.value === ans) {
+      ac++;
+      if(fb){ fb.textContent = '✅ Correto! ' + exp; fb.className = 'q-feedback show ok'; }
+    } else {
+      if(fb){ fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp; fb.className = 'q-feedback show err'; }
+    }
+  });
+  const total = entries.length;
+  const pct = Math.round((ac/total)*100);
+  const resEl = document.getElementById('quiz-c1-result');
+  document.getElementById('rc1-score').textContent = ac+'/'+total;
+  document.getElementById('rc1-sub').textContent   = pct+'% de aproveitamento';
+  resEl.style.display = 'block';
+  document.getElementById('quiz-c1-btn').style.display = 'none';
+}
+
+function resetQuizC1() {
+  Object.keys(GAB_C1).forEach(q => {
+    document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+      opt.checked = false;
+      const lbl = opt.closest('.q-opt');
+      lbl.classList.remove('correct','wrong');
+      lbl.style.pointerEvents = '';
+    });
+    const num = q.split('_')[1];
+    const fb = document.getElementById('fbc1_'+num);
+    if (fb) { fb.className = 'q-feedback'; fb.textContent = ''; }
+  });
+  document.getElementById('quiz-c1-result').style.display = 'none';
+  document.getElementById('quiz-c1-btn').style.display    = 'block';
+}
+
+// ─────────────────────────────────────────────
+//  QUIZ CONCEITO 2
+// ─────────────────────────────────────────────
+const GAB_C2 = {
+  qc2_1: { ans:'b', exp:'O tipo float armazena números com casas decimais. O int armazena apenas inteiros, então 8.5 seria truncado para 8.' },
+  qc2_2: { ans:'c', exp:'int nota1, nota2; está correto — começa com letra, sem acentos, sem espaços. As outras têm: número no início (2nota), acento (média), espaço no nome (nota final).' },
+  qc2_3: { ans:'c', exp:'O tipo float ocupa 4 bytes (32 bits) na memória, o que oferece precisão simples de cerca de 7 dígitos significativos.' },
+};
+
+function corrigirQuizC2() {
+  let ac = 0;
+  const entries = Object.entries(GAB_C2);
+  entries.forEach(([q,{ans,exp}]) => {
+    const sel = document.querySelector('input[name="'+q+'"]:checked');
+    const parts = q.split('_');
+    const fb  = document.getElementById(q.replace('q','fb'));
+    document.querySelectorAll('input[name="'+q+'"]').forEach(opt => {
+      const lbl = opt.closest('.q-opt');
+      lbl.style.pointerEvents = 'none';
+      if (opt.value === ans) lbl.classList.add('correct');
+      else if (opt.checked) lbl.classList.add('wrong');
+    });
+    if (sel && sel.value === ans) {
+      ac++;
+      if(fb){ fb.textContent = '✅ Correto! ' + exp; fb.className = 'q-feedback show ok'; }
+    } else {
+      if(fb){ fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp; fb.className = 'q-feedback show err'; }
+    }
+  });
+  const total = entries.length;
+  const pct = Math.round((ac/total)*100);
+  const resEl = document.getElementById('quiz-c2-result');
+  document.getElementById('rc2-score').textContent = ac+'/'+total;
+  document.getElementById('rc2-sub').textContent   = pct+'% de aproveitamento';
+  resEl.style.display = 'block';
+  document.getElementById('quiz-c2-btn').style.display = 'none';
+}
+
+function resetQuizC2() {
+  Object.keys(GAB_C2).forEach(q => {
+    document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+      opt.checked = false;
+      const lbl = opt.closest('.q-opt');
+      lbl.classList.remove('correct','wrong');
+      lbl.style.pointerEvents = '';
+    });
+    const num = q.split('_')[1];
+    const fb = document.getElementById('fbc2_'+num);
+    if (fb) { fb.className = 'q-feedback'; fb.textContent = ''; }
+  });
+  document.getElementById('quiz-c2-result').style.display = 'none';
+  document.getElementById('quiz-c2-btn').style.display    = 'block';
+}
+
+// ─────────────────────────────────────────────
+//  QUIZ CONCEITO 3
+// ─────────────────────────────────────────────
+const GAB_C3 = {
+  qc3_1: { ans:'b', exp:'Sem o & o programa compila, mas em tempo de execução o scanf tenta gravar o valor em um endereço de memória inválido, podendo travar ou gerar resultados errados.' },
+  qc3_2: { ans:'c', exp:'%f é o especificador de formato para float, tanto no printf (para exibir) quanto no scanf (para ler). Use %.2f para exibir com 2 casas decimais.' },
+  qc3_3: { ans:'d', exp:'O padrão E·P·S segue a ordem: Entrada (ler dados com scanf) → Processamento (calcular) → Saída (exibir com printf). Este padrão aparece em todos os programas desta aula.' },
+};
+
+function corrigirQuizC3() {
+  let ac = 0;
+  const entries = Object.entries(GAB_C3);
+  entries.forEach(([q,{ans,exp}]) => {
+    const sel = document.querySelector('input[name="'+q+'"]:checked');
+    const parts = q.split('_');
+    const fb  = document.getElementById(q.replace('q','fb'));
+    document.querySelectorAll('input[name="'+q+'"]').forEach(opt => {
+      const lbl = opt.closest('.q-opt');
+      lbl.style.pointerEvents = 'none';
+      if (opt.value === ans) lbl.classList.add('correct');
+      else if (opt.checked) lbl.classList.add('wrong');
+    });
+    if (sel && sel.value === ans) {
+      ac++;
+      if(fb){ fb.textContent = '✅ Correto! ' + exp; fb.className = 'q-feedback show ok'; }
+    } else {
+      if(fb){ fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp; fb.className = 'q-feedback show err'; }
+    }
+  });
+  const total = entries.length;
+  const pct = Math.round((ac/total)*100);
+  const resEl = document.getElementById('quiz-c3-result');
+  document.getElementById('rc3-score').textContent = ac+'/'+total;
+  document.getElementById('rc3-sub').textContent   = pct+'% de aproveitamento';
+  resEl.style.display = 'block';
+  document.getElementById('quiz-c3-btn').style.display = 'none';
+}
+
+function resetQuizC3() {
+  Object.keys(GAB_C3).forEach(q => {
+    document.querySelectorAll(`input[name="${q}"]`).forEach(opt => {
+      opt.checked = false;
+      const lbl = opt.closest('.q-opt');
+      lbl.classList.remove('correct','wrong');
+      lbl.style.pointerEvents = '';
+    });
+    const num = q.split('_')[1];
+    const fb = document.getElementById('fbc3_'+num);
+    if (fb) { fb.className = 'q-feedback'; fb.textContent = ''; }
+  });
+  document.getElementById('quiz-c3-result').style.display = 'none';
+  document.getElementById('quiz-c3-btn').style.display    = 'block';
+}
+
+// ─────────────────────────────────────────────
+//  ATIVIDADE DE ASSOCIAÇÃO — NOMES DE VARIÁVEIS
+// ─────────────────────────────────────────────
+
+
+function initAssoc() {
+  assocState = { selected: null, pairs: {} };
+  renderAssoc();
+}
+
+function renderAssoc() {
+  const namesEl = document.getElementById('assoc-names');
+  const catsEl  = document.getElementById('assoc-cats');
+  if (!namesEl || !catsEl) return;
+
+  // ── Nomes de variáveis (esquerda) ──
+  namesEl.innerHTML = '';
+  ASSOC_ITEMS.forEach(item => {
+    const isPaired   = !!assocState.pairs[item.id];
+    const isSelected = assocState.selected === item.id;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+
+    let css = [
+      'display:inline-flex;align-items:center;gap:.4rem',
+      'font-family:JetBrains Mono,monospace;font-size:.82rem;font-weight:500',
+      'padding:.45rem .9rem;border-radius:var(--radius)',
+      'user-select:none;transition:box-shadow .15s,border-color .15s',
+      'white-space:nowrap;text-align:left',
+    ];
+    if (isPaired) {
+      css.push('background:#e6eaf0;border:1.5px solid #b0bcc8;color:var(--text-muted);opacity:.55;cursor:default;');
+    } else if (isSelected) {
+      css.push('background:var(--blue-pale);border:2px solid var(--blue);color:var(--blue);box-shadow:var(--shadow);cursor:pointer;');
+    } else {
+      css.push('background:var(--surface);border:1.5px solid var(--border);color:var(--text);cursor:pointer;');
+    }
+    btn.style.cssText = css.join(';');
+    btn.textContent   = item.name;
+    btn.dataset.id    = item.id;
+    btn.disabled      = isPaired;
+
+    if (!isPaired) {
+      btn.onclick = () => {
+        assocState.selected = isSelected ? null : item.id;
+        renderAssoc();
+      };
+    }
+    namesEl.appendChild(btn);
+  });
+
+  // ── Categorias (direita) ──
+  catsEl.innerHTML = '';
+  ASSOC_CATS.forEach(cat => {
+    const pairedItems = ASSOC_ITEMS.filter(i => assocState.pairs[i.id] === cat.id);
+    const canReceive  = !!assocState.selected;
+
+    const box = document.createElement('div');
+    let boxCss = [
+      'background:var(--bg);border:2px dashed var(--border);border-radius:var(--radius)',
+      'padding:.55rem .85rem;font-size:.84rem;min-height:46px',
+      'display:flex;flex-direction:column;gap:.35rem',
+      'transition:border-color .15s,background .15s',
+    ];
+    if (canReceive) boxCss.push('cursor:pointer;border-color:var(--blue-light);background:var(--blue-pale);');
+    box.style.cssText = boxCss.join(';');
+
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:.74rem;font-weight:700;color:var(--text-muted);margin-bottom:.15rem;';
+    label.textContent = cat.label;
+    box.appendChild(label);
+
+    const chipRow = document.createElement('div');
+    chipRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:.3rem;';
+    pairedItems.forEach(item => {
+      const chip = document.createElement('span');
+      chip.style.cssText = [
+        'display:inline-flex;align-items:center;gap:.3rem',
+        'background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius)',
+        'padding:.2rem .55rem;font-family:JetBrains Mono,monospace;font-size:.76rem',
+        'cursor:pointer;',
+      ].join(';');
+      chip.innerHTML = item.name + ' <span style="opacity:.5;font-size:.7rem;">✕</span>';
+      chip.title = 'Clique para remover';
+      chip.onclick = (e) => {
+        e.stopPropagation();
+        delete assocState.pairs[item.id];
+        renderAssoc();
+      };
+      chipRow.appendChild(chip);
+    });
+    box.appendChild(chipRow);
+
+    if (canReceive) {
+      box.onclick = () => {
+        assocState.pairs[assocState.selected] = cat.id;
+        assocState.selected = null;
+        renderAssoc();
+      };
+    }
+    catsEl.appendChild(box);
+  });
+}
+
+function checkAssoc() {
+  const fb = document.getElementById('assoc-feedback');
+  const total = ASSOC_ITEMS.length;
+
+  if (Object.keys(assocState.pairs).length < total) {
+    fb.textContent = '⚠️ Associe todos os nomes de variáveis antes de verificar.';
+    fb.className = 'act-feedback show err';
+    return;
+  }
+
+  let ac = 0;
+  ASSOC_ITEMS.forEach(item => {
+    if (assocState.pairs[item.id] === item.correct) ac++;
+  });
+
+  if (ac === total) {
+    fb.textContent = `✅ Perfeito! Todos os ${total} nomes classificados corretamente!`;
+    fb.className = 'act-feedback show ok';
+  } else {
+    fb.textContent = `❌ ${ac} de ${total} corretos. Revise as associações e tente novamente.`;
+    fb.className = 'act-feedback show err';
+  }
+}
+
+function resetAssoc() {
+  document.getElementById('assoc-feedback').className = 'act-feedback';
+  initAssoc();
+}
+</script>
+</body>
+</html>
