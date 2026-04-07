@@ -168,7 +168,6 @@
     color: var(--muted); text-transform: uppercase;
     letter-spacing: 0.1em; margin-bottom: 0.45rem;
   }
-
   .demo input,
   .demo select,
   .demo textarea {
@@ -403,7 +402,7 @@ const INPUTS = [
       <span class="at">required</span>&gt;`,
     rawSnippet: `<input type="text" name="nome" placeholder="Ex: João Silva" required>`,
     render(id) {
-      return `<input type="text" id="${id}" placeholder="Ex: João Silva">`;
+      return `<input type="text" name="nome" id="${id}" placeholder="Ex: João Silva">`;
     },
     getValue(id) {
       return document.getElementById(id).value;
@@ -419,7 +418,7 @@ const INPUTS = [
       <span class="at">placeholder</span>=<span class="vl">"voce@exemplo.com"</span>&gt;`,
     rawSnippet: `<input type="email" name="email" placeholder="voce@exemplo.com">`,
     render(id) {
-      return `<input type="email" id="${id}" placeholder="voce@exemplo.com">`;
+      return `<input type="email" name="email" id="${id}" placeholder="voce@exemplo.com">`;
     },
     getValue(id) { return document.getElementById(id).value; }
   },
@@ -435,7 +434,7 @@ const INPUTS = [
       <span class="at">step</span>=<span class="vl">"1"</span>&gt;`,
     rawSnippet: `<input type="number" name="idade" min="0" max="120" step="1">`,
     render(id) {
-      return `<input type="number" id="${id}" min="0" max="120" step="1" placeholder="0 – 120">`;
+      return `<input type="number" name="idade" id="${id}" min="0" max="120" step="1" placeholder="0 – 120">`;
     },
     getValue(id) { return document.getElementById(id).value; }
   },
@@ -450,7 +449,7 @@ const INPUTS = [
       <span class="at">required</span>&gt;`,
     rawSnippet: `<input type="password" name="senha" minlength="8" required>`,
     render(id) {
-      return `<input type="password" id="${id}" placeholder="Mín. 8 caracteres">`;
+      return `<input type="password" name="senha" id="${id}" placeholder="Mín. 8 caracteres">`;
     },
     getValue(id) {
       const v = document.getElementById(id).value;
@@ -471,9 +470,9 @@ const INPUTS = [
     rawSnippet: `<input type="checkbox" name="skills[]" value="php"> PHP\n<input type="checkbox" name="skills[]" value="js"> JavaScript\n<input type="checkbox" name="skills[]" value="python"> Python`,
     render(id) {
       return `<div class="demo-check-group">
-        <label><input type="checkbox" class="${id}" value="php"> PHP</label>
-        <label><input type="checkbox" class="${id}" value="js"> JavaScript</label>
-        <label><input type="checkbox" class="${id}" value="python"> Python</label>
+        <label><input type="checkbox" id="${id}" name="skills" class="${id}" value="php"> PHP</label>
+        <label><input type="checkbox" id="${id}" name="skills" class="${id}" value="js"> JavaScript</label>
+        <label><input type="checkbox" id="${id}" name="skills" class="${id}" value="python"> Python</label>
       </div>`;
     },
     getValue(id) {
@@ -495,13 +494,13 @@ const INPUTS = [
     rawSnippet: `<input type="radio" name="turno" value="manha"> Manhã\n<input type="radio" name="turno" value="tarde"> Tarde\n<input type="radio" name="turno" value="noite"> Noite`,
     render(id) {
       return `<div class="demo-radio-group">
-        <label><input type="radio" name="${id}" value="manha"> Manhã</label>
-        <label><input type="radio" name="${id}" value="tarde"> Tarde</label>
-        <label><input type="radio" name="${id}" value="noite"> Noite</label>
+        <label><input type="radio" id="${id}" name="turno" value="manha"> Manhã</label>
+        <label><input type="radio" id="${id}" name="turno" value="tarde"> Tarde</label>
+        <label><input type="radio" id="${id}" name="turno" value="noite"> Noite</label>
       </div>`;
     },
     getValue(id) {
-      const el = document.querySelector(`input[name="${id}"]:checked`);
+      const el = document.querySelector(`input[name="turno"]:checked`);
       return el ? el.value : '';
     }
   },
@@ -542,7 +541,7 @@ const INPUTS = [
 &lt;/<span class="tg">textarea</span>&gt;`,
     rawSnippet: `<textarea name="mensagem" rows="4" placeholder="Sua mensagem..."></textarea>`,
     render(id) {
-      return `<textarea id="${id}" rows="3" placeholder="Digite sua mensagem aqui..."></textarea>`;
+      return `<textarea id="${id}" name="mensagem"  rows="3" placeholder="Digite sua mensagem aqui..."></textarea>`;
     },
     getValue(id) {
       const v = document.getElementById(id).value;
@@ -639,11 +638,21 @@ function buildCard(input, index) {
     const out  = document.getElementById(`out-${id}`);
     if (!wrap) return;
 
+    const el = document.getElementById(id);
+    if (el && input.type === "number") {
+      el.addEventListener("input", () => {
+        el.value = el.value.replace(/[^0-9]/g, '');
+      });
+    }
+
     const show = () => {
       if (!out) return;
+      const element = document.getElementById(id);
       const val = input.getValue(id);
-      if (val) {
-        out.textContent = `$_POST["${input.type === 'select' ? 'estado' : input.type}"] = "${val}"`;
+      const name = element.getAttribute("name");
+      
+      if (val !== "") {
+        out.textContent = `$_POST["${name}"] = "${val}"`;
         out.classList.add('visible');
       } else {
         out.classList.remove('visible');
