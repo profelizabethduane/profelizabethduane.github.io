@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab PC1 — Aula 04: Variáveis, Tipos de Dados e Operadores Aritméticos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #1a2e4a;
+      --navy-light:  #243d5c;
+      --blue:        #2c6fad;
+      --blue-light:  #3a82c4;
+      --blue-pale:   #e8f1f9;
+      --white:       #ffffff;
+      --bg:          #f5f7fa;
+      --surface:     #ffffff;
+      --border:      #dde3ea;
+      --border-light:#eef1f5;
+      --text:        #1c2b3a;
+      --text-muted:  #5a6a7a;
+      --green:       #1e7145;
+      --green-pale:  #e8f5ee;
+      --amber:       #8a5c00;
+      --amber-pale:  #fef7e6;
+      --red:         #c0392b;
+      --red-pale:    #fdecea;
+      --purple:      #5c2d91;
+      --purple-pale: #f2eafa;
+      --code-bg:     #1e2d3d;
+      --code-text:   #cfe2f3;
+      --radius:      8px;
+      --radius-lg:   12px;
+      --shadow-sm:   0 1px 4px rgba(26,46,74,.08);
+      --shadow:      0 2px 10px rgba(26,46,74,.10);
+      --shadow-md:   0 4px 20px rgba(26,46,74,.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--navy);
+      display: flex; align-items: center;
+      padding: 0 2rem; height: 52px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.2);
+      gap: .25rem;
+    }
+    .nav-brand {
+      font-size: .875rem; font-weight: 700; color: #fff;
+      padding-right: 1.25rem;
+      border-right: 1px solid rgba(255,255,255,.18);
+      margin-right: .5rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    nav a {
+      color: rgba(255,255,255,.72);
+      text-decoration: none;
+      font-size: .75rem; font-weight: 500;
+      padding: 0 .6rem; line-height: 52px;
+      border-bottom: 2px solid transparent;
+      transition: color .18s, border-color .18s;
+      white-space: nowrap;
+    }
+    nav a:hover { color: #fff; border-bottom-color: rgba(255,255,255,.5); }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--navy);
+      color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      font-weight: 700; line-height: 1.2;
+      margin-bottom: .6rem;
+    }
+    .hero h1 span { color: #7dbfef; }
+    .hero p {
+      font-size: .975rem; color: rgba(255,255,255,.7);
+      max-width: 680px; margin: 0 auto 2rem;
+    }
+    .hero-meta {
+      display: flex; justify-content: center;
+      gap: 1.25rem; flex-wrap: wrap;
+      font-size: .75rem; color: rgba(255,255,255,.5);
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 3rem 0 2.5rem; }
+    section + section { border-top: 1px solid var(--border-light); }
+
+    .section-label {
+      display: inline-block;
+      font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: .65rem;
+    }
+    h2 {
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      font-weight: 700; color: var(--navy);
+      line-height: 1.25; margin-bottom: .6rem;
+    }
+    .lead {
+      font-size: .95rem; color: var(--text-muted);
+      max-width: 1200px; margin-bottom: 2rem; line-height: 1.7;
+    }
+    h3 { font-size: 1rem; font-weight: 600; color: var(--navy); margin-bottom: .45rem; }
+    p  { margin-bottom: .8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1.5rem 0;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-icon { font-size: 1.4rem; margin-bottom: .55rem; display: block; }
+    .card-tag {
+      display: inline-block;
+      font-size: .62rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: .18rem .55rem; border-radius: 50px;
+      margin-bottom: .45rem;
+    }
+    .tag-blue   { background: var(--blue-pale);   color: var(--blue); }
+    .tag-navy   { background: #e6eaf0;             color: var(--navy); }
+    .tag-green  { background: var(--green-pale);   color: var(--green); }
+    .tag-amber  { background: var(--amber-pale);   color: var(--amber); }
+    .tag-purple { background: var(--purple-pale);  color: var(--purple); }
+    .tag-red    { background: var(--red-pale);     color: var(--red); }
+
+    /* ── Callout ── */
+    .callout {
+      display: flex; gap: .9rem; align-items: flex-start;
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      margin: 1.1rem 0;
+      font-size: .88rem; line-height: 1.6;
+      border: 1px solid transparent;
+    }
+    .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .05rem; }
+    .callout.tip  { background: var(--blue-pale);   border-color: #c0d8f0; color: #1a3a5c; }
+    .callout.info { background: var(--green-pale);  border-color: #b2ddc8; color: #133d29; }
+    .callout.warn { background: var(--amber-pale);  border-color: #f0d898; color: #5a3e00; }
+    .callout.err  { background: var(--red-pale);    border-color: #e8b0aa; color: #7a1a14; }
+
+    /* ── Concept box ── */
+    .concept-box {
+      background: var(--surface);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.1rem 1.35rem;
+      margin: 1.1rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .concept-box.green  { border-color: #2e9e63; }
+    .concept-box.amber  { border-color: #c8860a; }
+    .concept-box.purple { border-color: var(--purple); }
+
+    /* ── Code ── */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      margin: .9rem 0; overflow-x: auto;
+      position: relative;
+    }
+    .code-block pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; line-height: 1.85;
+      color: var(--code-text);
+    }
+    .kw  { color: #79d4ff; }
+    .fn  { color: #f8c555; }
+    .str { color: #95dba4; }
+    .cm  { color: #5e8a9e; font-style: italic; }
+    .nm  { color: #ffb87a; }
+    .op  { color: #ff9e9e; }
+    .pp  { color: #c792ea; }
+    .fmt { color: #f78c6c; }
+
+    .code-label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; font-weight: 500;
+      color: rgba(255,255,255,.35);
+      margin-bottom: .4rem;
+      letter-spacing: .05em;
+    }
+
+    /* ── Steps ── */
+    .steps { list-style: none; margin: 1.1rem 0; }
+    .steps li {
+      display: flex; gap: .85rem; align-items: flex-start;
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: .9rem;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .step-num {
+      min-width: 24px; height: 24px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+
+    /* ── Details ── */
+    details {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: .65rem 0;
+    }
+    summary {
+      cursor: pointer;
+      padding: .8rem 1rem;
+      font-weight: 600; font-size: .86rem;
+      color: var(--blue);
+      user-select: none; list-style: none;
+    }
+    summary::before { content: '▶  '; font-size: .65rem; }
+    details[open] summary::before { content: '▼  '; }
+    details[open] { border-color: var(--blue); }
+    .details-body { padding: .15rem 1rem .9rem; font-size: .88rem; }
+
+    /* ── Tables ── */
+    .ref-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.1rem 0; font-size: .85rem;
+    }
+    .ref-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left;
+      font-weight: 600; font-size: .8rem;
+    }
+    .ref-table td {
+      padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    .ref-table tr:nth-child(even) td { background: var(--bg); }
+    .ref-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; font-weight: 500;
+      color: var(--blue);
+    }
+
+    .analysis-table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.1rem 0; font-size: .85rem;
+    }
+    .analysis-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left;
+      font-weight: 600; font-size: .8rem;
+    }
+    .analysis-table td {
+      padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    .analysis-table tr:nth-child(even) td { background: var(--bg); }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      background: #e8f1f9; color: var(--navy);
+      padding: .1rem .35rem; border-radius: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: .66rem; font-weight: 700;
+      padding: .12rem .45rem; border-radius: 50px;
+    }
+    .badge-ok     { background: var(--green-pale);  color: var(--green); }
+    .badge-soon   { background: #eee; color: #999; }
+    .badge-in     { background: var(--blue-pale);   color: var(--blue); }
+    .badge-proc   { background: var(--green-pale);  color: var(--green); }
+    .badge-out    { background: var(--amber-pale);  color: var(--amber); }
+
+    /* ── Annotated code ── */
+    .annotated {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem; margin: 1.25rem 0;
+    }
+    .ann-code { background: var(--code-bg); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
+    .ann-code pre { font-family: 'JetBrains Mono', monospace; font-size: .77rem; line-height: 2; color: var(--code-text); }
+    .ann-desc { display: flex; flex-direction: column; gap: .55rem; }
+    .ann-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: .6rem .85rem;
+      font-size: .82rem;
+    }
+    .ann-item strong { color: var(--navy); font-family: 'JetBrains Mono', monospace; font-size: .75rem; display: block; margin-bottom: .2rem; }
+
+    /* ── Precedence diagram ── */
+    .prec-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: 1.25rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .prec-row {
+      display: flex; align-items: center;
+      padding: .65rem 1.1rem; gap: .9rem;
+      border-bottom: 1px solid var(--border-light);
+      font-size: .86rem;
+    }
+    .prec-row:last-child { border-bottom: none; }
+    .prec-level {
+      min-width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .75rem;
+      flex-shrink: 0;
+    }
+    .prec-level.high   { background: var(--red-pale);    color: var(--red); }
+    .prec-level.medium { background: var(--amber-pale);  color: var(--amber); }
+    .prec-level.low    { background: var(--green-pale);  color: var(--green); }
+    .prec-ops {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem; color: var(--blue); font-weight: 600;
+      min-width: 80px;
+    }
+    .prec-desc { color: var(--text-muted); }
+
+    /* ── Task wrap ── */
+    .task-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.75rem;
+    }
+    .task-head { background: var(--navy); color: #fff; padding: .9rem 1.3rem; }
+    .task-head h3 { color: #fff; font-size: 1rem; margin: 0; }
+    .task-body { background: var(--surface); padding: 1.3rem; }
+    .task-steps { list-style: none; margin: .9rem 0; }
+    .task-steps li {
+      display: flex; gap: .7rem; align-items: flex-start;
+      padding: .55rem 0;
+      border-bottom: 1px dashed var(--border-light);
+      font-size: .88rem;
+    }
+    .task-steps li:last-child { border: none; }
+    .ts-num {
+      min-width: 22px; height: 22px;
+      background: var(--blue); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem; font-weight: 700;
+      flex-shrink: 0; margin-top: .15rem;
+    }
+
+    /* ── Drag & Drop Activity ── */
+    .activity-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    .activity-head {
+      background: var(--navy); color: #fff;
+      padding: .9rem 1.3rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .activity-head h3 { color: #fff; font-size: 1rem; margin: 0; }
+    .activity-body { background: var(--surface); padding: 1.4rem; }
+
+    .drag-pool {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+      min-height: 54px;
+      background: var(--bg);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: .75rem;
+      margin-bottom: 1.25rem;
+      transition: border-color .2s;
+    }
+    .drag-pool.drag-over { border-color: var(--blue); background: var(--blue-pale); }
+
+    .slots { display: flex; flex-direction: column; gap: .55rem; margin-bottom: 1.25rem; }
+    .slot-row { display: flex; align-items: center; gap: .65rem; }
+    .slot-num {
+      min-width: 26px; height: 26px;
+      background: var(--navy); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .slot {
+      flex: 1; min-height: 42px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      display: flex; align-items: center;
+      padding: .4rem .75rem;
+      transition: border-color .2s, background .2s;
+      font-size: .86rem; color: var(--text-muted);
+    }
+    .slot.drag-over { border-color: var(--blue); background: var(--blue-pale); }
+    .slot.has-item  { border-style: solid; background: var(--surface); color: var(--text); }
+    .slot.correct   { border-color: var(--green); background: var(--green-pale); }
+    .slot.wrong     { border-color: var(--red);   background: var(--red-pale); }
+
+    .drag-item {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: .45rem .85rem;
+      font-size: .84rem; font-weight: 500;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .drag-item:hover { box-shadow: var(--shadow); border-color: #b0c0d0; }
+    .drag-item:active { cursor: grabbing; }
+    .drag-item.correct { border-color: var(--green); background: var(--green-pale); color: var(--green); cursor: default; }
+    .drag-item.wrong   { border-color: var(--red);   background: var(--red-pale);   color: var(--red);   cursor: default; }
+    .drag-item.code-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      background: #1e2d3d;
+      border-color: #2d4a6a;
+      color: var(--code-text);
+    }
+    .drag-item.code-item:hover { border-color: #4a7aaa; }
+    .slot.code-slot {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      background: #141f2d;
+      border-color: #2d4a6a;
+      color: #4a6a8a;
+    }
+    .slot.code-slot.has-item { background: #1e2d3d; color: var(--code-text); }
+    .slot.code-slot.correct  { border-color: #2e9e63; background: #0d2a1a; color: #7adba4; }
+    .slot.code-slot.wrong    { border-color: var(--red); background: #2a0d0d; color: #e88a80; }
+
+    .act-btn-row { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: .5rem; }
+    .btn-check {
+      background: var(--navy); color: #fff;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .6rem 1.4rem; border-radius: var(--radius); border: none;
+      cursor: pointer; transition: background .18s;
+    }
+    .btn-check:hover { background: var(--blue); }
+    .btn-reset {
+      background: transparent; color: var(--text-muted);
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: .84rem;
+      padding: .6rem 1.2rem; border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      cursor: pointer; transition: border-color .18s, color .18s;
+    }
+    .btn-reset:hover { border-color: var(--navy); color: var(--navy); }
+    .act-feedback {
+      display: none; margin-top: 1rem;
+      padding: .8rem 1.1rem; border-radius: var(--radius);
+      font-size: .88rem; font-weight: 600;
+    }
+    .act-feedback.show { display: block; }
+    .act-feedback.ok   { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .act-feedback.err  { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+
+    .reveal-panel { display: none; margin-top: 1.4rem; border-top: 1px solid var(--border-light); padding-top: 1.3rem; }
+    .reveal-panel.show { display: block; }
+    .copy-hint { font-size: .78rem; color: var(--text-muted); margin-top: 1rem; font-style: italic; }
+
+    /* ── Quiz ── */
+    #quiz { background: var(--bg); }
+    .quiz-progress { background: var(--border); border-radius: 50px; height: 5px; margin-bottom: 1.75rem; overflow: hidden; }
+    .quiz-progress-bar { height: 100%; background: var(--blue); border-radius: 50px; transition: width .35s ease; }
+    .q-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.35rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+    .q-num { font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin-bottom: .4rem; }
+    .q-text { font-weight: 600; margin-bottom: .9rem; font-size: .92rem; line-height: 1.5; }
+    .q-options { display: flex; flex-direction: column; gap: .45rem; }
+    .q-opt { display: flex; align-items: flex-start; gap: .7rem; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: .65rem .85rem; cursor: pointer; font-size: .87rem; line-height: 1.45; transition: border-color .15s, background .15s; user-select: none; }
+    .q-opt:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+    .q-opt input[type="radio"] { accent-color: var(--blue); margin-top: .25rem; flex-shrink: 0; }
+    .q-opt.correct { border-color: #2e9e63; background: var(--green-pale); }
+    .q-opt.wrong   { border-color: var(--red); background: var(--red-pale); }
+    .q-feedback { margin-top: .8rem; font-size: .83rem; padding: .65rem .9rem; border-radius: var(--radius); display: none; line-height: 1.55; }
+    .q-feedback.show { display: block; }
+    .q-feedback.ok  { background: var(--green-pale); color: var(--green); border: 1px solid #9fd4b8; }
+    .q-feedback.err { background: var(--red-pale);   color: var(--red);   border: 1px solid #e8b0aa; }
+
+    #quiz-btn { display: block; width: 100%; max-width: 280px; margin: 1.4rem auto 0; background: var(--navy); color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: .9rem; padding: .8rem 2rem; border-radius: var(--radius); border: none; cursor: pointer; transition: background .18s; }
+    #quiz-btn:hover { background: var(--blue); }
+    #quiz-result { display: none; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; margin-top: 1.4rem; box-shadow: var(--shadow); }
+    #quiz-result.show { display: block; }
+    .result-score { font-size: 3rem; font-weight: 700; color: var(--navy); }
+    .result-sub   { font-size: .9rem; color: var(--text-muted); margin: .4rem 0 1rem; }
+    .result-msg   { font-size: .9rem; margin-bottom: 1.1rem; }
+    #quiz-retry { background: var(--blue); color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; padding: .6rem 1.6rem; border-radius: var(--radius); border: none; cursor: pointer; font-size: .86rem; transition: background .18s; }
+    #quiz-retry:hover { background: var(--navy); }
+
+    /* ── Summary ── */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .9rem; margin: 1.4rem 0; }
+    .sum-item { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--blue); border-radius: var(--radius-lg); padding: 1rem; box-shadow: var(--shadow-sm); }
+    .sum-item.g { border-top-color: #2e9e63; }
+    .sum-item.a { border-top-color: #c8860a; }
+    .sum-item.r { border-top-color: var(--red); }
+    .sum-item.p { border-top-color: var(--purple); }
+    .sum-item .si-title { font-weight: 600; font-size: .88rem; color: var(--navy); margin-bottom: .35rem; }
+    .sum-item p { font-size: .8rem; color: var(--text-muted); }
+
+    /* ── Download ── */
+    .download-area { text-align: center; padding: 1.5rem 0 .5rem; }
+    .download-area p { color: var(--text-muted); font-size: .83rem; margin-bottom: .85rem; }
+    .download-row { display: flex; gap: .65rem; justify-content: center; flex-wrap: wrap; }
+    .download-row input[type="text"] { border: 1.5px solid var(--border); border-radius: var(--radius); padding: .55rem .85rem; font-family: 'Inter', sans-serif; font-size: .85rem; width: 240px; background: var(--surface); transition: border-color .18s; }
+    .download-row input:focus { outline: none; border-color: var(--blue); }
+    #btn-download { background: var(--navy); color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; padding: .55rem 1.4rem; border-radius: var(--radius); border: none; cursor: pointer; font-size: .85rem; display: inline-flex; align-items: center; gap: .4rem; transition: background .18s; }
+    #btn-download:hover { background: var(--blue); }
+
+    /* ── Tooltip ── */
+    .tip-word { border-bottom: 1px dashed var(--blue); cursor: help; position: relative; display: inline-block; color: var(--blue); font-weight: 600; }
+    .tip-word .tip-box { visibility: hidden; opacity: 0; background: var(--navy); color: #fff; font-size: .78rem; font-weight: 400; line-height: 1.55; border-radius: var(--radius); padding: .65rem .9rem; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: 240px; box-shadow: var(--shadow-md); z-index: 100; transition: opacity .18s; pointer-events: none; text-align: left; }
+    .tip-word .tip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--navy); }
+    .tip-word:hover .tip-box { visibility: visible; opacity: 1; }
+
+    /* ── Footer ── */
+    footer { background: var(--navy); color: rgba(255,255,255,.5); text-align: center; font-size: .75rem; padding: 1.25rem; }
+
+    @media (max-width: 640px) {
+      nav a { display: none; }
+      .annotated { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">💻 Lab PC1</div>
+  <a href="#revisao">Revisão</a>
+  <a href="#operadores">Operadores</a>
+  <a href="#precedencia">Precedência</a>
+  <a href="#quiz">Quiz</a>
+  <a href="#exemplos">Exemplos</a>
+  <a href="#atividades">Atividades</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">Laboratório de PC 1 · Aula 04 · CEFET-MG Contagem</div>
+  <h1>Variáveis, Tipos e <span>Operadores Aritméticos</span></h1>
+  <p>Revisão de tipos de dados e entrada/saída. Cálculos com operadores aritméticos.</p>
+  <div class="hero-meta">
+    <span>⚗️ Engenharia Química · 1º Período</span>
+    <span>👩‍🏫 Profª. Elizabeth Duane</span>
+    <span>🛠️ Dev-C++</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     1 — REVISÃO DE TIPOS DE DADOS
+     ══════════════════════════════════════ -->
+<section id="revisao">
+  <div class="container">
+    <div class="section-label">Revisão — Conceitos Anteriores</div>
+    <h2>Tipos de variáveis em C</h2>
+    <p class="lead">Na aula anterior você conheceu <code>int</code> e <code>float</code>. Nesta aula completamos o conjunto com <code>double</code> e <code>char</code>, e revisamos as regras de identificadores e as funções <code>printf</code> / <code>scanf</code>.</p>
+
+    <!-- 4 tipos -->
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));">
+      <div class="card">
+        <span class="card-icon">🔢</span>
+        <div class="card-tag tag-navy">int</div>
+        <h3>Número inteiro</h3>
+        <p style="font-size:.86rem;">Sem casas decimais. Ocupa <strong>4 bytes</strong>.</p>
+        <div class="code-block" style="margin-top:.7rem;padding:.7rem .9rem;">
+<pre><span class="kw">int</span> tempo_reacao;
+<span class="kw">int</span> massa_molar <span class="op">=</span> <span class="nm">46</span>;</pre>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);">Especificador: <code>%d</code></p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">📐</span>
+        <div class="card-tag tag-blue">float</div>
+        <h3>Decimal — precisão simples</h3>
+        <p style="font-size:.86rem;">~7 dígitos significativos. Ocupa <strong>4 bytes</strong>.</p>
+        <div class="code-block" style="margin-top:.7rem;padding:.7rem .9rem;">
+<pre><span class="kw">float</span> temperatura;
+<span class="kw">float</span> densidade <span class="op">=</span> <span class="nm">0.789</span>;</pre>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);">Especificador: <code>%f</code></p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🔬</span>
+        <div class="card-tag tag-green">double</div>
+        <h3>Decimal — precisão dupla</h3>
+        <p style="font-size:.86rem;">~15 dígitos significativos. Ocupa <strong>8 bytes</strong>. Ideal para cálculos científicos de alta precisão.</p>
+        <div class="code-block" style="margin-top:.7rem;padding:.7rem .9rem;">
+<pre><span class="kw">double</span> pressao;
+<span class="kw">double</span> p <span class="op">=</span> <span class="nm">2.300000</span>;</pre>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);">Especificador: <code>%lf</code></p>
+      </div>
+
+      <div class="card">
+        <span class="card-icon">🔤</span>
+        <div class="card-tag tag-amber">char</div>
+        <h3>Caractere único</h3>
+        <p style="font-size:.86rem;">Um único símbolo entre <strong>aspas simples</strong>. Ocupa <strong>1 byte</strong>. Vetores de char armazenam texto.</p>
+        <div class="code-block" style="margin-top:.7rem;padding:.7rem .9rem;">
+<pre><span class="kw">char</span> tipo_reator <span class="op">=</span> <span class="str">'B'</span>;
+<span class="kw">char</span> nome[<span class="nm">50</span>];</pre>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);">Especificadores: <code>%c</code> (char) · <code>%s</code> (string)</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>float vs. double:</strong> na Engenharia Química, prefira <code>double</code> para cálculos que envolvem muitas casas decimais (termodinâmica, equações de estado). Use <code>float</code> quando o espaço de memória for crítico ou a precisão não for tão importante.</div>
+    </div>
+
+    <!-- Identificadores (revisão) -->
+    <h3 style="margin-top:1.75rem;">Identificadores — revisão das regras</h3>
+    <p style="font-size:.9rem;">Lembre-se: o nome de uma variável em C deve seguir estas regras:</p>
+
+    <div class="card-grid" style="grid-template-columns:1fr 1fr;margin-top:.75rem;">
+      <div class="card" style="border-top:3px solid var(--green);">
+        <div class="card-tag tag-green">✅ Válidos</div>
+        <div class="code-block" style="margin-top:.6rem;padding:.7rem .9rem;">
+<pre>Idade
+PesoDoCarro
+Usuario_1
+RaioDoCirculo
+temp_celsius
+_pressao</pre>
+        </div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--red);">
+        <div class="card-tag tag-red">❌ Inválidos</div>
+        <div class="code-block" style="margin-top:.6rem;padding:.7rem .9rem;">
+<pre><span class="cm">// começa com número:</span>   1nota
+<span class="cm">// espaço no nome:</span>     nota final
+<span class="cm">// acento:</span>             média
+<span class="cm">// palavra reservada:</span>  float, int</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela especificadores de formato (revisão completa) -->
+    <h3 style="margin-top:1.75rem;">Especificadores de formato — tabela completa desta aula</h3>
+    <table class="ref-table">
+      <thead>
+        <tr><th>Especificador</th><th>Tipo</th><th>Exemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>%d</td><td>Inteiro (<code>int</code>)</td><td><code>printf("%d", nota);</code></td></tr>
+        <tr><td>%f</td><td>Decimal (<code>float</code>)</td><td><code>printf("%.2f", media);</code></td></tr>
+        <tr><td>%lf</td><td>Precisão dupla (<code>double</code>)</td><td><code>scanf("%lf", &pressao);</code></td></tr>
+        <tr><td>%c</td><td>Caractere (<code>char</code>)</td><td><code>printf("%c", tipo_reator);</code></td></tr>
+        <tr><td>%s</td><td>Texto (<code>char[]</code>)</td><td><code>printf("%s", nome);</code></td></tr>
+        <tr><td>%%</td><td>Imprime literalmente o símbolo <code>%</code></td><td><code>printf("100%%");</code> → <em>100%</em></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div><strong>Lendo <code>double</code> com <code>scanf</code>:</strong> use <code>%lf</code> (com o "l" de <em>long</em>). Para exibir com <code>printf</code>, <code>%f</code> funciona para os dois — mas é boa prática usar <code>%lf</code> de forma consistente com o tipo da variável.</div>
+    </div>
+
+    <!-- scanf com char ── dica extra -->
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div><strong>Lendo <code>char</code> com <code>scanf</code>:</strong> coloque um espaço antes do <code>%c</code> para descartar o Enter que ficou no buffer do teclado: <code>scanf(" %c", &tipo_reator);</code>. Sem o espaço, o caractere pode ser lido incorretamente após outra leitura.</div>
+    </div>
+
+    <!-- Exemplo 1 da professora -->
+    <div class="task-wrap" style="margin-top:2rem;">
+      <div class="task-head" style="background:#1e3a5c;">
+        <h3>📋 Exemplo 1 — Relatório de Processo Químico</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Programa que declara, inicializa e imprime variáveis de diferentes tipos, simulando dados de um processo químico.</p>
+        <div class="code-block">
+          <div class="code-label">//exemplo1.c</div>
+<pre><span class="cm">/*
+  Autor : coloque o seu Nome
+  Data  : coloque a data
+  Desc  : Declaração de variáveis e função printf
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// Declaração de variáveis para processo químico</span>
+    <span class="kw">int</span>    tempo_reacao;    <span class="cm">// tempo em minutos</span>
+    <span class="kw">float</span>  temperatura;    <span class="cm">// temperatura em °C</span>
+    <span class="kw">double</span> pressao;        <span class="cm">// pressão em atm (alta precisão)</span>
+    <span class="kw">char</span>   tipo_reator;    <span class="cm">// 'B'atelada, 'C'ontínuo, 'S'emibatelada</span>
+
+    <span class="cm">// Atribuição de valores (condições do processo)</span>
+    tempo_reacao <span class="op">=</span> <span class="nm">120</span>;       <span class="cm">// 2 horas</span>
+    temperatura  <span class="op">=</span> <span class="nm">85.5</span>;     <span class="cm">// °C</span>
+    pressao      <span class="op">=</span> <span class="nm">2.3</span>;      <span class="cm">// atm</span>
+    tipo_reator  <span class="op">=</span> <span class="str">'B'</span>;      <span class="cm">// Batelada</span>
+
+    <span class="cm">// Declaração com inicialização (propriedades da substância)</span>
+    <span class="kw">float</span> densidade  <span class="op">=</span> <span class="nm">0.789</span>; <span class="cm">// g/cm³ (etanol)</span>
+    <span class="kw">int</span>   massa_molar <span class="op">=</span> <span class="nm">46</span>;  <span class="cm">// g/mol (etanol)</span>
+
+    <span class="cm">// Impressão dos dados do processo</span>
+    <span class="fn">printf</span>(<span class="str">"=== RELATÓRIO DO PROCESSO QUÍMICO ===\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"Condições Operacionais:\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"- Tempo de reação: %d minutos\n"</span>, tempo_reacao);
+    <span class="fn">printf</span>(<span class="str">"- Temperatura: %.1f °C\n"</span>, temperatura);
+    <span class="fn">printf</span>(<span class="str">"- Pressão: %.1f atm\n"</span>, pressao);
+    <span class="fn">printf</span>(<span class="str">"- Tipo de reator: %c (Batelada)\n"</span>, tipo_reator);
+    <span class="fn">printf</span>(<span class="str">"\nPropriedades da Substância (Etanol):\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"- Densidade: %.3f g/cm³\n"</span>, densidade);
+    <span class="fn">printf</span>(<span class="str">"- Massa molar: %d g/mol\n"</span>, massa_molar);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <ul class="task-steps" style="margin-top:1rem;">
+          <li><div class="ts-num">1</div><div>Digite o código acima no Dev-C++, salve como <strong><code>exemplo1.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Compile e execute com <strong>F11</strong> (ou F9 para compilar + F10 para executar).</div></li>
+          <li><div class="ts-num">3</div><div>Confira que a saída corresponde aos valores atribuídos no código.</div></li>
+          <li><div class="ts-num">4</div><div>Envie o arquivo <code>exemplo1.c</code> diretamente no Moodle — <strong>sem compactar</strong>.</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Exemplo 2 da professora -->
+    <div class="task-wrap">
+      <div class="task-head" style="background:#1e3a5c;">
+        <h3>📋 Exemplo 2 — Leitura de Nome e Idade</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Programa que utiliza <code>scanf</code> para ler dados do usuário e <code>printf</code> com <code>\t</code> (tabulação) para formatar a saída.</p>
+        <div class="code-block">
+          <div class="code-label">//exemplo2.c</div>
+<pre><span class="cm">/*
+  Autor : &lt;coloque o seu Nome&gt;
+  Data  : &lt;coloque a data&gt;
+  Desc  : Utilização das funções printf e scanf
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">char</span> nome[<span class="nm">50</span>];        <span class="cm">// Declara uma string (vetor de caracteres) para armazenar o nome do usuário</span>
+    <span class="kw">int</span>  idade;              <span class="cm">// Declara uma variável inteira para armazenar a idade</span>
+
+    <span class="fn">printf</span>(<span class="str">"Digite seu nome: "</span>);  <span class="cm">// Exibe uma mensagem solicitando o nome</span>
+    <span class="fn">scanf</span>(<span class="str">"%s"</span>, nome);         <span class="cm">// Lê um conjunto de caracteres</span>
+
+    <span class="fn">printf</span>(<span class="str">"Digite sua idade: "</span>); <span class="cm">// Exibe uma mensagem solicitando a idade</span>
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>idade);      <span class="cm">// Lê um valor inteiro</span>
+
+    <span class="cm">// espaçamento horizontal com "\t"</span>
+    <span class="fn">printf</span>(<span class="str">"Nome: %s \t\t\t Idade: %d\n"</span>, nome, idade);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <div class="callout tip" style="margin-top:.75rem;">
+          <div class="callout-icon">💡</div>
+          <div><strong>Atenção ao <code>&amp;</code>:</strong> note que <code>scanf("%s", nome)</code> <em>não usa</em> <code>&amp;</code> — porque <code>nome</code> já é o endereço do vetor. Para variáveis simples (<code>int</code>, <code>float</code>, <code>char</code>) o <code>&amp;</code> é obrigatório.</div>
+        </div>
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">1</div><div>Digite o código acima no Dev-C++, salve como <strong><code>exemplo2.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Compile, execute e teste com diferentes nomes e idades.</div></li>
+          <li><div class="ts-num">3</div><div>Envie o arquivo <code>exemplo2.c</code> no Moodle.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     2 — OPERADORES ARITMÉTICOS
+     ══════════════════════════════════════ -->
+<section id="operadores">
+  <div class="container">
+    <div class="section-label">Conceito Principal</div>
+    <h2>Operadores Aritméticos</h2>
+    <p class="lead">A linguagem C possui cinco operadores aritméticos básicos. Entender como cada um funciona — especialmente a divisão inteira e o operador de resto — é fundamental para escrever cálculos corretos.</p>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: .65rem 0;">
+      <table class="ref-table">
+        <thead>
+          <tr><th>Operador</th><th>Função</th><th>Exemplo (a=10, b=3)</th><th>Resultado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>+</td><td>Adição</td><td><code>a + b</code></td><td>13</td></tr>
+          <tr><td>-</td><td>Subtração</td><td><code>a - b</code></td><td>7</td></tr>
+          <tr><td>*</td><td>Multiplicação</td><td><code>a * b</code></td><td>30</td></tr>
+          <tr><td>/</td><td>Divisão</td><td><code>a / b</code></td><td>3 (inteiros!) · 3.33… (floats)</td></tr>
+          <tr><td>%</td><td>Resto da divisão (módulo)</td><td><code>a % b</code></td><td>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Divisão inteira vs float — ponto crítico -->
+    <div class="concept-box amber" style="margin-top:1.5rem;">
+      <h3>⚠️ Divisão inteira vs. divisão em ponto flutuante</h3>
+      <p style="font-size:.88rem;margin-top:.5rem;">Esta é a armadilha mais comum para iniciantes em C. O comportamento do operador <code>/</code> depende do <strong>tipo dos operandos</strong>:</p>
+    </div>
+
+    <div class="annotated" style="margin-top:.5rem;">
+      <div class="ann-code">
+        <div class="code-label">//divisão — comparação de tipos</div>
+        <pre><span class="kw">int</span> a <span class="op">=</span> <span class="nm">7</span>, b <span class="op">=</span> <span class="nm">2</span>;
+<span class="kw">float</span> x <span class="op">=</span> <span class="nm">7.0</span>, y <span class="op">=</span> <span class="nm">2.0</span>;
+
+<span class="cm">// int ÷ int → int (trunca!)</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, a <span class="op">/</span> b);    <span class="cm">// → 3</span>
+
+<span class="cm">// float ÷ float → float</span>
+<span class="fn">printf</span>(<span class="str">"%.2f\n"</span>, x <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+<span class="cm">// int ÷ float → float</span>
+<span class="fn">printf</span>(<span class="str">"%.2f\n"</span>, a <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+<span class="cm">// forçar float com sufixo:</span>
+<span class="fn">printf</span>(<span class="str">"%.2f\n"</span>, a <span class="op">/</span> <span class="nm">2.0</span>); <span class="cm">// → 3.50</span></pre>
+      </div>
+      <div class="ann-desc">
+        <div class="ann-item">
+          <strong>int / int → int</strong>
+          Ambos inteiros? O resultado é inteiro. A parte decimal é simplesmente descartada (truncada, não arredondada). <code>7 / 2 = 3</code>, não <code>3.5</code>.
+        </div>
+        <div class="ann-item">
+          <strong>float / float → float</strong>
+          Se pelo menos um dos operandos for <code>float</code> ou <code>double</code>, o resultado preserva as casas decimais.
+        </div>
+        <div class="ann-item">
+          <strong>Forçar divisão decimal</strong>
+          Use <code>2.0</code> em vez de <code>2</code>, ou faça um <span class="tip-word">cast<span class="tip-box">🔄 Cast: conversão explícita de tipo. Exemplo: <code>(float)a / b</code> converte <code>a</code> para float antes de dividir, garantindo resultado decimal.</span></span>: <code>(float)a / b</code>.
+        </div>
+        <div class="ann-item">
+          <strong>Regra geral</strong>
+          Se qualquer operando for <code>float</code> ou <code>double</code>, a operação toda é promovida para esse tipo.
+        </div>
+      </div>
+    </div>
+
+    <!-- Operador % -->
+    <div class="concept-box green" style="margin-top:1.5rem;">
+      <h3>Operador % — Resto da Divisão (Módulo)</h3>
+      <p style="font-size:.88rem;margin-top:.4rem;">O operador <code>%</code> retorna o <strong>resto</strong> da divisão inteira. Só funciona com operandos inteiros (<code>int</code>). Muito útil para verificar se um número é par/ímpar, fazer conversões de unidades, etc.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-label">//operador % — exemplos</div>
+<pre><span class="fn">printf</span>(<span class="str">"10 %% 3 = %d\n"</span>, <span class="nm">10</span> <span class="op">%</span> <span class="nm">3</span>);  <span class="cm">// → 1  (10 = 3×3 + 1)</span>
+<span class="fn">printf</span>(<span class="str">"15 %% 4 = %d\n"</span>, <span class="nm">15</span> <span class="op">%</span> <span class="nm">4</span>);  <span class="cm">// → 3  (15 = 4×3 + 3)</span>
+<span class="fn">printf</span>(<span class="str">"8  %% 2 = %d\n"</span>, <span class="nm">8</span>  <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 0  (divisão exata)</span>
+
+<span class="cm">// verificar se número é par: se resto for 0, é par</span>
+<span class="kw">int</span> n <span class="op">=</span> <span class="nm">7</span>;
+<span class="fn">printf</span>(<span class="str">"%d %% 2 = %d\n"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 1 (ímpar)</span>
+
+<span class="cm">// Para imprimir o símbolo % no printf, use %%</span>
+<span class="fn">printf</span>(<span class="str">"Rendimento: 95%%\n"</span>);         <span class="cm">// → Rendimento: 95%</span></pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div><strong>Para imprimir o símbolo <code>%</code></strong> dentro de um <code>printf</code>, escreva <code>%%</code>. Um único <code>%</code> seria interpretado como início de um especificador de formato e causaria comportamento indefinido.</div>
+    </div>
+
+    <!-- Exemplo 3 da professora -->
+    <div class="task-wrap" style="margin-top:1.75rem;">
+      <div class="task-head">
+        <h3>📋 Exemplo 3 — Operações Aritméticas Básicas</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Este exemplo será desenvolvido em etapas. Comece com a versão básica e vá adicionando funcionalidades, testando a cada passo.</p>
+
+        <h4 style="margin-top:1.5rem;">Etapa 1: Operações básicas com inteiros</h4>
+        <div class="code-block">
+          <div class="code-label">//exemplo3.c</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  : Operações Aritméticas Básicas - Etapa 1
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">//ETAPA 1</span>
+    <span class="kw">int</span> a <span class="op">=</span> <span class="nm">10</span>, b <span class="op">=</span> <span class="nm">3</span>;
+
+    <span class="fn">printf</span>(<span class="str">"a + b = %d\n"</span>, a <span class="op">+</span> b);   <span class="cm">// 13</span>
+    <span class="fn">printf</span>(<span class="str">"a - b = %d\n"</span>, a <span class="op">-</span> b);   <span class="cm">// 7</span>
+    <span class="fn">printf</span>(<span class="str">"a * b = %d\n"</span>, a <span class="op">*</span> b);   <span class="cm">// 30</span>
+    <span class="fn">printf</span>(<span class="str">"a / b = %d\n"</span>, a <span class="op">/</span> b);   <span class="cm">// 3 (divisão inteira!)</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">1</div><div>Digite o código da Etapa 1 no Dev-C++, salve como <strong><code>exemplo3.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Compile e execute. Observe a divisão inteira.<br><em>Não precisa criar novo arquivo para cada etapa, pode atualizar o mesmo.</em></div></li>
+        </ul>
+
+        <h4 style="margin-top:1.5rem;">Etapa 2: Incluindo comparação de tipos na divisão</h4>
+        <div class="code-block">
+          <div class="code-label">//exemplo3.c</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  : Operações Aritméticas Básicas - Etapa 2
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">int</span> a <span class="op">=</span> <span class="nm">10</span>, b <span class="op">=</span> <span class="nm">3</span>;
+
+    <span class="fn">printf</span>(<span class="str">"a + b = %d\n"</span>, a <span class="op">+</span> b);   <span class="cm">// 13</span>
+    <span class="fn">printf</span>(<span class="str">"a - b = %d\n"</span>, a <span class="op">-</span> b);   <span class="cm">// 7</span>
+    <span class="fn">printf</span>(<span class="str">"a * b = %d\n"</span>, a <span class="op">*</span> b);   <span class="cm">// 30</span>
+    <span class="fn">printf</span>(<span class="str">"a / b = %d\n"</span>, a <span class="op">/</span> b);   <span class="cm">// 3 (divisão inteira!)</span>
+
+    <span class="cm">//ETAPA 2</span>
+    <span class="fn">printf</span>(<span class="str">"\n--- Divisão — Comparação de Tipos ---\n"</span>);
+    <span class="kw">int</span> a_int <span class="op">=</span> <span class="nm">7</span>, b_int <span class="op">=</span> <span class="nm">2</span>;
+    <span class="kw">float</span> x <span class="op">=</span> <span class="nm">7.0</span>, y <span class="op">=</span> <span class="nm">2.0</span>;
+
+    <span class="cm">// int ÷ int → int (trunca!)</span>
+    <span class="fn">printf</span>(<span class="str">"%d / %d = %d\n"</span>, a_int, b_int, a_int <span class="op">/</span> b_int);    <span class="cm">// → 3</span>
+
+    <span class="cm">// float ÷ float → float</span>
+    <span class="fn">printf</span>(<span class="str">"%.1f / %.1f = %.2f\n"</span>, x, y, x <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+    <span class="cm">// int ÷ float → float</span>
+    <span class="fn">printf</span>(<span class="str">"%d / %.1f = %.2f\n"</span>, a_int, y, a_int <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+    <span class="cm">// forçar float com sufixo:</span>
+    <span class="fn">printf</span>(<span class="str">"%d / 2.0 = %.2f\n"</span>, a_int, a_int <span class="op">/</span> <span class="nm">2.0</span>); <span class="cm">// → 3.50</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">3</div><div>Adicione o código da Etapa 2 ao mesmo arquivo (não precisa criar novo).</div></li>
+          <li><div class="ts-num">4</div><div>Compile e execute novamente. Observe as diferenças na divisão.</div></li>
+        </ul>
+
+        <h4 style="margin-top:1.5rem;">Etapa 3: Incluindo o operador resto da divisão</h4>
+        <div class="code-block">
+          <div class="code-label">//exemplo3.c</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  : Operações Aritméticas Básicas - Etapa 3
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">int</span> a <span class="op">=</span> <span class="nm">10</span>, b <span class="op">=</span> <span class="nm">3</span>;
+
+    <span class="fn">printf</span>(<span class="str">"a + b = %d\n"</span>, a <span class="op">+</span> b);   <span class="cm">// 13</span>
+    <span class="fn">printf</span>(<span class="str">"a - b = %d\n"</span>, a <span class="op">-</span> b);   <span class="cm">// 7</span>
+    <span class="fn">printf</span>(<span class="str">"a * b = %d\n"</span>, a <span class="op">*</span> b);   <span class="cm">// 30</span>
+    <span class="fn">printf</span>(<span class="str">"a / b = %d\n"</span>, a <span class="op">/</span> b);   <span class="cm">// 3 (divisão inteira!)</span>
+    <span class="fn">printf</span>(<span class="str">"a %% b = %d\n"</span>, a <span class="op">%</span> b);  <span class="cm">// 1 (resto)</span>
+
+    <span class="fn">printf</span>(<span class="str">"\n--- Divisão — Comparação de Tipos ---\n"</span>);
+    <span class="kw">int</span> a_int <span class="op">=</span> <span class="nm">7</span>, b_int <span class="op">=</span> <span class="nm">2</span>;
+    <span class="kw">float</span> x <span class="op">=</span> <span class="nm">7.0</span>, y <span class="op">=</span> <span class="nm">2.0</span>;
+
+    <span class="cm">// int ÷ int → int (trunca!)</span>
+    <span class="fn">printf</span>(<span class="str">"%d / %d = %d\n"</span>, a_int, b_int, a_int <span class="op">/</span> b_int);    <span class="cm">// → 3</span>
+
+    <span class="cm">// float ÷ float → float</span>
+    <span class="fn">printf</span>(<span class="str">"%.1f / %.1f = %.2f\n"</span>, x, y, x <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+    <span class="cm">// int ÷ float → float</span>
+    <span class="fn">printf</span>(<span class="str">"%d / %.1f = %.2f\n"</span>, a_int, y, a_int <span class="op">/</span> y); <span class="cm">// → 3.50</span>
+
+    <span class="cm">// forçar float com sufixo:</span>
+    <span class="fn">printf</span>(<span class="str">"%d / 2.0 = %.2f\n"</span>, a_int, a_int <span class="op">/</span> <span class="nm">2.0</span>); <span class="cm">// → 3.50</span>
+
+    <span class="cm">//ETAPA 3</span>
+    <span class="fn">printf</span>(<span class="str">"\n--- Operador %% — Exemplos ---\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"10 %% 3 = %d\n"</span>, <span class="nm">10</span> <span class="op">%</span> <span class="nm">3</span>);  <span class="cm">// → 1  (10 = 3×3 + 1)</span>
+    <span class="fn">printf</span>(<span class="str">"15 %% 4 = %d\n"</span>, <span class="nm">15</span> <span class="op">%</span> <span class="nm">4</span>);  <span class="cm">// → 3  (15 = 4×3 + 3)</span>
+    <span class="fn">printf</span>(<span class="str">"8  %% 2 = %d\n"</span>, <span class="nm">8</span>  <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 0  (divisão exata)</span>
+
+    <span class="cm">// verificar se número é par: se resto for 0, é par</span>
+    <span class="kw">int</span> n <span class="op">=</span> <span class="nm">7</span>;
+    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 1 (ímpar)</span>
+
+    n <span class="op">=</span> <span class="nm">4</span>;
+    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 0 (par)</span>
+
+    <span class="cm">// Para imprimir o símbolo % no printf, use %%</span>
+    <span class="fn">printf</span>(<span class="str">"Rendimento: 95%%\n"</span>);         <span class="cm">// → Rendimento: 95%</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">5</div><div>Adicione o código da Etapa 3 ao mesmo arquivo.</div></li>
+          <li><div class="ts-num">6</div><div>Compile e execute a versão final. Observe o operador resto.</div></li>
+          <li><div class="ts-num">7</div><div>Envie o arquivo <code>exemplo3.c</code> (com todas as etapas) no Moodle.</div></li>
+        </ul>
+        <div class="callout info" style="margin-top:.75rem;">
+          <div class="callout-icon">🔍</div>
+          <div><strong>Saída esperada:</strong> <code>a / b = 3</code> — porque ambos são <code>int</code>, a divisão descarta o resto. Compare com <code>10.0 / 3.0</code> que resultaria em <code>3.333...</code></div>
+        </div>
+      </div>
+    </div>
+
+
+  <div class="container">
+    <div class="section-label">Conceito 2</div>
+    <h2>Precedência e Parênteses</h2>
+    <p class="lead">Quando há múltiplos operadores em uma expressão, C segue uma ordem definida — chamada de <strong>precedência</strong>. Conhecê-la evita resultados inesperados em seus cálculos.</p>
+
+    <div class="prec-box">
+      <div class="prec-row">
+        <div class="prec-level high">1º</div>
+        <div class="prec-ops">( )</div>
+        <div class="prec-desc"><strong>Parênteses</strong> — maior precedência. Sempre avaliados primeiro. Use-os sempre que quiser garantir a ordem.</div>
+      </div>
+      <div class="prec-row">
+        <div class="prec-level medium">2º</div>
+        <div class="prec-ops">* / %</div>
+        <div class="prec-desc"><strong>Multiplicação, divisão e módulo</strong> — avaliados antes de + e -. Da esquerda para a direita quando há empate.</div>
+      </div>
+      <div class="prec-row">
+        <div class="prec-level low">3º</div>
+        <div class="prec-ops">+ -</div>
+        <div class="prec-desc"><strong>Adição e subtração</strong> — menor precedência. Avaliados por último. Da esquerda para a direita quando há empate.</div>
+      </div>
+    </div>
+
+    <!-- Exemplo 4 da professora -->
+    <div class="task-wrap" style="margin-top:1.75rem;">
+      <div class="task-head">
+        <h3>📋 Exemplo 4 — Precedência de Operadores</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Programa que demonstra a precedência de operadores aritméticos em C. Observe como a ausência de parênteses pode levar a resultados inesperados.</p>
+
+        <div class="code-block">
+          <div class="code-label">//exemplo4.c</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  : Precedência de Operadores
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// Sem parênteses: * antes de +</span>
+    <span class="kw">int</span> r1 <span class="op">=</span> <span class="nm">2</span> <span class="op">+</span> <span class="nm">3</span> <span class="op">*</span> <span class="nm">4</span>;        <span class="cm">// → 14  (não 20!)</span>
+    <span class="cm">//              └── 3*4=12 primeiro, depois 2+12</span>
+    <span class="fn">printf</span>(<span class="str">"2 + 3 * 4 = %d\n"</span>, r1);
+
+    <span class="cm">// Com parênteses: força a soma primeiro</span>
+    <span class="kw">int</span> r2 <span class="op">=</span> (<span class="nm">2</span> <span class="op">+</span> <span class="nm">3</span>) <span class="op">*</span> <span class="nm">4</span>;       <span class="cm">// → 20</span>
+    <span class="fn">printf</span>(<span class="str">"(2 + 3) * 4 = %d\n"</span>, r2);
+
+    <span class="cm">// Média correta de dois inteiros:</span>
+    <span class="kw">int</span> n1 <span class="op">=</span> <span class="nm">8</span>, n2 <span class="op">=</span> <span class="nm">6</span>;
+    <span class="kw">float</span> m;
+
+    m <span class="op">=</span> n1 <span class="op">+</span> n2 <span class="op">/</span> <span class="nm">2.0</span>;         <span class="cm">// ❌ → 11.0 (divide n2 antes de somar)</span>
+    <span class="fn">printf</span>(<span class="str">"8 + 6 / 2.0 = %.1f (incorreto)\n"</span>, m);
+
+    m <span class="op">=</span> (n1 <span class="op">+</span> n2) <span class="op">/</span> <span class="nm">2.0</span>;       <span class="cm">// ✅ → 7.0  (soma antes de dividir)</span>
+    <span class="fn">printf</span>(<span class="str">"(8 + 6) / 2.0 = %.1f (correto)\n"</span>, m);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <div class="callout tip">
+          <div class="callout-icon">💡</div>
+          <div><strong>Dica de ouro:</strong> quando estiver em dúvida sobre a precedência, use parênteses. Eles tornam o código mais legível e eliminam ambiguidades.<br><code>(n1 + n2) / 2.0</code> é mais claro que depender da precedência.</div>
+        </div>
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">1</div><div>Digite o código acima no Dev-C++, salve como <strong><code>exemplo4.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Compile e execute. Observe os resultados e compare com os comentários.</div></li>
+          <li><div class="ts-num">3</div><div>Envie o arquivo <code>exemplo4.c</code> no Moodle.</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Simulador de precedência -->
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: .65rem 0;">
+      <h3 style="font-size:.9rem; font-weight:600; color:var(--navy); margin-bottom:.5rem; padding: .8rem 1rem .2rem;">Simulador de precedência — trace manual</h3>
+      <div style="padding: 0 1rem .9rem;">
+        <p style="margin-bottom:.75rem;font-size:.88rem;">Resolva passo a passo como o compilador avalia cada expressão:</p>
+        <table class="analysis-table">
+          <thead><tr><th>Expressão</th><th>Passo 1 (*, /, %)</th><th>Passo 2 (+, -)</th><th>Resultado</th></tr></thead>
+          <tbody>
+            <tr><td><code>5 + 2 * 3</code></td><td>2 * 3 = 6</td><td>5 + 6 = 11</td><td>11</td></tr>
+            <tr><td><code>10 - 4 / 2</code></td><td>4 / 2 = 2</td><td>10 - 2 = 8</td><td>8</td></tr>
+            <tr><td><code>7 % 3 + 1</code></td><td>7 % 3 = 1</td><td>1 + 1 = 2</td><td>2</td></tr>
+            <tr><td><code>(5 + 2) * 3</code></td><td>(5+2) = 7 primeiro</td><td>7 * 3 = 21</td><td>21</td></tr>
+            <tr><td><code>2 + 8 / 4 * 2</code></td><td>8/4=2, então 2*2=4</td><td>2 + 4 = 6</td><td>6</td></tr>
+          </tbody>
+        </table>
+        <div class="callout info" style="margin-top:.75rem;">
+          <div>Quando dois operadores têm a <strong>mesma precedência</strong> (ex.: <code>*</code> e <code>/</code>), a avaliação é feita da <strong>esquerda para a direita</strong>. Assim, <code>8 / 4 * 2 = (8/4) * 2 = 2 * 2 = 4</code>.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     4 — ATIVIDADES DRAG & DROP
+     ══════════════════════════════════════ -->
+<section id="quiz">
+  <div class="container">
+    <div class="section-label">Quiz</div>
+    <h2>Confirme seu Conhecimento</h2>
+    <p class="lead">Responda todas as questões e clique em <strong>Ver minha pontuação</strong>.</p>
+
+    <div class="quiz-progress"><div class="quiz-progress-bar" id="q-bar" style="width:0%"></div></div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 1 de 8</div>
+      <div class="q-text">Qual tipo de variável em C é mais adequado para armazenar a pressão de um sistema com alta precisão numérica (ex.: 2.300017 atm)?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q1" value="a"> <code>int</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="b"> <code>float</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="c"> <code>double</code></label>
+        <label class="q-opt"><input type="radio" name="q1" value="d"> <code>char</code></label>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 2 de 8</div>
+      <div class="q-text">Qual é o resultado de <code>10 / 3</code> em C, quando ambas as variáveis são do tipo <code>int</code>?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q2" value="a"> 3.33</label>
+        <label class="q-opt"><input type="radio" name="q2" value="b"> 3</label>
+        <label class="q-opt"><input type="radio" name="q2" value="c"> 4</label>
+        <label class="q-opt"><input type="radio" name="q2" value="d"> Erro de compilação</label>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 3 de 8</div>
+      <div class="q-text">Qual é o resultado de <code>17 % 5</code> em C?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q3" value="a"> 3</label>
+        <label class="q-opt"><input type="radio" name="q3" value="b"> 2</label>
+        <label class="q-opt"><input type="radio" name="q3" value="c"> 0</label>
+        <label class="q-opt"><input type="radio" name="q3" value="d"> 3.4</label>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 4 de 8</div>
+      <div class="q-text">Um programa precisa calcular a média de dois inteiros <code>a</code> e <code>b</code> e guardar em <code>float media</code>. Qual das expressões está <strong>correta</strong>?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q4" value="a"> <code>media = a + b / 2;</code></label>
+        <label class="q-opt"><input type="radio" name="q4" value="b"> <code>media = (a + b) / 2;</code></label>
+        <label class="q-opt"><input type="radio" name="q4" value="c"> <code>media = (a + b) / 2.0;</code></label>
+        <label class="q-opt"><input type="radio" name="q4" value="d"> <code>media = a + b / 2.0;</code></label>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 5 de 8</div>
+      <div class="q-text">Qual é o valor de <code>r</code> após executar: <code>int r = 2 + 3 * 4;</code>?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q5" value="a"> 20</label>
+        <label class="q-opt"><input type="radio" name="q5" value="b"> 14</label>
+        <label class="q-opt"><input type="radio" name="q5" value="c"> 24</label>
+        <label class="q-opt"><input type="radio" name="q5" value="d"> 11</label>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 6 de 8</div>
+      <div class="q-text">Para ler um valor <code>double</code> com <code>scanf</code>, qual especificador de formato é obrigatório?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q6" value="a"> <code>%f</code></label>
+        <label class="q-opt"><input type="radio" name="q6" value="b"> <code>%d</code></label>
+        <label class="q-opt"><input type="radio" name="q6" value="c"> <code>%lf</code></label>
+        <label class="q-opt"><input type="radio" name="q6" value="d"> <code>%D</code></label>
+      </div>
+      <div class="q-feedback" id="fb6"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 7 de 8</div>
+      <div class="q-text">Como imprimir corretamente o símbolo <code>%</code> dentro de um <code>printf</code>?</div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q7" value="a"> Usar <code>\%</code></label>
+        <label class="q-opt"><input type="radio" name="q7" value="b"> Usar <code>%%</code></label>
+        <label class="q-opt"><input type="radio" name="q7" value="c"> Usar <code>%s</code> com o valor <code>"%"</code></label>
+        <label class="q-opt"><input type="radio" name="q7" value="d"> Não é possível imprimir <code>%</code> com printf</label>
+      </div>
+      <div class="q-feedback" id="fb7"></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-num">Questão 8 de 8</div>
+      <div class="q-text">Qual será a saída do trecho abaixo?<br>
+        <code style="display:block;margin-top:.5rem;white-space:pre;font-size:.8rem;line-height:1.8;">int p = 2, q = 4, r = 8;
+int res = p / q * r;
+printf("%d", res);</code>
+      </div>
+      <div class="q-options">
+        <label class="q-opt"><input type="radio" name="q8" value="a"> 0</label>
+        <label class="q-opt"><input type="radio" name="q8" value="b"> 4</label>
+        <label class="q-opt"><input type="radio" name="q8" value="c"> 2</label>
+        <label class="q-opt"><input type="radio" name="q8" value="d"> 6</label>
+      </div>
+      <div class="q-feedback" id="fb8"></div>
+    </div>
+
+    <button id="quiz-btn" onclick="corrigirQuiz()">Ver minha pontuação</button>
+
+    <div id="quiz-result">
+      <div class="result-score" id="r-score"></div>
+      <div class="result-sub"   id="r-sub"></div>
+      <div class="result-msg"   id="r-msg"></div>
+      <button id="quiz-retry" onclick="resetQuiz()">↺ Tentar novamente</button>
+    </div>
+  </div>
+</section>
+
+<section id="exemplos">
+  <div class="container">
+    <div class="section-label">Atividade Interativa</div>
+    <h2>Ordenar o Código C</h2>
+    <p class="lead">Organize as linhas de código na ordem correta para formar um programa completo e funcionando. Arraste ou clique para montar.</p>
+
+    <!-- ATIVIDADE DRAG — IMC -->
+    <div class="activity-wrap">
+      <div class="activity-head">
+        <span style="font-size:1.2rem;">⚖️</span>
+        <h3>Ordenar: Cálculo do IMC</h3>
+      </div>
+      <div class="activity-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Contexto:</strong> organize as linhas para um programa que lê nome, peso e altura, calcula o IMC e exibe o resultado.</p>
+        <p style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.5rem;">Linhas embaralhadas — arraste para a ordem correta:</p>
+
+        <div class="drag-pool" id="poolIMC"
+             ondragover="poolOver(event,'IMC')"
+             ondrop="dropToPool(event,'IMC')"
+             onclick="poolClick('IMC')">
+        </div>
+        <div class="slots" id="slotsIMC"></div>
+
+        <div class="act-btn-row">
+          <button class="btn-check" onclick="checkActivity('IMC')">✅ Verificar código</button>
+          <button class="btn-reset" onclick="resetActivity('IMC')">↺ Recomeçar</button>
+        </div>
+        <div class="act-feedback" id="feedbackIMC"></div>
+
+        <div class="reveal-panel" id="revealIMC">
+          <h3 style="margin-bottom:.75rem;">Programa completo — copie no Dev-C++</h3>
+          <div class="code-block">
+            <div class="code-label">//imc.c</div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">char</span>  nome[<span class="nm">50</span>];
+    <span class="kw">float</span> peso, altura, imc;
+
+    <span class="fn">printf</span>(<span class="str">"Digite seu nome: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%s"</span>, nome);
+
+    <span class="fn">printf</span>(<span class="str">"Digite seu peso em kg: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>peso);
+
+    <span class="fn">printf</span>(<span class="str">"Digite sua altura em metros: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>altura);
+
+    imc <span class="op">=</span> peso <span class="op">/</span> (altura <span class="op">*</span> altura);
+
+    <span class="fn">printf</span>(<span class="str">"%s, seu IMC e: %.2f\n"</span>, nome, imc);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+          </div>
+          <div class="callout info" style="margin-top:.75rem;">
+            <div class="callout-icon">⚗️</div>
+            <div><strong>Por que <code>(altura * altura)</code> e não <code>altura^2</code>?</strong> Em C não existe operador de potência. Para elevar ao quadrado, multiplique a variável por ela mesma. Para potências maiores, use a função <code>pow(base, expoente)</code> da biblioteca <code>math.h</code>.</div>
+          </div>
+          <p class="copy-hint">📋 Cole no Dev-C++, salve como <code>imc.c</code>, compile com F11 e teste. Envie o <code>.c</code> no Moodle.</p>
+          <table class="analysis-table" style="margin-top:.85rem;">
+            <thead><tr><th>Peso (kg)</th><th>Altura (m)</th><th>IMC esperado</th></tr></thead>
+            <tbody>
+              <tr><td>70.0</td><td>1.75</td><td>22.86</td></tr>
+              <tr><td>90.0</td><td>1.80</td><td>27.78</td></tr>
+              <tr><td>55.0</td><td>1.65</td><td>20.20</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATIVIDADE DRAG — Celsius → Fahrenheit -->
+    <div class="activity-wrap">
+      <div class="activity-head" style="background:var(--navy-light);">
+        <span style="font-size:1.2rem;">🌡️</span>
+        <h3>Ordenar: Conversor Celsius → Fahrenheit</h3>
+      </div>
+      <div class="activity-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;"><strong>Contexto:</strong> organize as linhas para converter temperatura de Celsius para Fahrenheit. Fórmula: <strong>F = (C × 9/5) + 32</strong>.</p>
+        <p style="font-size:.85rem;font-weight:600;color:var(--navy);margin-bottom:.5rem;">Linhas embaralhadas — arraste para a ordem correta:</p>
+
+        <div class="drag-pool" id="poolCF"
+             style="background:#141f2d;border-color:#2d4a6a;"
+             ondragover="poolOver(event,'CF')"
+             ondrop="dropToPool(event,'CF')"
+             onclick="poolClick('CF')">
+        </div>
+        <div class="slots" id="slotsCF"></div>
+
+        <div class="act-btn-row">
+          <button class="btn-check" onclick="checkActivity('CF')">✅ Verificar código</button>
+          <button class="btn-reset" onclick="resetActivity('CF')">↺ Recomeçar</button>
+        </div>
+        <div class="act-feedback" id="feedbackCF"></div>
+
+        <div class="reveal-panel" id="revealCF">
+          <h3 style="margin-bottom:.75rem;">Programa completo — copie no Dev-C++</h3>
+          <div class="code-block">
+            <div class="code-label">//celsius_fahrenheit.c</div>
+<pre><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">float</span> celsius, fahrenheit;
+
+    <span class="fn">printf</span>(<span class="str">"Digite a temperatura em Celsius: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>celsius);
+
+    fahrenheit <span class="op">=</span> (celsius <span class="op">*</span> <span class="nm">9.0</span> <span class="op">/</span> <span class="nm">5.0</span>) <span class="op">+</span> <span class="nm">32.0</span>;
+
+    <span class="fn">printf</span>(<span class="str">"%.2f C = %.2f F\n"</span>, celsius, fahrenheit);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+          </div>
+          <div class="callout tip" style="margin-top:.75rem;">
+            <div class="callout-icon">💡</div>
+            <div><strong>Por que <code>9.0 / 5.0</code> e não <code>9 / 5</code>?</strong> Com <code>9 / 5</code> a divisão seria inteira: resultado <code>1</code> (não <code>1.8</code>). A fórmula ficaria errada. Use <code>9.0</code> ou <code>9.0f</code> para garantir divisão de ponto flutuante.</div>
+          </div>
+          <p class="copy-hint">📋 Cole no Dev-C++, salve como <code>celsius_fahrenheit.c</code>, compile com F11 e teste. Envie o <code>.c</code> no Moodle.</p>
+          <table class="analysis-table" style="margin-top:.85rem;">
+            <thead><tr><th>Entrada (°C)</th><th>Saída esperada (°F)</th><th>Referência</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>32.00</td><td>Ponto de fusão da água</td></tr>
+              <tr><td>100</td><td>212.00</td><td>Ponto de ebulição da água</td></tr>
+              <tr><td>37</td><td>98.60</td><td>Temperatura corporal</td></tr>
+              <tr><td>-40</td><td>-40.00</td><td>Ponto de interseção das escalas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <div class="download-area">
+    <p>Preencha seu nome e salve um registro desta atividade.</p>
+    <div class="download-row">
+      <input id="nome-aluno" type="text" placeholder="Seu nome completo" />
+      <button id="btn-download" onclick="baixarResultado()">⬇️ Baixar resultado</button>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════
+     5 — ATIVIDADES PRÁTICAS (para entregar)
+     ══════════════════════════════════════ -->
+<section id="atividades">
+  <div class="container">
+    <div class="section-label">Atividades — Entrega no Moodle</div>
+    <h2>Complete e entregue os programas</h2>
+    <p class="lead">Para cada atividade abaixo, complete o código no Dev-C++, compile, teste e envie o arquivo <code>.c</code> no Moodle — sem compactar.</p>
+
+    <!-- Atividade 1 -->
+    <div class="task-wrap">
+      <div class="task-head">
+        <h3>✏️ Atividade 1 — Dados Pessoais</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Complete o código declarando variáveis para seus dados pessoais, atribuindo valores e imprimindo tudo.</p>
+        <div class="code-block">
+          <div class="code-label">//atividade1.c — complete os TODO</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  :
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="cm">// TODO: Declare variáveis para:</span>
+    <span class="cm">// - sua idade (int)</span>
+    <span class="cm">// - sua altura em metros (float)</span>
+    <span class="cm">// - primeira letra do seu nome (char)</span>
+    <span class="cm">// - número de irmãos (int)</span>
+
+    <span class="cm">// TODO: Atribua valores às variáveis</span>
+
+    <span class="cm">// TODO: Imprima todas as variáveis</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <details style="margin-top:.75rem;">
+          <summary>💡 Dica — Ver estrutura esperada</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <div class="code-block">
+<pre><span class="kw">int</span>   idade <span class="op">=</span> <span class="nm">20</span>;
+<span class="kw">float</span> altura <span class="op">=</span> <span class="nm">1.75</span>;
+<span class="kw">char</span>  inicial <span class="op">=</span> <span class="str">'A'</span>;
+<span class="kw">int</span>   irmaos <span class="op">=</span> <span class="nm">2</span>;
+
+<span class="fn">printf</span>(<span class="str">"Idade: %d\n"</span>, idade);
+<span class="fn">printf</span>(<span class="str">"Altura: %.2f m\n"</span>, altura);
+<span class="fn">printf</span>(<span class="str">"Inicial: %c\n"</span>, inicial);
+<span class="fn">printf</span>(<span class="str">"Irmãos: %d\n"</span>, irmaos);</pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Atividade 2 -->
+    <div class="task-wrap">
+      <div class="task-head">
+        <h3>✏️ Atividade 2 — Entrada de Dados Pessoais</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Agora com <code>scanf</code>: peça nome, idade e altura ao usuário e exiba uma mensagem personalizada.</p>
+        <div class="code-block">
+          <div class="code-label">//atividade2.c — complete os TODO</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  :
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">char</span>  nome[<span class="nm">50</span>];
+    <span class="kw">int</span>   idade;
+    <span class="kw">float</span> altura;
+
+    <span class="cm">// TODO: Peça para o usuário digitar nome, idade e altura</span>
+    <span class="cm">// TODO: Leia os valores com scanf</span>
+    <span class="cm">// TODO: Exiba uma mensagem personalizada com os dados</span>
+    <span class="cm">// Ex.: Jose tem 18 anos e 1.4 metro(s) de altura.</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <details style="margin-top:.75rem;">
+          <summary>💡 Dica — Ver como ler os dados</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <div class="code-block">
+<pre><span class="fn">printf</span>(<span class="str">"Digite seu nome: "</span>);
+<span class="fn">scanf</span>(<span class="str">"%s"</span>, nome);
+
+<span class="fn">printf</span>(<span class="str">"Digite sua idade: "</span>);
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&amp;</span>idade);
+
+<span class="fn">printf</span>(<span class="str">"Digite sua altura (m): "</span>);
+<span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>altura);
+
+<span class="fn">printf</span>(<span class="str">"%s tem %d anos e %.1f metro(s) de altura.\n"</span>,
+       nome, idade, altura);</pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Atividade 3 -->
+    <div class="task-wrap">
+      <div class="task-head">
+        <h3>✏️ Atividade 3 — Calculadora de Operações</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:1rem;">Complete o código que lê dois números e calcula todas as operações aritméticas.</p>
+        <div class="code-block">
+          <div class="code-label">//atividade3.c — complete os TODO</div>
+<pre><span class="cm">/*
+  Autor :
+  Data  :
+  Desc  :
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+
+    <span class="kw">float</span> num1, num2;
+
+    <span class="fn">printf</span>(<span class="str">"Digite o primeiro número: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>num1);
+    <span class="fn">printf</span>(<span class="str">"Digite o segundo número: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, <span class="op">&amp;</span>num2);
+
+    <span class="cm">// TODO: Calcule e exiba com duas casas decimais:</span>
+    <span class="cm">// - Soma</span>
+    <span class="cm">// - Subtração</span>
+    <span class="cm">// - Multiplicação</span>
+    <span class="cm">// - Divisão</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+        </div>
+        <details style="margin-top:.75rem;">
+          <summary>💡 Dica — Ver a solução</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <div class="code-block">
+<pre><span class="fn">printf</span>(<span class="str">"Soma:           %.2f\n"</span>, num1 <span class="op">+</span> num2);
+<span class="fn">printf</span>(<span class="str">"Subtração:      %.2f\n"</span>, num1 <span class="op">-</span> num2);
+<span class="fn">printf</span>(<span class="str">"Multiplicação:  %.2f\n"</span>, num1 <span class="op">*</span> num2);
+<span class="fn">printf</span>(<span class="str">"Divisão:        %.2f\n"</span>, num1 <span class="op">/</span> num2);</pre>
+            </div>
+            <div class="callout warn" style="margin-top:.75rem;">
+              <div class="callout-icon">⚠️</div>
+              <div>Lembre-se: como <code>num1</code> e <code>num2</code> são <code>float</code>, a divisão já retorna decimal. Não é necessário usar <code>2.0</code>. Porém, se o usuário digitar <code>0</code> para o divisor, o programa exibirá <code>inf</code> — divisão por zero. Veremos como tratar isso quando estudarmos condicionais.</div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Atividade 4 — Calculadora de Energia Elétrica -->
+    <div class="task-wrap">
+      <div class="task-head" style="background:#1e4a3a;">
+        <h3>⚡ Atividade 4 — Calculadora de Energia Elétrica</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:.75rem;">Escreva <strong>do zero</strong> um programa que calcula o consumo de energia elétrica em kilowatt-hora (kWh).</p>
+
+        <table class="analysis-table">
+          <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td>Nome do aparelho, potência em watts, tempo de uso em horas</td><td><code>aparelho</code>, <code>potencia</code>, <code>horas</code></td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td>Calcular energia elétrica em kWh</td><td><code>energia = potencia * horas / 1000.0</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td>Exibir o aparelho e o consumo em kWh com 2 casas decimais</td><td><code>energia</code></td></tr>
+          </tbody>
+        </table>
+
+        <ul class="task-steps" style="margin-top:1rem;">
+          <li><div class="ts-num">1</div><div>Crie um novo arquivo no Dev-C++, salve como <strong><code>energia_eletrica.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Escreva o cabeçalho de comentários com seu nome, data e descrição.</div></li>
+          <li><div class="ts-num">3</div><div>Implemente o programa completo (sem copiar das atividades anteriores).</div></li>
+          <li><div class="ts-num">4</div><div>Compile e teste com os valores da tabela abaixo.</div></li>
+          <li><div class="ts-num">5</div><div>Envie o arquivo <code>energia_eletrica.c</code> no Moodle.</div></li>
+        </ul>
+
+        <table class="analysis-table" style="margin-top:.75rem;">
+          <thead><tr><th>Potência (W)</th><th>Tempo (h)</th><th>Energia esperada (kWh)</th></tr></thead>
+          <tbody>
+            <tr><td>1000.0</td><td>2.5</td><td>2.50</td></tr>
+            <tr><td>60.0</td><td>5.0</td><td>0.30</td></tr>
+            <tr><td>1500.0</td><td>3.5</td><td>5.25</td></tr>
+          </tbody>
+        </table>
+
+        <details style="margin-top:.75rem;">
+          <summary>💡 Dica — Esqueleto do programa</summary>
+          <div class="details-body" style="padding-top:.75rem;">
+            <div class="code-block">
+<pre><span class="cm">/*
+  Autor: [SEU NOME]
+  Data:  [DATA]
+  Desc:  Calcula o consumo de energia elétrica em kWh
+*/</span>
+<span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cm">// declare suas variáveis aqui</span>
+
+    <span class="cm">// peça o nome do aparelho, potência e tempo de uso</span>
+
+    <span class="cm">// calcule: energia = potencia * horas / 1000.0</span>
+
+    <span class="cm">// exiba o resultado</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</pre>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Atividade 5 — Conversor de Velocidade km/h → m/s -->
+    <div class="task-wrap">
+      <div class="task-head" style="background:#1e4a3a;">
+        <h3>⚡ Atividade 5 — Conversor de Velocidade km/h → m/s</h3>
+      </div>
+      <div class="task-body">
+        <p style="font-size:.9rem;margin-bottom:.75rem;">Escreva <strong>do zero</strong> um programa que converte velocidade de quilômetros por hora para metros por segundo.</p>
+
+        <div class="concept-box">
+          <h3>Fórmula: m/s = km/h ÷ 3.6</h3>
+          <p style="font-size:.88rem;margin-top:.4rem;"><strong>Atenção à implementação:</strong> use <code>velocidade_ms = kmh / 3.6</code> ou <code>kmh * 1000.0 / 3600.0</code> para evitar divisão inteira.</p>
+        </div>
+
+        <table class="analysis-table">
+          <thead><tr><th>Etapa</th><th>Descrição</th><th>Variável</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-in">Entrada</span></td><td>Velocidade em km/h</td><td><code>kmh</code> — tipo <code>float</code></td></tr>
+            <tr><td><span class="badge badge-proc">Processamento</span></td><td>Converter para metros por segundo</td><td><code>velocidade_ms = kmh / 3.6</code></td></tr>
+            <tr><td><span class="badge badge-out">Saída</span></td><td>Exibir resultado com 2 casas decimais</td><td><code>velocidade_ms</code></td></tr>
+          </tbody>
+        </table>
+
+        <ul class="task-steps" style="margin-top:.75rem;">
+          <li><div class="ts-num">1</div><div>Crie um novo arquivo no Dev-C++, salve como <strong><code>velocidade.c</code></strong>.</div></li>
+          <li><div class="ts-num">2</div><div>Escreva o cabeçalho de comentários e implemente o programa completo.</div></li>
+          <li><div class="ts-num">3</div><div>Implemente o programa completo (sem copiar das atividades anteriores).</div></li>
+          <li><div class="ts-num">4</div><div>Compile e teste com os valores da tabela abaixo e verifique os resultados.</div></li>
+          <li><div class="ts-num">5</div><div>Envie o arquivo <code>velocidade.c</code> no Moodle.</div></li>
+        </ul>
+
+        <table class="analysis-table" style="margin-top:.75rem;">
+          <thead><tr><th>Entrada (km/h)</th><th>Saída esperada (m/s)</th><th>Referência</th></tr></thead>
+          <tbody>
+            <tr><td>36.0</td><td>10.00</td><td>Velocidade urbana comum</td></tr>
+            <tr><td>72.0</td><td>20.00</td><td>Dobro de 36 km/h</td></tr>
+            <tr><td>100.0</td><td>27.78</td><td>Velocidade de estrada</td></tr>
+            <tr><td>5.0</td><td>1.39</td><td>Caminhada rápida</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout info" style="margin-top:.75rem;">
+          <div><strong>Curiosidade:</strong> em física, a unidade m/s é usada em fórmulas de movimento. Para converter km/h em m/s, divida por 3.6 porque 1 km = 1000 m e 1 h = 3600 s.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Erros comuns -->
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: .65rem 0;">
+      <h3 style="font-size:.9rem; font-weight:600; color:var(--navy); margin-bottom:.5rem; padding: .8rem 1rem .2rem;">🐛 Erros comuns nesta aula</h3>
+      <div style="padding: 0 1rem .9rem;">
+        <table class="analysis-table">
+          <thead><tr><th>Erro</th><th>Causa</th><th>Correção</th></tr></thead>
+          <tbody>
+            <tr><td>Resultado da divisão é inteiro sem querer</td><td>Ambos os operandos são <code>int</code></td><td>Use <code>2.0</code> em vez de <code>2</code>, ou declare as variáveis como <code>float</code></td></tr>
+            <tr><td>Resultado do IMC é <code>0.00</code></td><td><code>peso</code> e <code>altura</code> declarados como <code>int</code></td><td>Declare como <code>float</code> ou <code>double</code></td></tr>
+            <tr><td>Programa não imprime <code>%</code></td><td>Usou <code>%</code> em vez de <code>%%</code> no <code>printf</code></td><td>Escreva <code>%%</code> para imprimir o símbolo literal</td></tr>
+            <tr><td>Média errada (ex.: <code>7 + 6 / 2.0 = 10</code>)</td><td><code>media = n1 + n2 / 2.0</code> sem parênteses</td><td>Escreva <code>media = (n1 + n2) / 2.0</code></td></tr>
+            <tr><td>Programa não lê o <code>char</code> corretamente</td><td>Buffer do teclado com <code>\n</code> do <code>Enter</code> anterior</td><td>Coloque espaço antes de <code>%c</code>: <code>scanf(" %c", &var)</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     RESUMO
+     ══════════════════════════════════════ -->
+<section id="resumo">
+  <div class="container">
+    <div class="section-label">Resumo</div>
+    <h2>O que você aprendeu hoje</h2>
+
+    <div class="summary-grid">
+      <div class="sum-item">
+        <div class="si-title">🔢 int</div>
+        <p>Inteiros. 4 bytes. Especificador <code>%d</code>. Divisão entre ints trunca o resultado.</p>
+      </div>
+      <div class="sum-item g">
+        <div class="si-title">📐 float / double</div>
+        <p>Decimais. float = 4 bytes / 7 dígitos. double = 8 bytes / 15 dígitos. Use <code>%lf</code> no scanf de double.</p>
+      </div>
+      <div class="sum-item a">
+        <div class="si-title">🔤 char / char[]</div>
+        <p>Um caractere (1 byte, <code>%c</code>) ou vetor de caracteres para strings (<code>%s</code>). Use espaço antes de <code>%c</code> no scanf.</p>
+      </div>
+    </div>
+
+    <div class="summary-grid" style="margin-top:1rem;">
+      <div class="sum-item r">
+        <div class="si-title">➗ Divisão inteira</div>
+        <p>int ÷ int = int (parte decimal truncada). Para obter decimal, use pelo menos um operando <code>float</code> ou adicione <code>.0</code>.</p>
+      </div>
+      <div class="sum-item p">
+        <div class="si-title">% Módulo</div>
+        <p>Retorna o resto da divisão inteira. Apenas para <code>int</code>. Para exibir o símbolo % no printf, use <code>%%</code>.</p>
+      </div>
+      <div class="sum-item">
+        <div class="si-title">🔢 Precedência</div>
+        <p>Ordem: parênteses → <code>* / %</code> → <code>+ -</code>. Em dúvida, use parênteses. <code>(a+b)/2.0</code> ≠ <code>a+b/2.0</code>.</p>
+      </div>
+    </div>
+
+    <div class="callout tip" style="margin-top:1.25rem;">
+      <div class="callout-icon">🔜</div>
+      <div><strong>Próxima aula:</strong> Estruturas de decisão — <code>if</code>, <code>else</code> e operadores relacionais. Você vai adicionar lógica condicional aos seus programas: por exemplo, classificar o IMC em "abaixo do peso", "normal", "sobrepeso".</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  📚 Laboratório de PC 1 · CEFET-MG Campus Contagem · 1º Período Engenharia Química · 2026
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+//  DADOS DAS ATIVIDADES DRAG & DROP
+// ─────────────────────────────────────────────
+
+const ACTIVITY_IMC = {
+  items: [
+    { id:'i1',  text:'#include <stdio.h>',                              cls:'code-item' },
+    { id:'i2',  text:'int main() {',                                    cls:'code-item' },
+    { id:'i3',  text:'    char nome[50];',                              cls:'code-item' },
+    { id:'i4',  text:'    float peso, altura, imc;',                    cls:'code-item' },
+    { id:'i5',  text:'    printf("Digite seu nome: ");',                cls:'code-item' },
+    { id:'i6',  text:'    scanf("%s", nome);',                          cls:'code-item' },
+    { id:'i7',  text:'    printf("Digite seu peso em kg: ");',          cls:'code-item' },
+    { id:'i8',  text:'    scanf("%f", &peso);',                         cls:'code-item' },
+    { id:'i9',  text:'    printf("Digite sua altura em metros: ");',    cls:'code-item' },
+    { id:'i10', text:'    scanf("%f", &altura);',                       cls:'code-item' },
+    { id:'i11', text:'    imc = peso / (altura * altura);',             cls:'code-item' },
+    { id:'i12', text:'    printf("%s, seu IMC e: %.2f\\n", nome, imc);',cls:'code-item' },
+    { id:'i13', text:'    return 0;\n}',                                cls:'code-item' },
+  ],
+  correct: ['i1','i2','i3','i4','i5','i6','i7','i8','i9','i10','i11','i12','i13'],
+  slotHints: [
+    'Inclua a biblioteca de entrada e saída',
+    'Declare a função principal do programa',
+    'Declare a variável nome como vetor de char',
+    'Declare as variáveis numéricas peso, altura e imc',
+    'Peça o nome ao usuário',
+    'Leia o nome com scanf',
+    'Peça o peso ao usuário',
+    'Leia o peso com scanf',
+    'Peça a altura ao usuário',
+    'Leia a altura com scanf',
+    'Calcule o IMC',
+    'Exiba o resultado',
+    'Encerre o programa',
+  ],
+};
+
+const ACTIVITY_CF = {
+  items: [
+    { id:'c1', text:'#include <stdio.h>',                                            cls:'code-item' },
+    { id:'c2', text:'int main() {',                                                  cls:'code-item' },
+    { id:'c3', text:'    float celsius, fahrenheit;',                                cls:'code-item' },
+    { id:'c4', text:'    printf("Digite a temperatura em Celsius: ");',              cls:'code-item' },
+    { id:'c5', text:'    scanf("%f", &celsius);',                                    cls:'code-item' },
+    { id:'c6', text:'    fahrenheit = (celsius * 9.0 / 5.0) + 32.0;',              cls:'code-item' },
+    { id:'c7', text:'    printf("%.2f C = %.2f F\\n", celsius, fahrenheit);',       cls:'code-item' },
+    { id:'c8', text:'    return 0;\n}',                                              cls:'code-item' },
+  ],
+  correct: ['c1','c2','c3','c4','c5','c6','c7','c8'],
+  slotHints: [
+    'Inclua a biblioteca de entrada e saída',
+    'Declare a função principal do programa',
+    'Declare as variáveis celsius e fahrenheit',
+    'Peça a temperatura em Celsius ao usuário',
+    'Leia o valor com scanf',
+    'Aplique a fórmula de conversão',
+    'Exiba as duas temperaturas formatadas',
+    'Encerre o programa',
+  ],
+};
+
+// ─────────────────────────────────────────────
+//  ESTADO GLOBAL
+// ─────────────────────────────────────────────
+const state = {
+  IMC: { slots: Array(13).fill(null), pool: [], checked: false, selected: null, selectedFrom: null },
+  CF:  { slots: Array(8).fill(null),  pool: [], checked: false, selected: null, selectedFrom: null },
+};
+
+// ─────────────────────────────────────────────
+//  FUNÇÕES DE RENDER
+// ─────────────────────────────────────────────
+function getData(act) { return act === 'IMC' ? ACTIVITY_IMC : ACTIVITY_CF; }
+
+function getItem(act, id) {
+  return getData(act).items.find(i => i.id === id);
+}
+
+function renderActivity(act) {
+  const s     = state[act];
+  const data  = getData(act);
+  const poolEl  = document.getElementById('pool' + act);
+  const slotsEl = document.getElementById('slots' + act);
+  if (!poolEl || !slotsEl) return;
+
+  // pool
+  poolEl.innerHTML = '';
+  s.pool.forEach(id => {
+    const item = getItem(act, id);
+    const div = document.createElement('div');
+    div.className = 'drag-item' + (item.cls ? ' ' + item.cls : '');
+    div.dataset.id  = id;
+    div.draggable   = !s.checked;
+    div.textContent = item.text;
+    if (s.selected === id) div.style.outline = '2px solid #3a82c4';
+    div.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('id', id);
+      e.dataTransfer.setData('from', 'pool');
+    });
+    div.addEventListener('click', () => clickItem(act, id, 'pool'));
+    poolEl.appendChild(div);
+  });
+
+  // slots
+  slotsEl.innerHTML = '';
+  s.slots.forEach((sid, idx) => {
+    const row  = document.createElement('div');
+    row.className = 'slot-row';
+    const num  = document.createElement('div');
+    num.className = 'slot-num';
+    num.textContent = idx + 1;
+    const slot = document.createElement('div');
+    slot.className = 'slot code-slot' + (sid ? ' has-item' : '');
+    if (s.checked && sid) {
+      slot.classList.add(data.correct[idx] === sid ? 'correct' : 'wrong');
+    }
+    slot.dataset.idx = idx;
+
+    if (sid) {
+      const item = getItem(act, sid);
+      const div = document.createElement('div');
+      div.className = 'drag-item' + (item.cls ? ' ' + item.cls : '');
+      if (s.checked) div.classList.add(data.correct[idx] === sid ? 'correct' : 'wrong');
+      div.dataset.id  = sid;
+      div.draggable   = !s.checked;
+      div.textContent = item.text;
+      div.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('id', sid);
+        e.dataTransfer.setData('from', idx);
+      });
+      div.addEventListener('click', () => clickItem(act, sid, idx));
+      slot.appendChild(div);
+    } else {
+      slot.textContent = data.slotHints ? data.slotHints[idx] : 'Solte aqui a linha ' + (idx + 1);
+      slot.style.fontFamily = 'Inter, sans-serif';
+      slot.style.fontSize   = '.78rem';
+      slot.style.fontStyle  = 'italic';
+    }
+
+    slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => { e.preventDefault(); slot.classList.remove('drag-over'); dropToSlot(e, act, idx); });
+    slot.addEventListener('click', () => slotClick(act, idx));
+
+    row.appendChild(num);
+    row.appendChild(slot);
+    slotsEl.appendChild(row);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  DRAG
+// ─────────────────────────────────────────────
+function poolOver(e, act) { e.preventDefault(); document.getElementById('pool' + act).classList.add('drag-over'); }
+
+function dropToPool(e, act) {
+  e.preventDefault();
+  document.getElementById('pool' + act).classList.remove('drag-over');
+  const id   = e.dataTransfer.getData('id');
+  const from = e.dataTransfer.getData('from');
+  const s    = state[act];
+  if (s.checked) return;
+  if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+    if (!s.pool.includes(id)) s.pool.push(id);
+  }
+  renderActivity(act);
+}
+
+function dropToSlot(e, act, idx) {
+  const id   = e.dataTransfer.getData('id');
+  const from = e.dataTransfer.getData('from');
+  const s    = state[act];
+  if (s.checked) return;
+  if (s.slots[idx]) {
+    const displaced = s.slots[idx];
+    if (from === 'pool') s.pool.push(displaced);
+    else s.slots[parseInt(from)] = displaced;
+  } else if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+  }
+  if (from === 'pool') s.pool = s.pool.filter(p => p !== id);
+  s.slots[idx] = id;
+  renderActivity(act);
+}
+
+// ─────────────────────────────────────────────
+//  CLICK (mobile)
+// ─────────────────────────────────────────────
+function clickItem(act, id, from) {
+  const s = state[act];
+  if (s.checked) return;
+  if (s.selected === id) { s.selected = null; renderActivity(act); return; }
+  s.selected = id;
+  s.selectedFrom = from;
+  renderActivity(act);
+}
+
+function slotClick(act, idx) {
+  const s = state[act];
+  if (s.checked) return;
+  if (s.selected === null) {
+    if (s.slots[idx]) { s.selected = s.slots[idx]; s.selectedFrom = idx; renderActivity(act); }
+    return;
+  }
+  const id = s.selected, from = s.selectedFrom;
+  if (s.slots[idx]) {
+    const disp = s.slots[idx];
+    if (from === 'pool') s.pool.push(disp);
+    else s.slots[parseInt(from)] = disp;
+  } else if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+  }
+  if (from === 'pool') s.pool = s.pool.filter(p => p !== id);
+  s.slots[idx] = id;
+  s.selected = null; s.selectedFrom = null;
+  renderActivity(act);
+}
+
+function poolClick(poolId) {
+  const act = poolId.replace('pool', '');
+  const s   = state[act];
+  if (s.checked || s.selected === null) return;
+  const id = s.selected, from = s.selectedFrom;
+  if (from !== 'pool') {
+    s.slots[parseInt(from)] = null;
+    if (!s.pool.includes(id)) s.pool.push(id);
+    s.selected = null; s.selectedFrom = null;
+    renderActivity(act);
+  }
+}
+
+// ─────────────────────────────────────────────
+//  VERIFICAR
+// ─────────────────────────────────────────────
+function checkActivity(act) {
+  const s    = state[act];
+  const data = getData(act);
+  const fb   = document.getElementById('feedback' + act);
+  if (s.pool.length > 0) {
+    fb.textContent = '⚠️ Ainda há itens na área de peças. Arraste todos para os slots antes de verificar.';
+    fb.className = 'act-feedback show err'; return;
+  }
+  let ac = 0;
+  s.slots.forEach((sid, idx) => { if (sid === data.correct[idx]) ac++; });
+  const total = data.correct.length;
+  s.checked = true;
+  renderActivity(act);
+  if (ac === total) {
+    fb.textContent = '✅ Perfeito! Todas as ' + total + ' linhas na ordem correta. Veja o programa completo abaixo.';
+    fb.className = 'act-feedback show ok';
+    document.getElementById('reveal' + act).classList.add('show');
+  } else {
+    fb.textContent = '❌ ' + ac + ' de ' + total + ' corretos. Os itens em vermelho estão na posição errada. Clique em "Recomeçar" e tente novamente.';
+    fb.className = 'act-feedback show err';
+  }
+}
+
+function resetActivity(act) {
+  const data = getData(act);
+  state[act] = {
+    slots: Array(data.items.length).fill(null),
+    pool:  shuffle([...data.items.map(i => i.id)]),
+    checked: false, selected: null, selectedFrom: null,
+  };
+  document.getElementById('feedback' + act).className = 'act-feedback';
+  document.getElementById('reveal'   + act).classList.remove('show');
+  renderActivity(act);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ─────────────────────────────────────────────
+//  QUIZ
+// ─────────────────────────────────────────────
+const GABARITO = {
+  q1:{ ans:'c', exp:'double ocupa 8 bytes e oferece ~15 dígitos significativos — ideal para grandezas de engenharia que exigem alta precisão. float tem apenas ~7 dígitos.' },
+  q2:{ ans:'b', exp:'Divisão entre dois int trunca a parte decimal sem arredondamento. 10 ÷ 3 = 3, o resto (1) é descartado.' },
+  q3:{ ans:'b', exp:'17 = 5 × 3 + 2. O operador % retorna o resto, que é 2.' },
+  q4:{ ans:'c', exp:'(a + b) / 2.0 é a única opção que tanto soma corretamente (parênteses) quanto força divisão decimal (2.0). Sem parênteses, / tem precedência sobre + e divide apenas b. Sem 2.0, o resultado seria int mesmo guardando em float.' },
+  q5:{ ans:'b', exp:'* tem precedência sobre +. O compilador calcula 3*4=12 primeiro, depois 2+12=14.' },
+  q6:{ ans:'c', exp:'Para ler double com scanf é obrigatório %lf (com "l" de long). Usar %f no scanf de double causa comportamento indefinido.' },
+  q7:{ ans:'b', exp:'%% é o único jeito de imprimir o símbolo % dentro de printf. Um único % seria interpretado como início de especificador de formato.' },
+  q8:{ ans:'a', exp:'p(2) / q(4) * r(8) = 0 * 8 = 0. Como / e * têm mesma precedência, são avaliados da esquerda para a direita. A divisão inteira 2/4 resulta em 0.' },
+};
+
+function corrigirQuiz() {
+  let acertos = 0;
+  const total = Object.keys(GABARITO).length;
+  Object.entries(GABARITO).forEach(([q, {ans, exp}]) => {
+    const sel = document.querySelector('input[name="' + q + '"]:checked');
+    const fb  = document.getElementById('fb' + q.slice(1));
+    document.querySelectorAll('input[name="' + q + '"]').forEach(opt => {
+      const lbl = opt.closest('.q-opt');
+      lbl.style.pointerEvents = 'none';
+      if (opt.value === ans) lbl.classList.add('correct');
+      else if (opt.checked) lbl.classList.add('wrong');
+    });
+    if (sel && sel.value === ans) {
+      acertos++;
+      fb.textContent = '✅ Correto! ' + exp;
+      fb.className = 'q-feedback show ok';
+    } else {
+      fb.textContent = '❌ ' + (sel ? 'Incorreto. ' : 'Não respondida. ') + exp;
+      fb.className = 'q-feedback show err';
+    }
+  });
+  document.getElementById('q-bar').style.width = '100%';
+  const pct = Math.round((acertos / total) * 100);
+  document.getElementById('r-score').textContent = acertos + '/' + total;
+  document.getElementById('r-sub').textContent   = pct + '% de aproveitamento';
+  let msg = '', color = '';
+  if      (pct === 100) { msg = '🏆 Excelente! Domínio completo dos operadores e tipos de dados.'; color = 'var(--green)'; }
+  else if (pct >= 75)   { msg = '👍 Muito bom! Revise os itens marcados em vermelho.';              color = 'var(--blue)'; }
+  else if (pct >= 50)   { msg = '📖 Bom esforço. Revise divisão inteira e precedência.';            color = 'var(--amber)'; }
+  else                  { msg = '🔄 Recomenda-se reler o conteúdo com atenção e tentar novamente.'; color = 'var(--red)'; }
+  const msgEl = document.getElementById('r-msg');
+  msgEl.textContent = msg; msgEl.style.color = color;
+  const res = document.getElementById('quiz-result');
+  res.classList.add('show');
+  document.getElementById('quiz-btn').style.display = 'none';
+  res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetQuiz() {
+  Object.keys(GABARITO).forEach(q => {
+    document.querySelectorAll('input[name="' + q + '"]').forEach(opt => {
+      opt.checked = false;
+      const lbl = opt.closest('.q-opt');
+      lbl.classList.remove('correct', 'wrong');
+      lbl.style.pointerEvents = '';
+    });
+    const fb = document.getElementById('fb' + q.slice(1));
+    fb.className = 'q-feedback'; fb.textContent = '';
+  });
+  document.getElementById('quiz-result').classList.remove('show');
+  document.getElementById('quiz-btn').style.display = 'block';
+  document.getElementById('q-bar').style.width = '0%';
+  document.getElementById('quiz').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  if (document.getElementById('quiz-result').classList.contains('show')) return;
+  const qs   = document.getElementById('quiz');
+  const rect = qs.getBoundingClientRect();
+  const pct  = Math.min(100, Math.max(0, (-rect.top / qs.offsetHeight) * 120));
+  document.getElementById('q-bar').style.width = pct + '%';
+});
+
+// ─────────────────────────────────────────────
+//  DOWNLOAD
+// ─────────────────────────────────────────────
+function baixarResultado() {
+  const nome  = document.getElementById('nome-aluno').value.trim() || 'Aluno';
+  const hoje  = new Date().toLocaleDateString('pt-BR');
+  const res   = document.getElementById('quiz-result');
+  const pont  = res.classList.contains('show')
+    ? document.getElementById('r-score').textContent + ' (' + document.getElementById('r-sub').textContent + ')'
+    : 'Quiz não finalizado';
+
+  function getAtv(act) {
+    const s = state[act]; const data = getData(act);
+    if (!s.checked) return 'Não verificada';
+    let ac = 0;
+    s.slots.forEach((sid, i) => { if (sid === data.correct[i]) ac++; });
+    return ac + '/' + data.correct.length;
+  }
+
+  const conteudo =
+`Laboratório de Programação de Computadores I — CEFET-MG Contagem
+Aula 04: Variáveis, Tipos de Dados e Operadores Aritméticos
+Data: ${hoje}
+Aluno(a): ${nome}
+
+══════════════════════════════════════════════════════════
+RESULTADOS DAS ATIVIDADES INTERATIVAS
+══════════════════════════════════════════════════════════
+
+[ Atividade Drag ] Ordenar código — IMC ........... ${getAtv('IMC')}
+[ Atividade Drag ] Ordenar código — C→F ........... ${getAtv('CF')}
+[ Quiz Final ] Pontuação geral ..................... ${pont}
+
+══════════════════════════════════════════════════════════
+ENTREGAS NO MOODLE (arquivos .c)
+══════════════════════════════════════════════════════════
+  • exemplo1.c          — Relatório de processo químico
+  • exemplo2.c          — Leitura de nome e idade
+  • exemplo3.c          — Operações aritméticas básicas
+  • atividade1.c        — Dados pessoais
+  • atividade2.c        — Entrada com scanf
+  • atividade3.c        — Calculadora de operações
+  • energia_eletrica.c  — Calculadora de energia elétrica
+  • velocidade.c       — Conversor de km/h para m/s
+`;
+
+  const blob = new Blob([conteudo], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'aula04_' + nome.replace(/\s+/g, '_') + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+(function init() {
+  state.IMC.pool = shuffle(ACTIVITY_IMC.items.map(i => i.id));
+  state.CF.pool  = shuffle(ACTIVITY_CF.items.map(i => i.id));
+  renderActivity('IMC');
+  renderActivity('CF');
+})();
+</script>
+</body>
+</html>
