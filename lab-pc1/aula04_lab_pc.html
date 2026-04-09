@@ -747,14 +747,14 @@ _pressao</pre>
     <span class="kw">int</span>   massa_molar <span class="op">=</span> <span class="nm">46</span>;  <span class="cm">// g/mol (etanol)</span>
 
     <span class="cm">// Impressão dos dados do processo</span>
-    <span class="fn">printf</span>(<span class="str">"=== RELATÓRIO DO PROCESSO QUÍMICO ===\n"</span>);
-    <span class="fn">printf</span>(<span class="str">"Condições Operacionais:\n"</span>);
-    <span class="fn">printf</span>(<span class="str">"- Tempo de reação: %d minutos\n"</span>, tempo_reacao);
-    <span class="fn">printf</span>(<span class="str">"- Temperatura: %.1f °C\n"</span>, temperatura);
-    <span class="fn">printf</span>(<span class="str">"- Pressão: %.1f atm\n"</span>, pressao);
+    <span class="fn">printf</span>(<span class="str">"--- RELATORIO DO PROCESSO QUIMICO ---\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"Condicoes Operacionais:\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"- Tempo de reacao: %d minutos\n"</span>, tempo_reacao);
+    <span class="fn">printf</span>(<span class="str">"- Temperatura: %.1f C\n"</span>, temperatura);
+    <span class="fn">printf</span>(<span class="str">"- Pressao: %.1f atm\n"</span>, pressao);
     <span class="fn">printf</span>(<span class="str">"- Tipo de reator: %c (Batelada)\n"</span>, tipo_reator);
-    <span class="fn">printf</span>(<span class="str">"\nPropriedades da Substância (Etanol):\n"</span>);
-    <span class="fn">printf</span>(<span class="str">"- Densidade: %.3f g/cm³\n"</span>, densidade);
+    <span class="fn">printf</span>(<span class="str">"\nPropriedades da Substancia (Etanol):\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"- Densidade: %.3f g/cm3\n"</span>, densidade);
     <span class="fn">printf</span>(<span class="str">"- Massa molar: %d g/mol\n"</span>, massa_molar);
 
     <span class="kw">return</span> <span class="nm">0</span>;
@@ -965,7 +965,7 @@ _pressao</pre>
     <span class="fn">printf</span>(<span class="str">"a / b = %d\n"</span>, a <span class="op">/</span> b);   <span class="cm">// 3 (divisão inteira!)</span>
 
     <span class="cm">//ETAPA 2</span>
-    <span class="fn">printf</span>(<span class="str">"\n--- Divisão — Comparação de Tipos ---\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"\n--- Divisao — Comparacao de Tipos ---\n"</span>);
     <span class="kw">int</span> a_int <span class="op">=</span> <span class="nm">7</span>, b_int <span class="op">=</span> <span class="nm">2</span>;
     <span class="kw">float</span> x <span class="op">=</span> <span class="nm">7.0</span>, y <span class="op">=</span> <span class="nm">2.0</span>;
 
@@ -1009,7 +1009,7 @@ _pressao</pre>
     <span class="fn">printf</span>(<span class="str">"a / b = %d\n"</span>, a <span class="op">/</span> b);   <span class="cm">// 3 (divisão inteira!)</span>
     <span class="fn">printf</span>(<span class="str">"a %% b = %d\n"</span>, a <span class="op">%</span> b);  <span class="cm">// 1 (resto)</span>
 
-    <span class="fn">printf</span>(<span class="str">"\n--- Divisão — Comparação de Tipos ---\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"\n--- Divisao — Comparacao de Tipos ---\n"</span>);
     <span class="kw">int</span> a_int <span class="op">=</span> <span class="nm">7</span>, b_int <span class="op">=</span> <span class="nm">2</span>;
     <span class="kw">float</span> x <span class="op">=</span> <span class="nm">7.0</span>, y <span class="op">=</span> <span class="nm">2.0</span>;
 
@@ -1033,10 +1033,10 @@ _pressao</pre>
 
     <span class="cm">// verificar se número é par: se resto for 0, é par</span>
     <span class="kw">int</span> n <span class="op">=</span> <span class="nm">7</span>;
-    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 1 (ímpar)</span>
+    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d\n"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 1 (ímpar)</span>
 
     n <span class="op">=</span> <span class="nm">4</span>;
-    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 0 (par)</span>
+    <span class="fn">printf</span>(<span class="str">"%d %% 2 = %d\n"</span>, n, n <span class="op">%</span> <span class="nm">2</span>);  <span class="cm">// → 0 (par)</span>
 
     <span class="cm">// Para imprimir o símbolo % no printf, use %%</span>
     <span class="fn">printf</span>(<span class="str">"Rendimento: 95%%\n"</span>);         <span class="cm">// → Rendimento: 95%</span>
