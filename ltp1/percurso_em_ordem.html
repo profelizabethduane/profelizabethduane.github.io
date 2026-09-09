@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percurso Em Ordem</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+  :root{
+    --paper:#f4f6fa; --surface:#ffffff; --surface-2:#eaeef6; --line:#d6dce9;
+    --ink:#121824; --ink-2:#48536a; --ink-3:#7a849a;
+    --ativo:#cf2f4c; --ativo-soft:#fce7eb; --ativo-ring:#f3b7c2;
+    --impresso:#6a41b6; --impresso-soft:#efe9fb;
+    --pilha:#a86e07; --pilha-soft:#fbf0d9;
+    --ok:#26775a; --ok-soft:#e0f1ea;
+    --code-bg:#eff2f8;
+    --sombra:0 1px 2px rgba(18,24,36,.06), 0 8px 24px -16px rgba(18,24,36,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0c1016; --surface:#151a24; --surface-2:#1d2430; --line:#2b3342;
+      --ink:#e9ecf3; --ink-2:#a6b0c2; --ink-3:#6f7a8f;
+      --ativo:#ff6e85; --ativo-soft:#3b1b24; --ativo-ring:#7d2b3c;
+      --impresso:#b195f2; --impresso-soft:#272042;
+      --pilha:#e8ac45; --pilha-soft:#392b13;
+      --ok:#5cc194; --ok-soft:#123024;
+      --code-bg:#111722;
+      --sombra:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0c1016; --surface:#151a24; --surface-2:#1d2430; --line:#2b3342;
+    --ink:#e9ecf3; --ink-2:#a6b0c2; --ink-3:#6f7a8f;
+    --ativo:#ff6e85; --ativo-soft:#3b1b24; --ativo-ring:#7d2b3c;
+    --impresso:#b195f2; --impresso-soft:#272042;
+    --pilha:#e8ac45; --pilha-soft:#392b13;
+    --ok:#5cc194; --ok-soft:#123024;
+    --code-bg:#111722;
+    --sombra:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -18px rgba(0,0,0,.9);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+    font-size:16px; line-height:1.5;
+    padding-block:20px; padding-left:20px; padding-right:20px;
+  }
+  .wrap{max-width:1220px; margin:0 auto; display:flex; flex-direction:column; gap:16px}
+
+  /* ---------- cabecalho ---------- */
+  header{display:flex; flex-wrap:wrap; align-items:flex-end; gap:14px 22px; justify-content:space-between}
+  .marca{display:flex; flex-direction:column; gap:2px}
+  .eyebrow{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-3);
+  }
+  h1{
+    font-family:"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    font-weight:700; font-size:clamp(24px,3.2vw,34px); line-height:1.05; margin:0;
+    text-wrap:balance; letter-spacing:-.015em;
+  }
+  .subtitulo{color:var(--ink-2); font-size:15px; max-width:58ch}
+
+  /* ---------- controles ---------- */
+  .controles{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  button{
+    font-family:inherit; font-size:14px; font-weight:600; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:7px;
+    padding:8px 14px; cursor:pointer; box-shadow:var(--sombra);
+    transition:background .12s ease, border-color .12s ease, transform .06s ease;
+  }
+  button:hover:not(:disabled){border-color:var(--ink-3)}
+  button:active:not(:disabled){transform:translateY(1px)}
+  button:disabled{opacity:.4; cursor:not-allowed}
+  button:focus-visible{outline:2px solid var(--ativo); outline-offset:2px}
+  button.principal{background:var(--ativo); border-color:var(--ativo); color:#fff}
+  button.principal:hover:not(:disabled){filter:brightness(1.06); border-color:var(--ativo)}
+
+  .contador{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px;
+    color:var(--ink-2); font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  .barra{height:4px; background:var(--surface-2); border-radius:99px; overflow:hidden}
+  .barra > i{display:block; height:100%; background:var(--ativo); border-radius:99px; transition:width .18s ease}
+
+  /* ---------- grade ---------- */
+  .grade{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:16px; align-items:start}
+  .col{display:flex; flex-direction:column; gap:16px; min-width:0}
+
+  .painel{background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--sombra)}
+  .painel > h2{
+    font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3);
+    margin:0; padding:12px 16px 0;
+  }
+  .corpo{padding:12px 16px 16px}
+
+  /* ---------- arvore ---------- */
+  svg{display:block; width:100%; height:auto}
+  .aresta{stroke:var(--line); stroke-width:2; fill:none; transition:stroke .18s ease, stroke-width .18s ease}
+  .aresta.viva{stroke:var(--ativo); stroke-width:3.5}
+  .aresta.fantasma{stroke-dasharray:4 5; opacity:0}
+  .aresta.fantasma.vista{opacity:1}
+
+  .no circle{fill:var(--surface-2); stroke:var(--line); stroke-width:2; transition:fill .18s ease, stroke .18s ease, stroke-width .18s ease}
+  .no text{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-weight:700; font-size:17px;
+    fill:var(--ink); text-anchor:middle; dominant-baseline:central;
+    transition:fill .18s ease;
+  }
+  .no.impresso circle{fill:var(--impresso-soft); stroke:var(--impresso)}
+  .no.impresso text{fill:var(--impresso)}
+  .no.pronto circle{fill:var(--ok-soft); stroke:var(--ok)}
+  .no.pronto text{fill:var(--ok)}
+  .no.napilha circle{stroke:var(--pilha); stroke-width:3.5}
+  .no.ativo circle{fill:var(--ativo-soft); stroke:var(--ativo); stroke-width:4}
+  .no.ativo text{fill:var(--ativo)}
+  .halo{fill:none; stroke:var(--ativo-ring); stroke-width:9; opacity:0}
+  .no.ativo .halo{opacity:1}
+
+  .nulo{opacity:0; transition:opacity .18s ease}
+  .nulo.vista{opacity:1}
+  .nulo circle{fill:var(--ativo-soft); stroke:var(--ativo); stroke-width:2; stroke-dasharray:4 4}
+  .nulo text{font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10px; fill:var(--ativo); text-anchor:middle; dominant-baseline:central}
+
+  .legenda{display:flex; flex-wrap:wrap; gap:6px 16px; padding:0 16px 14px; font-size:12.5px; color:var(--ink-2)}
+  .legenda span{display:inline-flex; align-items:center; gap:6px}
+  .bolinha{width:11px; height:11px; border-radius:99px; border:2px solid; flex:none}
+
+  /* ---------- saida ---------- */
+  .fita{display:flex; align-items:center; gap:7px; flex-wrap:wrap; min-height:44px}
+  .colchete{font-family:"JetBrains Mono", ui-monospace, monospace; font-size:22px; color:var(--ink-3)}
+  .chip{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-weight:700; font-size:18px;
+    color:var(--impresso); background:var(--impresso-soft); border:1px solid var(--impresso);
+    border-radius:7px; padding:3px 11px; font-variant-numeric:tabular-nums;
+    animation:entra .22s ease-out;
+  }
+  .chip.novo{background:var(--ativo-soft); border-color:var(--ativo); color:var(--ativo)}
+  @keyframes entra{from{opacity:0; transform:translateY(-5px) scale(.9)} to{opacity:1; transform:none}}
+  .vazio{color:var(--ink-3); font-style:italic; font-size:14px}
+
+  /* ---------- codigo ---------- */
+  pre{
+    margin:0; background:var(--code-bg); border-radius:9px; padding:12px 0;
+    overflow-x:auto; font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65;
+  }
+  pre .ln{display:block; padding:0 14px 0 46px; position:relative; white-space:pre; border-left:3px solid transparent; transition:background .15s ease}
+  pre .ln::before{
+    content:attr(data-n); position:absolute; left:0; width:34px; text-align:right;
+    color:var(--ink-3); font-size:11.5px;
+  }
+  pre .ln.acesa{background:var(--ativo-soft); border-left-color:var(--ativo)}
+  .k{color:var(--impresso); font-weight:700}
+  .c{color:var(--ink-3); font-style:italic}
+  .s{color:var(--ok)}
+
+  /* ---------- pilha ---------- */
+  .frames{display:flex; flex-direction:column-reverse; gap:5px; min-height:52px}
+  .frame{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12.5px;
+    border:1px solid var(--line); border-left:4px solid var(--pilha); background:var(--pilha-soft);
+    border-radius:6px; padding:6px 10px; display:flex; justify-content:space-between; gap:10px;
+    color:var(--ink-2); animation:entra .18s ease-out;
+  }
+  .frame.topo{border-left-color:var(--ativo); background:var(--ativo-soft); color:var(--ativo); font-weight:700}
+  .frame .tag{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; opacity:.8}
+  .pilha-vazia{color:var(--ink-3); font-style:italic; font-size:14px}
+
+  /* ---------- estado ---------- */
+  .estado dt{
+    font-family:"JetBrains Mono", ui-monospace, monospace; font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-3); margin-top:10px;
+  }
+  .estado dt:first-child{margin-top:0}
+  .estado dd{margin:2px 0 0; font-size:14.5px; color:var(--ink)}
+  .estado dd code{font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; background:var(--surface-2); padding:1px 5px; border-radius:4px}
+  .titulo-passo{
+    font-family:"Bricolage Grotesque", ui-sans-serif, sans-serif; font-weight:700;
+    font-size:19px; line-height:1.2; margin:0 0 2px; color:var(--ativo); text-wrap:balance;
+  }
+
+  footer{color:var(--ink-3); font-size:13px; text-align:center; padding-top:4px}
+
+  @media (max-width:920px){
+    .grade{grid-template-columns:minmax(0,1fr)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="marca">
+      <span class="eyebrow">CEFET-MG Contagem · LLTPI · Árvore binária</span>
+      <h1>Percurso em ordem, chamada por chamada</h1>
+      <p class="subtitulo">O mesmo <code>imprimirRecursivo</code> do laboratório, rodando devagar na árvore do Passo 2.1. Acompanhe a pilha crescer e a saída se formar.</p>
+    </div>
+    <div class="controles">
+      <button id="btn-reiniciar" type="button">Reiniciar</button>
+      <button id="btn-anterior" type="button">← Anterior</button>
+      <button id="btn-proximo" type="button" class="principal">Próximo →</button>
+      <button id="btn-tocar" type="button">Reproduzir</button>
+    </div>
+  </header>
+
+  <div>
+    <div class="barra"><i id="progresso" style="width:0%"></i></div>
+    <p class="contador" id="contador" style="margin:6px 0 0">Passo 1 de 1</p>
+  </div>
+
+  <div class="grade">
+    <div class="col">
+      <section class="painel">
+        <h2>Árvore de exemplo</h2>
+        <div class="corpo" style="padding-bottom:4px"><svg id="arvore" viewBox="0 14 760 372" role="img" aria-label="Árvore binária com raiz 50, filhos 15 e 75, e folhas 10, 30, 60 e 90"></svg></div>
+        <div class="legenda">
+          <span><i class="bolinha" style="background:var(--ativo-soft); border-color:var(--ativo)"></i>chamada ativa</span>
+          <span><i class="bolinha" style="background:transparent; border-color:var(--pilha)"></i>pausada na pilha</span>
+          <span><i class="bolinha" style="background:var(--impresso-soft); border-color:var(--impresso)"></i>já impresso</span>
+          <span><i class="bolinha" style="background:var(--ok-soft); border-color:var(--ok)"></i>subárvore concluída</span>
+        </div>
+      </section>
+
+      <section class="painel">
+        <h2>Saída na tela</h2>
+        <div class="corpo">
+          <div class="fita" id="fita"></div>
+        </div>
+      </section>
+
+      <section class="painel">
+        <h2>Pilha de chamadas</h2>
+        <div class="corpo"><div class="frames" id="frames"></div></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="painel">
+        <h2>Estado atual</h2>
+        <div class="corpo">
+          <p class="titulo-passo" id="titulo">Antes de começar</p>
+          <dl class="estado">
+            <dt>Nó em execução</dt><dd id="no-atual">nenhum</dd>
+            <dt>Ação</dt><dd id="acao">—</dd>
+            <dt>Próximo</dt><dd id="proximo">—</dd>
+          </dl>
+        </div>
+      </section>
+
+      <section class="painel">
+        <h2>Código</h2>
+        <div class="corpo"><pre id="codigo"></pre></div>
+      </section>
+    </div>
+  </div>
+
+  <footer>Use as setas ← → do teclado para avançar e voltar.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- a arvore do Passo 2.1 ---------- */
+  var NOS = {
+    50:{x:380,y:52,esq:15,dir:75},
+    15:{x:190,y:158,esq:10,dir:30},
+    75:{x:570,y:158,esq:60,dir:90},
+    10:{x:100,y:264,esq:null,dir:null},
+    30:{x:280,y:264,esq:null,dir:null},
+    60:{x:480,y:264,esq:null,dir:null},
+    90:{x:660,y:264,esq:null,dir:null}
+  };
+  var R = 27, RN = 20;
+  function posNulo(k, lado){
+    var n = NOS[k];
+    return { x: n.x + (lado === "esq" ? -46 : 46), y: n.y + 92 };
+  }
+
+  /* ---------- o codigo mostrado, linha a linha ---------- */
+  var LINHAS = [
+    '<span class="k">void</span> ArvoreBinaria::imprimirRecursivo(No* no)',
+    '{',
+    '    <span class="k">if</span> (no == <span class="k">nullptr</span>)',
+    '    {',
+    '        <span class="k">return</span>;                     <span class="c">// caso base</span>',
+    '    }',
+    '',
+    '    imprimirRecursivo(no-&gt;esquerdo);   <span class="c">// 1. esquerda</span>',
+    '    cout &lt;&lt; no-&gt;dado &lt;&lt; <span class="s">" "</span>;         <span class="c">// 2. raiz</span>',
+    '    imprimirRecursivo(no-&gt;direito);    <span class="c">// 3. direita</span>',
+    '}'
+  ];
+
+  /* ---------- geracao dos passos ---------- */
+  var passos = [], impressos = [], concluidos = [], pilha = [];
+
+  function foto(o){
+    var p = {
+      titulo:"", linha:null, atual:null, acao:"", proximo:"",
+      aresta:null, ghost:null,
+      impressos:impressos.slice(), concluidos:concluidos.slice(),
+      pilha:pilha.map(function(f){ return {rot:f.rot}; })
+    };
+    for (var c in o){ if (Object.prototype.hasOwnProperty.call(o,c)) p[c] = o[c]; }
+    passos.push(p);
+  }
+
+  function anda(k, pai, lado){
+    if (k === null){
+      pilha.push({rot:"imprimirRecursivo(nullptr)"});
+      foto({
+        titulo:"Caso base, ponteiro nulo",
+        linha:4, ghost:{no:pai, lado:lado},
+        acao:"<code>no == nullptr</code>, então o <code>if</code> é verdadeiro e a chamada executa <code>return</code> sem imprimir nada",
+        proximo:"Volta para a chamada do nó " + pai
+      });
+      pilha.pop();
+      return;
+    }
+    var n = NOS[k];
+    pilha.push({rot:"imprimirRecursivo(" + k + ")"});
+
+    foto({
+      titulo:"Entra em imprimirRecursivo(" + k + ")",
+      linha:2, atual:k,
+      acao:"<code>no != nullptr</code>, então o <code>if</code> não retorna e a chamada segue para as três linhas de baixo",
+      proximo:"Executar a chamada da subárvore esquerda"
+    });
+
+    foto({
+      titulo:"Desce para a esquerda de " + k,
+      linha:7, atual:k,
+      aresta:{de:String(k), para: n.esq !== null ? String(n.esq) : ("nulo-" + k + "-esq")},
+      ghost: n.esq === null ? {no:k, lado:"esq"} : null,
+      acao:"Executa <code>imprimirRecursivo(no-&gt;esquerdo)</code>. O nó " + k + " fica pausado no meio dessa chamada",
+      proximo: n.esq !== null ? ("Nova chamada, agora com o nó " + n.esq) : "Nova chamada, agora com <code>nullptr</code>"
+    });
+
+    anda(n.esq, k, "esq");
+
+    impressos.push(k);
+    foto({
+      titulo:"Imprime " + k,
+      linha:8, atual:k,
+      acao:"A esquerda acabou, então executa <code>cout &lt;&lt; " + k + "</code>. Este é o primeiro momento em que o nó " + k + " aparece na tela",
+      proximo:"Executar a chamada da subárvore direita"
+    });
+
+    foto({
+      titulo:"Desce para a direita de " + k,
+      linha:9, atual:k,
+      aresta:{de:String(k), para: n.dir !== null ? String(n.dir) : ("nulo-" + k + "-dir")},
+      ghost: n.dir === null ? {no:k, lado:"dir"} : null,
+      acao:"Executa <code>imprimirRecursivo(no-&gt;direito)</code>",
+      proximo: n.dir !== null ? ("Nova chamada, agora com o nó " + n.dir) : "Nova chamada, agora com <code>nullptr</code>"
+    });
+
+    anda(n.dir, k, "dir");
+
+    concluidos.push(k);
+    foto({
+      titulo:"Termina imprimirRecursivo(" + k + ")",
+      linha:10, atual:k,
+      acao:"As três linhas foram executadas, então esta chamada acaba e sai da pilha",
+      proximo: pai === null
+        ? "Volta para o imprimirEmOrdem, que fecha o colchete"
+        : "Volta para a chamada do nó " + pai + ", que estava pausada"
+    });
+    pilha.pop();
+  }
+
+  foto({
+    titulo:"Antes de começar",
+    acao:"O <code>imprimirEmOrdem</code> imprime <code>[</code> e chama <code>imprimirRecursivo(raiz)</code>",
+    proximo:"Primeira chamada, com o nó 50"
+  });
+  anda(50, null, null);
+  foto({
+    titulo:"Fim do percurso",
+    acao:"A pilha esvaziou e o <code>imprimirEmOrdem</code> imprime <code>]</code>. Os sete nós saíram em ordem crescente",
+    proximo:"Nada, o percurso acabou"
+  });
+
+  /* ---------- desenho da arvore ---------- */
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("arvore");
+  var elNo = {}, elAresta = {}, elNulo = {};
+
+  function cria(tag, attrs){
+    var e = document.createElementNS(NS, tag);
+    for (var a in attrs){ if (Object.prototype.hasOwnProperty.call(attrs,a)) e.setAttribute(a, attrs[a]); }
+    return e;
+  }
+
+  Object.keys(NOS).forEach(function(k){
+    var n = NOS[k];
+    ["esq","dir"].forEach(function(lado){
+      var filho = n[lado];
+      if (filho !== null){
+        var f = NOS[filho];
+        var l = cria("line", {x1:n.x, y1:n.y, x2:f.x, y2:f.y, class:"aresta"});
+        elAresta[k + "->" + filho] = l;
+        svg.appendChild(l);
+      } else {
+        var p = posNulo(k, lado);
+        var lf = cria("line", {x1:n.x, y1:n.y, x2:p.x, y2:p.y, class:"aresta fantasma"});
+        elAresta[k + "->nulo-" + k + "-" + lado] = lf;
+        svg.appendChild(lf);
+      }
+    });
+  });
+
+  Object.keys(NOS).forEach(function(k){
+    var n = NOS[k];
+    ["esq","dir"].forEach(function(lado){
+      if (n[lado] !== null) return;
+      var p = posNulo(k, lado);
+      var g = cria("g", {class:"nulo"});
+      g.appendChild(cria("circle", {cx:p.x, cy:p.y, r:RN}));
+      var t = cria("text", {x:p.x, y:p.y}); t.textContent = "nullptr";
+      g.appendChild(t);
+      elNulo[k + "-" + lado] = g;
+      svg.appendChild(g);
+    });
+  });
+
+  Object.keys(NOS).forEach(function(k){
+    var n = NOS[k];
+    var g = cria("g", {class:"no"});
+    g.appendChild(cria("circle", {cx:n.x, cy:n.y, r:R + 5, class:"halo"}));
+    g.appendChild(cria("circle", {cx:n.x, cy:n.y, r:R}));
+    var t = cria("text", {x:n.x, y:n.y}); t.textContent = k;
+    g.appendChild(t);
+    elNo[k] = g;
+    svg.appendChild(g);
+  });
+
+  /* ---------- codigo ---------- */
+  var pre = document.getElementById("codigo"), elLinha = [];
+  LINHAS.forEach(function(html, i){
+    var s = document.createElement("span");
+    s.className = "ln";
+    s.setAttribute("data-n", String(i + 1));
+    s.innerHTML = html === "" ? "&nbsp;" : html;
+    elLinha.push(s);
+    pre.appendChild(s);
+  });
+
+  /* ---------- render ---------- */
+  var i = 0, tocando = null;
+  var elFita = document.getElementById("fita");
+  var elFrames = document.getElementById("frames");
+  var elTitulo = document.getElementById("titulo");
+  var elAtual = document.getElementById("no-atual");
+  var elAcao = document.getElementById("acao");
+  var elProx = document.getElementById("proximo");
+  var elCont = document.getElementById("contador");
+  var elProg = document.getElementById("progresso");
+  var bAnt = document.getElementById("btn-anterior");
+  var bProx = document.getElementById("btn-proximo");
+  var bTocar = document.getElementById("btn-tocar");
+
+  function pinta(){
+    var p = passos[i];
+    var naPilha = {};
+    p.pilha.forEach(function(f){
+      var m = /\((\d+)\)/.exec(f.rot);
+      if (m) naPilha[m[1]] = true;
+    });
+
+    Object.keys(NOS).forEach(function(k){
+      var c = ["no"];
+      if (p.concluidos.indexOf(Number(k)) >= 0) c.push("pronto");
+      else if (p.impressos.indexOf(Number(k)) >= 0) c.push("impresso");
+      if (naPilha[k]) c.push("napilha");
+      if (String(p.atual) === k) c.push("ativo");
+      elNo[k].setAttribute("class", c.join(" "));
+    });
+
+    Object.keys(elAresta).forEach(function(id){
+      var e = elAresta[id];
+      var base = id.indexOf("nulo-") >= 0 ? "aresta fantasma" : "aresta";
+      var viva = p.aresta && (p.aresta.de + "->" + p.aresta.para) === id;
+      e.setAttribute("class", base + (viva ? " viva" : "") + (base.indexOf("fantasma") >= 0 && viva ? " vista" : ""));
+    });
+
+    Object.keys(elNulo).forEach(function(id){
+      var ativo = p.ghost && (p.ghost.no + "-" + p.ghost.lado) === id;
+      elNulo[id].setAttribute("class", "nulo" + (ativo ? " vista" : ""));
+    });
+
+    elLinha.forEach(function(s, n){ s.className = "ln" + (p.linha === n ? " acesa" : ""); });
+
+    elFita.innerHTML = "";
+    var abre = document.createElement("span");
+    abre.className = "colchete"; abre.textContent = "[";
+    elFita.appendChild(abre);
+    if (p.impressos.length === 0){
+      var v = document.createElement("span");
+      v.className = "vazio"; v.textContent = "ainda não saiu nenhum valor";
+      elFita.appendChild(v);
+    }
+    p.impressos.forEach(function(val, idx){
+      var c = document.createElement("span");
+      c.className = "chip" + (idx === p.impressos.length - 1 && p.linha === 8 ? " novo" : "");
+      c.textContent = val;
+      elFita.appendChild(c);
+    });
+    if (i === passos.length - 1){
+      var fecha = document.createElement("span");
+      fecha.className = "colchete"; fecha.textContent = "]";
+      elFita.appendChild(fecha);
+    }
+
+    elFrames.innerHTML = "";
+    if (p.pilha.length === 0){
+      var pv = document.createElement("p");
+      pv.className = "pilha-vazia";
+      pv.textContent = i === 0 ? "vazia, nenhuma chamada começou" : "vazia, todas as chamadas terminaram";
+      elFrames.appendChild(pv);
+    }
+    p.pilha.forEach(function(f, idx){
+      var d = document.createElement("div");
+      d.className = "frame" + (idx === p.pilha.length - 1 ? " topo" : "");
+      var a = document.createElement("span"); a.textContent = f.rot;
+      var b = document.createElement("span"); b.className = "tag";
+      b.textContent = idx === p.pilha.length - 1 ? "ativa" : "pausada";
+      d.appendChild(a); d.appendChild(b);
+      elFrames.appendChild(d);
+    });
+
+    elTitulo.textContent = p.titulo;
+    elAtual.innerHTML = p.atual === null
+      ? (p.ghost ? "<code>nullptr</code>, o filho " + (p.ghost.lado === "esq" ? "esquerdo" : "direito") + " do nó " + p.ghost.no : "nenhum")
+      : "<code>" + p.atual + "</code>";
+    elAcao.innerHTML = p.acao;
+    elProx.innerHTML = p.proximo;
+
+    elCont.textContent = "Passo " + (i + 1) + " de " + passos.length;
+    elProg.style.width = (i / (passos.length - 1) * 100) + "%";
+    bAnt.disabled = (i === 0);
+    bProx.disabled = (i === passos.length - 1);
+    if (i === passos.length - 1 && tocando) para();
+  }
+
+  function vai(n){ i = Math.max(0, Math.min(passos.length - 1, n)); pinta(); }
+  function para(){ clearInterval(tocando); tocando = null; bTocar.textContent = "Reproduzir"; }
+
+  bProx.addEventListener("click", function(){ vai(i + 1); });
+  bAnt.addEventListener("click", function(){ vai(i - 1); });
+  document.getElementById("btn-reiniciar").addEventListener("click", function(){ para(); vai(0); });
+  bTocar.addEventListener("click", function(){
+    if (tocando){ para(); return; }
+    if (i === passos.length - 1) vai(0);
+    bTocar.textContent = "Pausar";
+    tocando = setInterval(function(){ vai(i + 1); }, 1100);
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "ArrowRight"){ para(); vai(i + 1); }
+    else if (e.key === "ArrowLeft"){ para(); vai(i - 1); }
+    else if (e.key === "Home"){ para(); vai(0); }
+  });
+
+  pinta();
+})();
+</script>
+</body>
+</html>
