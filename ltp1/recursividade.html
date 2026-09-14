@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão: funções recursivas em C++</title>
+<style>
+:root{
+  --bg:#eef2f7; --card:#fff; --ink:#16324f; --muted:#5c7a99; --line:#d7e0ea;
+  --accent:#1b6ca8; --accent-dark:#0f4c75;
+  --ativa-bg:#ffd9b0; --ativa-bd:#d9730d;
+  --pilha-bg:#fff3bf; --pilha-bd:#c99700;
+  --ret-bg:#b7e4c7;  --ret-bd:#2d6a4f;
+  --alerta-bg:#ffd3d3; --alerta-bd:#c92a2a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;line-height:1.5}
+header{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;padding:22px 20px}
+header .wrap{max-width:1220px;margin:0 auto}
+header h1{margin:0 0 4px;font-size:1.5rem}
+header p{margin:0;opacity:.9;font-size:.95rem}
+header .tag{display:inline-block;margin-top:8px;font-size:.75rem;letter-spacing:1px;
+  text-transform:uppercase;background:rgba(255,255,255,.16);padding:3px 10px;border-radius:999px}
+main{max-width:1220px;margin:0 auto;padding:18px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,50,79,.05)}
+.card h2{margin:0 0 10px;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);font-weight:700}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.4px}
+select,input[type=number]{font:inherit;padding:7px 9px;border:1px solid var(--line);
+  border-radius:8px;background:#fff;color:var(--ink);min-width:90px}
+select{min-width:260px}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:8px;padding:8px 14px;
+  border:1px solid var(--accent);background:var(--accent);color:#fff}
+button:hover:not(:disabled){filter:brightness(1.08)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:#fff;color:var(--accent-dark);border-color:var(--line)}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
+.nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.counter{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.hint{font-size:.8rem;color:var(--muted);margin-top:8px}
+/* cascata */
+#cascata{display:flex;flex-direction:column;gap:5px;min-height:120px;overflow-x:auto}
+.chamada{display:flex;align-items:center;gap:8px;border:1px solid var(--line);
+  border-left:4px solid var(--pilha-bd);background:#fffdf3;border-radius:8px;
+  padding:6px 10px;font-family:Consolas,Menlo,monospace;font-size:.86rem;white-space:nowrap;width:fit-content;min-width:260px}
+.chamada.ativa{border-left-color:var(--ativa-bd);background:#fff5e9;font-weight:700;
+  box-shadow:0 0 0 2px rgba(217,115,13,.18)}
+.chamada.ret{border-left-color:var(--ret-bd);background:#eaf9f0;color:#215c41}
+.chamada .nivel{font-size:.68rem;color:var(--muted);font-family:inherit}
+.chamada .val{margin-left:auto;padding-left:14px;color:#1b6b45;font-weight:700}
+.chamada.alerta{border-left-color:var(--alerta-bd);background:#fff0f0;color:#a12626;font-weight:700}
+/* computacao */
+.expr{background:#0f2233;color:#ffe3a3;border-radius:10px;padding:12px 14px;
+  font-family:Consolas,Menlo,monospace;font-size:1rem;word-break:break-word;min-height:44px}
+.expr b{color:#9ef0c2}
+.stack{display:flex;flex-direction:column;gap:6px;min-height:50px}
+.frame{border:1px solid var(--line);border-left:4px solid var(--pilha-bd);background:#fffdf3;
+  border-radius:8px;padding:6px 10px;font-family:Consolas,Menlo,monospace;font-size:.82rem}
+.frame.top{border-left-color:var(--ativa-bd);background:#fff5e9;font-weight:700}
+.frame .tag{float:right;font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase}
+.empty{color:var(--muted);font-style:italic;font-size:.86rem}
+.out{background:#0f2233;color:#9ef0c2;border-radius:10px;padding:12px 14px;min-height:46px;
+  font-family:Consolas,Menlo,monospace;font-size:.88rem;white-space:pre-wrap;word-break:break-word}
+.state{background:#f4f8fc;border:1px solid var(--line);border-left:4px solid var(--accent);
+  border-radius:8px;padding:10px 12px;font-size:.92rem;min-height:44px}
+pre.code{margin:0;background:#0f2233;border-radius:10px;padding:12px 0;overflow-x:auto;
+  font-family:"Cascadia Mono",Consolas,Menlo,monospace;font-size:.82rem;line-height:1.65}
+pre.code .ln{display:block;padding:0 14px 0 46px;position:relative;color:#c8d6e5;white-space:pre}
+pre.code .ln::before{content:attr(data-n);position:absolute;left:0;width:34px;text-align:right;
+  color:#527089;font-size:.75rem}
+pre.code .ln.on{background:#1d4b6e;color:#fff;box-shadow:inset 3px 0 0 #ffb703}
+footer{max-width:1220px;margin:0 auto;padding:0 16px 34px;color:var(--muted);font-size:.8rem}
+footer a{color:var(--accent)}
+@media (max-width:880px){ .grid{grid-template-columns:1fr} select{min-width:200px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Funções recursivas em C++, passo a passo</h1>
+    <p>Simulação das chamadas recursivas e da computação dos retornos, chamada por chamada.</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Controles</h2>
+    <div class="controls">
+      <div class="field">
+        <label for="ex">Exemplo</label>
+        <select id="ex">
+          <option value="infinita">recur() sem condição de parada</option>
+          <option value="parada">recur(contador) com condição de parada</option>
+          <option value="sum" selected>Somatório com recursão, sum(num)</option>
+          <option value="fat">Fatorial com recursão, fatorial(num)</option>
+        </select>
+      </div>
+      <div class="field" id="valField">
+        <label for="val">Valor do argumento</label>
+        <input type="number" id="val" value="5" min="1" max="8">
+      </div>
+      <button id="btnExec">Executar</button>
+      <button class="ghost" id="btnPrev">&larr; Anterior</button>
+      <button class="ghost" id="btnNext">Próximo &rarr;</button>
+      <button id="btnPlay">Reproduzir</button>
+      <div class="field">
+        <label for="vel">Velocidade</label>
+        <input type="range" id="vel" min="200" max="1600" step="100" value="750" style="width:130px">
+      </div>
+      <span class="counter" id="counter">passo 0 de 0</span>
+    </div>
+    <div class="hint">Use as setas &larr; e &rarr; do teclado para avançar ou voltar um passo.</div>
+  </div>
+
+  <div class="card">
+    <h2 id="codeTitle">Código C++</h2>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>Cascata de chamadas</h2>
+        <div id="cascata"></div>
+        <div class="hint">Cada linha é uma chamada da função; o recuo mostra o nível da recursão e o valor à direita é o que aquela chamada devolveu.</div>
+      </div>
+      <div class="card" id="cardExpr">
+        <h2>Computação do resultado</h2>
+        <div class="expr" id="expr"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pilha de chamadas</h2>
+      <div class="stack" id="stack"></div>
+      <h2 style="margin-top:16px">Saída na tela (cout)</h2>
+      <div class="out" id="out"></div>
+      <h2 style="margin-top:16px">Estado atual</h2>
+      <div class="state" id="state">Escolha um exemplo e clique em Executar.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Exemplos baseados em
+  <a href="https://cmmprogressivo.net/2019/12/Funcao-Recursiva-recursividade-Tutorial-Cpp.html" target="_blank" rel="noopener">
+  Função Recursiva, recursividade, Curso C++ Progressivo</a>,
+  cmmprogressivo.net/2019/12/Funcao-Recursiva-recursividade-Tutorial-Cpp.html.
+  Material de apoio de Linguagens e Técnicas de Programação, curso técnico em Informática integrado ao ensino médio, CEFET-MG.
+</footer>
+
+<script>
+"use strict";
+
+const MAX_INFINITA = 7;
+
+/* ------------------------------------------------------------------ */
+/* Códigos C++                                                         */
+/* ------------------------------------------------------------------ */
+const EX = {
+  infinita: {
+    nome:"recur", tipo:"void", usaArg:false,
+    titulo:"Código C++ &middot; recursão sem condição de parada",
+    code: function(){ return [
+      "void recur() {",
+      "    cout << \"Recursividade é mágica!\" << '\\n';",
+      "    recur();                       // nao existe condicao de parada",
+      "}",
+      "",
+      "int main() {",
+      "    recur();",
+      "    return 0;",
+      "}"
+    ];},
+    L:{ chamada:6, print:1, rec:2, fim:3 }
+  },
+  parada: {
+    nome:"recur", tipo:"void", usaArg:true, padrao:3,
+    titulo:"Código C++ &middot; recursão com condição de parada",
+    code: function(v){ return [
+      "void recur(int contador) {",
+      "    if (contador > 0) {",
+      "        cout << \"Recursividade é mágica!\" << '\\n';",
+      "        recur(contador - 1);",
+      "    }",
+      "}",
+      "",
+      "int main() {",
+      "    recur(" + v + ");",
+      "    return 0;",
+      "}"
+    ];},
+    L:{ chamada:8, teste:1, print:2, rec:3, fim:5 }
+  },
+  sum: {
+    nome:"sum", tipo:"int", op:"+", usaArg:true, padrao:5,
+    titulo:"Código C++ &middot; somatório com recursão",
+    code: function(v){ return [
+      "int sum(int num) {",
+      "    if (num == 1) {",
+      "        return 1;                      // caso base",
+      "    }",
+      "    else {",
+      "        return num + sum(num - 1);     // caso recursivo",
+      "    }",
+      "}",
+      "",
+      "int main() {",
+      "    int num = " + v + ";",
+      "    cout << \"Somatorio de 1 ate \" << num << \" = \" << sum(num) << '\\n';",
+      "    return 0;",
+      "}"
+    ];},
+    L:{ chamada:11, teste:1, base:2, senao:4, rec:5, fim:11 }
+  },
+  fat: {
+    nome:"fatorial", tipo:"int", op:"*", usaArg:true, padrao:5,
+    titulo:"Código C++ &middot; fatorial com recursão",
+    code: function(v){ return [
+      "int fatorial(int num) {",
+      "    if (num == 1) {",
+      "        return 1;                      // caso base",
+      "    }",
+      "    else {",
+      "        return num * fatorial(num - 1);     // caso recursivo",
+      "    }",
+      "}",
+      "",
+      "int main() {",
+      "    int num = " + v + ";",
+      "    cout << \"Fatorial de \" << num << \" = \" << fatorial(num) << '\\n';",
+      "    return 0;",
+      "}"
+    ];},
+    L:{ chamada:11, teste:1, base:2, senao:4, rec:5, fim:11 }
+  }
+};
+
+/* ------------------------------------------------------------------ */
+/* Estado                                                              */
+/* ------------------------------------------------------------------ */
+let passos = [], idx = 0, exAtual = "sum", valAtual = 5, tocando = null, linhas = [];
+
+/* ------------------------------------------------------------------ */
+/* Expressão em construção                                             */
+/* ------------------------------------------------------------------ */
+function montarExpr(frames, k, op, nome){
+  if (frames.length === 0) return "";
+  const f = frames[k];
+  if (f.ret !== null && f.ret !== undefined) return String(f.ret);
+  if (k === frames.length - 1) return nome + "(" + f.n + ")";
+  const dentro = montarExpr(frames, k + 1, op, nome);
+  const par = /[+*]/.test(dentro) ? "(" + dentro + ")" : dentro;
+  return f.n + " " + op + " " + par;
+}
+
+/* ------------------------------------------------------------------ */
+/* Geração dos passos                                                  */
+/* ------------------------------------------------------------------ */
+function gerar(chave, v){
+  const e = EX[chave], L = e.L, nome = e.nome;
+  const steps = [];
+  const frames = [];
+  let out = "";
+
+  function snap(line, msg, alerta){
+    steps.push({
+      line: line,
+      msg: msg,
+      frames: JSON.parse(JSON.stringify(frames)),
+      out: out,
+      expr: (e.tipo === "int") ? montarExpr(frames, 0, e.op, nome) : null,
+      alerta: !!alerta
+    });
+  }
+  function abrir(arg, rotulo){
+    if (frames.length) frames[frames.length - 1].estado = "pilha";
+    frames.push({ n:arg, rotulo:rotulo, ret:null, estado:"ativa" });
+    return frames.length - 1;
+  }
+  function fechar(i, valor){
+    frames[i].ret = (valor === undefined ? "void" : valor);
+    frames[i].estado = "ret";
+    if (i > 0) frames[i - 1].estado = "ativa";
+  }
+
+  /* ---------- recursão infinita ---------- */
+  if (chave === "infinita"){
+    snap(L.chamada, "A main faz a primeira chamada: recur().");
+    for (let i = 1; i <= MAX_INFINITA; i++){
+      abrir(null, "recur()");
+      out += "Recursividade é mágica!\n";
+      snap(L.print, "Nível " + i + ": a função imprime a mensagem.");
+      snap(L.rec, "Nível " + i + ": recur() chama recur() de novo. Não há teste nenhum para interromper.");
+    }
+    snap(L.rec, "A recursão nunca chega a um caso base: a pilha cresce sem parar até estourar (stack overflow) e o programa é encerrado pelo sistema. A simulação parou no nível " + MAX_INFINITA + ".", true);
+  }
+
+  /* ---------- recursão com parada ---------- */
+  else if (chave === "parada"){
+    snap(L.chamada, "A main faz a primeira chamada: recur(" + v + ").");
+    const rec = function(c){
+      const i = abrir(c, "recur(" + c + ")");
+      snap(L.teste, "recur(" + c + "): testa se contador > 0.");
+      if (c > 0){
+        out += "Recursividade é mágica!\n";
+        snap(L.print, c + " > 0 é verdadeiro: imprime a mensagem.");
+        snap(L.rec, "Chama recur(" + c + " - 1), ou seja, recur(" + (c - 1) + "). A chamada atual fica parada na pilha esperando.");
+        rec(c - 1);
+        frames[i].estado = "ativa";
+        snap(L.fim, "A chamada recur(" + (c - 1) + ") terminou; recur(" + c + ") chega ao fim da função.");
+        fechar(i);
+        snap(L.fim, "recur(" + c + ") retorna e sai da pilha.");
+      } else {
+        snap(L.teste, c + " > 0 é falso: caso base. O if não é executado e a função retorna sem chamar ninguém.");
+        fechar(i);
+        snap(L.fim, "recur(" + c + ") retorna e sai da pilha; começa o desempilhamento.");
+      }
+    };
+    rec(v);
+    snap(L.chamada, "Todas as chamadas retornaram. A mensagem foi impressa " + v + " vezes.");
+  }
+
+  /* ---------- somatório e fatorial ---------- */
+  else {
+    const op = e.op;
+    snap(L.chamada, "A main chama " + nome + "(" + v + ") dentro do cout.");
+    const rec = function(k){
+      const i = abrir(k, nome + "(" + k + ")");
+      snap(L.teste, nome + "(" + k + "): testa se num == 1.");
+      if (k === 1){
+        snap(L.base, "num == 1: caso base. Retorna 1 sem fazer novas chamadas.");
+        fechar(i, 1);
+        snap(L.base, nome + "(1) devolve 1 e sai da pilha.");
+        return 1;
+      }
+      snap(L.senao, "num != 1: a execução vai para o else.");
+      snap(L.rec, "Para calcular " + k + " " + op + " " + nome + "(" + (k - 1) + "), primeiro é preciso chamar " + nome + "(" + (k - 1) + "). A chamada atual fica parada na pilha.");
+      const r = rec(k - 1);
+      frames[i].estado = "ativa";
+      const total = (op === "+") ? k + r : k * r;
+      snap(L.rec, nome + "(" + (k - 1) + ") devolveu " + r + ". Agora " + k + " " + op + " " + r + " = " + total + ".");
+      fechar(i, total);
+      snap(L.rec, nome + "(" + k + ") retorna " + total + " e sai da pilha.");
+      return total;
+    };
+    const res = rec(v);
+    out += (chave === "sum")
+      ? "Somatorio de 1 ate " + v + " = " + res + "\n"
+      : "Fatorial de " + v + " = " + res + "\n";
+    snap(L.fim, "O valor " + res + " volta para a main e é impresso pelo cout.");
+  }
+
+  return steps;
+}
+
+/* ------------------------------------------------------------------ */
+/* Desenho                                                             */
+/* ------------------------------------------------------------------ */
+function desenharCodigo(linha){
+  const pre = document.getElementById("code");
+  pre.innerHTML = "";
+  linhas.forEach(function(txt, i){
+    const d = document.createElement("span");
+    d.className = "ln" + (i === linha ? " on" : "");
+    d.setAttribute("data-n", i + 1);
+    d.textContent = txt === "" ? " " : txt;
+    pre.appendChild(d);
+  });
+  document.getElementById("codeTitle").innerHTML = EX[exAtual].titulo;
+}
+
+function desenharCascata(frames, alerta){
+  const el = document.getElementById("cascata");
+  el.innerHTML = "";
+  if (frames.length === 0){
+    el.innerHTML = '<p class="empty">Nenhuma chamada foi feita ainda.</p>';
+    return;
+  }
+  frames.forEach(function(f, i){
+    const d = document.createElement("div");
+    d.className = "chamada " + (f.estado === "ativa" ? "ativa" : f.estado === "ret" ? "ret" : "");
+    d.style.marginLeft = (i * 22) + "px";
+    const n = document.createElement("span");
+    n.className = "nivel";
+    n.textContent = "nível " + (i + 1);
+    d.appendChild(n);
+    d.appendChild(document.createTextNode(f.rotulo));
+    if (f.ret !== null && f.ret !== undefined){
+      const v = document.createElement("span");
+      v.className = "val";
+      v.textContent = f.ret === "void" ? "↩ retorna" : "↩ retorna " + f.ret;
+      d.appendChild(v);
+    }
+    el.appendChild(d);
+  });
+  if (alerta){
+    const d = document.createElement("div");
+    d.className = "chamada alerta";
+    d.style.marginLeft = (frames.length * 22) + "px";
+    d.textContent = "recur()  ...  estouro da pilha (stack overflow)";
+    el.appendChild(d);
+  }
+}
+
+function desenharPilha(frames){
+  const el = document.getElementById("stack");
+  el.innerHTML = "";
+  const ativos = frames.filter(function(f){ return f.estado !== "ret"; });
+  if (ativos.length === 0){
+    el.innerHTML = '<p class="empty">Pilha vazia, nenhuma chamada em execução.</p>';
+    return;
+  }
+  for (let i = ativos.length - 1; i >= 0; i--){
+    const f = ativos[i];
+    const d = document.createElement("div");
+    d.className = "frame" + (i === ativos.length - 1 ? " top" : "");
+    const s = document.createElement("span");
+    s.className = "tag";
+    s.textContent = i === ativos.length - 1 ? "topo" : "";
+    d.appendChild(s);
+    const arg = (f.n === null) ? "" : (EX[exAtual].nome === "recur" ? "  contador = " + f.n : "  num = " + f.n);
+    d.appendChild(document.createTextNode(f.rotulo + arg));
+    el.appendChild(d);
+  }
+}
+
+function desenharPasso(){
+  if (passos.length === 0) return;
+  const p = passos[idx];
+  desenharCascata(p.frames, p.alerta);
+  desenharPilha(p.frames);
+  desenharCodigo(p.line);
+  const cardExpr = document.getElementById("cardExpr");
+  if (p.expr === null){
+    cardExpr.style.display = "none";
+  } else {
+    cardExpr.style.display = "";
+    const el = document.getElementById("expr");
+    el.innerHTML = "";
+    el.appendChild(document.createTextNode(EX[exAtual].nome + "(" + valAtual + ")  =  " + p.expr));
+  }
+  document.getElementById("out").textContent = p.out;
+  document.getElementById("state").textContent = p.msg;
+  document.getElementById("counter").textContent = "passo " + (idx + 1) + " de " + passos.length;
+  document.getElementById("btnPrev").disabled = idx === 0;
+  document.getElementById("btnNext").disabled = idx === passos.length - 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Controles                                                           */
+/* ------------------------------------------------------------------ */
+function parar(){
+  if (tocando){ clearInterval(tocando); tocando = null; }
+  document.getElementById("btnPlay").textContent = "Reproduzir";
+}
+
+function executar(){
+  parar();
+  exAtual = document.getElementById("ex").value;
+  const e = EX[exAtual];
+  let v = parseInt(document.getElementById("val").value, 10);
+  if (isNaN(v) || v < 1) v = e.padrao || 1;
+  if (v > 8) v = 8;
+  document.getElementById("val").value = v;
+  valAtual = v;
+  linhas = e.usaArg ? e.code(v) : e.code();
+  passos = gerar(exAtual, v);
+  idx = 0;
+  desenharPasso();
+}
+
+function proximo(){ if (idx < passos.length - 1){ idx++; desenharPasso(); } else parar(); }
+function anterior(){ if (idx > 0){ idx--; desenharPasso(); } }
+
+document.getElementById("btnExec").addEventListener("click", executar);
+document.getElementById("btnNext").addEventListener("click", function(){ parar(); proximo(); });
+document.getElementById("btnPrev").addEventListener("click", function(){ parar(); anterior(); });
+document.getElementById("btnPlay").addEventListener("click", function(){
+  if (tocando){ parar(); return; }
+  if (passos.length === 0) executar();
+  if (idx === passos.length - 1) idx = 0;
+  this.textContent = "Pausar";
+  tocando = setInterval(proximo, parseInt(document.getElementById("vel").value, 10));
+});
+document.getElementById("vel").addEventListener("input", function(){
+  if (tocando){ clearInterval(tocando); tocando = setInterval(proximo, parseInt(this.value, 10)); }
+});
+document.getElementById("ex").addEventListener("change", function(){
+  parar();
+  const e = EX[this.value];
+  document.getElementById("valField").style.display = e.usaArg ? "flex" : "none";
+  if (e.usaArg) document.getElementById("val").value = e.padrao;
+  executar();
+});
+document.addEventListener("keydown", function(ev){
+  if (ev.target.tagName === "INPUT" || ev.target.tagName === "SELECT") return;
+  if (ev.key === "ArrowRight"){ parar(); proximo(); ev.preventDefault(); }
+  if (ev.key === "ArrowLeft"){ parar(); anterior(); ev.preventDefault(); }
+});
+
+executar();
+</script>
+</body>
+</html>
