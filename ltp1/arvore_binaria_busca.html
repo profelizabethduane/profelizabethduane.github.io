@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Árvore Binária de Busca, passo a passo</title>
+<style>
+:root{
+  --bg:#eef2f7;
+  --card:#ffffff;
+  --ink:#16324f;
+  --muted:#5c7a99;
+  --line:#d7e0ea;
+  --accent:#1b6ca8;
+  --accent-dark:#0f4c75;
+  --ativa-bg:#ffd9b0;   --ativa-bd:#d9730d;
+  --pilha-bg:#fff3bf;   --pilha-bd:#c99700;
+  --impr-bg:#b7e4c7;    --impr-bd:#2d6a4f;
+  --done-bg:#e2e8f0;    --done-bd:#94a3b8;
+  --novo-bg:#bde0fe;    --novo-bd:#1b6ca8;
+  --del-bg:#ffd3d3;     --del-bd:#c92a2a;
+  --ok-bg:#a7f3d0;      --ok-bd:#047857;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  line-height:1.5;
+}
+header{
+  background:linear-gradient(135deg,var(--accent-dark),var(--accent));
+  color:#fff; padding:22px 20px;
+}
+header .wrap{max-width:1220px;margin:0 auto}
+header h1{margin:0 0 4px;font-size:1.5rem;letter-spacing:.2px}
+header p{margin:0;opacity:.9;font-size:.95rem}
+header .tag{
+  display:inline-block;margin-top:8px;font-size:.75rem;letter-spacing:1px;
+  text-transform:uppercase;background:rgba(255,255,255,.16);
+  padding:3px 10px;border-radius:999px;
+}
+main{max-width:1220px;margin:0 auto;padding:18px 16px 48px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,50,79,.05);
+}
+.card h2{
+  margin:0 0 10px;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);font-weight:700;
+}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.4px}
+select,input[type=text],input[type=number]{
+  font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  background:#fff;color:var(--ink);min-width:90px;
+}
+input[type=text]{min-width:180px}
+button{
+  font:inherit;font-weight:600;cursor:pointer;border-radius:8px;padding:8px 14px;
+  border:1px solid var(--accent);background:var(--accent);color:#fff;
+  transition:filter .15s ease;
+}
+button:hover:not(:disabled){filter:brightness(1.08)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.ghost{background:#fff;color:var(--accent-dark);border-color:var(--line)}
+button.warn{background:#fff;color:#b02a37;border-color:#f2c2c7}
+.sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;align-items:start}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+#treeBox{overflow-x:auto;background:#fbfdff;border:1px solid var(--line);border-radius:10px;padding:6px}
+svg{display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:.82rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid}
+.nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.counter{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+pre.code{
+  margin:0;background:#0f2233;border-radius:10px;padding:12px 0;overflow-x:auto;
+  font-family:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;font-size:.82rem;line-height:1.65;
+}
+pre.code .ln{display:block;padding:0 14px 0 46px;position:relative;color:#c8d6e5;white-space:pre}
+pre.code .ln::before{
+  content:attr(data-n);position:absolute;left:0;width:34px;text-align:right;
+  color:#527089;font-size:.75rem;
+}
+pre.code .ln.on{background:#1d4b6e;color:#fff;box-shadow:inset 3px 0 0 #ffb703}
+.stack{display:flex;flex-direction:column;gap:6px;min-height:54px}
+.frame{
+  border:1px solid var(--line);border-left:4px solid var(--pilha-bd);background:#fffdf3;
+  border-radius:8px;padding:6px 10px;font-family:Consolas,Menlo,monospace;font-size:.82rem;
+}
+.frame.top{border-left-color:var(--ativa-bd);background:#fff5e9;font-weight:700}
+.frame .tag{float:right;font-family:inherit;font-size:.68rem;color:var(--muted);font-weight:600;text-transform:uppercase}
+.empty{color:var(--muted);font-style:italic;font-size:.86rem}
+.out{
+  background:#0f2233;color:#9ef0c2;border-radius:10px;padding:12px 14px;min-height:46px;
+  font-family:Consolas,Menlo,monospace;font-size:.95rem;word-break:break-word;
+}
+.out .cursor{color:#ffb703}
+.state{
+  background:#f4f8fc;border:1px solid var(--line);border-left:4px solid var(--accent);
+  border-radius:8px;padding:10px 12px;font-size:.92rem;min-height:44px;
+}
+.hint{font-size:.8rem;color:var(--muted);margin-top:8px}
+details>summary{
+  cursor:pointer;font-size:.9rem;letter-spacing:.2px;
+  color:var(--accent-dark);font-weight:700;list-style:none;
+}
+details>summary::before{content:"\25B8  ";color:var(--accent)}
+details[open]>summary::before{content:"\25BE  "}
+details>summary::-webkit-details-marker{display:none}
+.node-label{font-family:Consolas,Menlo,monospace;font-weight:700}
+footer{max-width:1220px;margin:0 auto;padding:0 16px 30px;color:var(--muted);font-size:.8rem}
+@media (max-width:880px){
+  .grid,.grid-2{grid-template-columns:1fr}
+  input[type=text]{min-width:140px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Árvore Binária de Busca, passo a passo</h1>
+    <p>Visualização com pilha de recursão: inserção, busca, percursos e destrutor.</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Controles</h2>
+    <div class="controls">
+      <div class="field">
+        <label for="op">Operação</label>
+        <select id="op">
+          <option value="inserir">Inserir nó</option>
+          <option value="buscar">Buscar valor</option>
+          <option value="pre">Percurso pré-ordem</option>
+          <option value="in">Percurso in-ordem</option>
+          <option value="pos">Percurso pós-ordem</option>
+          <option value="destruir">Destrutor</option>
+        </select>
+      </div>
+      <div class="field" id="valorField">
+        <label for="valor">Valor</label>
+        <input type="number" id="valor" value="45" min="0" max="999">
+      </div>
+      <button id="btnExec">Executar</button>
+      <div class="sep"></div>
+      <div class="field">
+        <label for="montar">Montar árvore (valores separados por vírgula)</label>
+        <input type="text" id="montar" value="50, 30, 70, 20, 40, 60, 80">
+      </div>
+      <button class="ghost" id="btnMontar">Montar</button>
+      <button class="ghost" id="btnExemplo">Árvore exemplo</button>
+      <button class="warn" id="btnVazia">Esvaziar</button>
+    </div>
+    <div class="hint">Use as setas &larr; e &rarr; do teclado para avançar ou voltar um passo.</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Árvore binária de busca</h2>
+      <div id="treeBox"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--ativa-bg);border-color:var(--ativa-bd)"></i>chamada ativa</span>
+        <span><i class="dot" style="background:var(--pilha-bg);border-color:var(--pilha-bd)"></i>pausada na pilha</span>
+        <span><i class="dot" style="background:var(--impr-bg);border-color:var(--impr-bd)"></i>já impresso</span>
+        <span><i class="dot" style="background:var(--done-bg);border-color:var(--done-bd)"></i>subárvore concluída</span>
+        <span><i class="dot" style="background:var(--novo-bg);border-color:var(--novo-bd)"></i>nó novo</span>
+        <span><i class="dot" style="background:var(--ok-bg);border-color:var(--ok-bd)"></i>encontrado</span>
+        <span><i class="dot" style="background:var(--del-bg);border-color:var(--del-bd)"></i>liberado com delete</span>
+      </div>
+      <div class="nav">
+        <button class="ghost" id="btnPrev">&larr; Anterior</button>
+        <button class="ghost" id="btnNext">Próximo &rarr;</button>
+        <button id="btnPlay">Reproduzir</button>
+        <div class="field">
+          <label for="vel">Velocidade</label>
+          <input type="range" id="vel" min="200" max="1600" step="100" value="750" style="width:130px">
+        </div>
+        <span class="counter" id="counter">passo 0 de 0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Pilha de chamadas</h2>
+      <div class="stack" id="stack"></div>
+      <h2 style="margin-top:16px" id="outTitle">Saída na tela (cout)</h2>
+      <div class="out" id="out"></div>
+      <h2 style="margin-top:16px">Estado atual</h2>
+      <div class="state" id="state">Escolha uma operação e clique em Executar.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="codeTitle">Código C++</h2>
+    <pre class="code" id="code"></pre>
+  </div>
+
+  <div class="card">
+    <details id="decl">
+      <summary>Declaração da classe ArvoreBinariaBusca</summary>
+      <pre class="code" style="margin-top:10px">
+<span class="ln" data-n="1">struct No {</span><span class="ln" data-n="2">    int chave;</span><span class="ln" data-n="3">    No* esq;</span><span class="ln" data-n="4">    No* dir;</span><span class="ln" data-n="5">    No(int valor) : chave(valor), esq(nullptr), dir(nullptr) { }</span><span class="ln" data-n="6">};</span><span class="ln" data-n="7"> </span><span class="ln" data-n="8">class ArvoreBinariaBusca {</span><span class="ln" data-n="9">private:</span><span class="ln" data-n="10">    No* raiz;</span><span class="ln" data-n="11">    No* inserirRecursivo(No* no, int valor);</span><span class="ln" data-n="12">    bool buscarRecursivo(No* no, int valor);</span><span class="ln" data-n="13">    void preOrdem(No* no);</span><span class="ln" data-n="14">    void emOrdem(No* no);</span><span class="ln" data-n="15">    void posOrdem(No* no);</span><span class="ln" data-n="16">    void destruir(No* no);</span><span class="ln" data-n="17"> </span><span class="ln" data-n="18">public:</span><span class="ln" data-n="19">    ArvoreBinariaBusca() : raiz(nullptr) { }</span><span class="ln" data-n="20">    ~ArvoreBinariaBusca() { destruir(raiz); }</span><span class="ln" data-n="21">    void inserir(int valor);</span><span class="ln" data-n="22">    bool buscar(int valor);</span><span class="ln" data-n="23">    void imprimirPreOrdem();</span><span class="ln" data-n="24">    void imprimirEmOrdem();</span><span class="ln" data-n="25">    void imprimirPosOrdem();</span><span class="ln" data-n="26">};</span></pre>
+      <p class="hint">Os métodos recursivos são privados porque recebem um ponteiro para nó, detalhe interno da estrutura. O usuário da classe enxerga apenas os métodos públicos, que sempre começam a recursão a partir de raiz.</p>
+    </details>
+  </div>
+</main>
+
+<footer>
+  Material de apoio de Linguagens e Técnicas de Programação I - Curso Técnico em Informática - CEFET-MG.
+</footer>
+
+<script>
+"use strict";
+
+/* ------------------------------------------------------------------ */
+/* Códigos C++ exibidos                                               */
+/* ------------------------------------------------------------------ */
+const CODES = {
+  inserir: [
+    "void ArvoreBinariaBusca::inserir(int valor) {",
+    "    raiz = inserirRecursivo(raiz, valor);",
+    "}",
+    "",
+    "No* ArvoreBinariaBusca::inserirRecursivo(No* no, int valor) {",
+    "    if (no == nullptr) {",
+    "        return new No(valor);                       // cria o no na heap",
+    "    }",
+    "    if (valor < no->chave) {",
+    "        no->esq = inserirRecursivo(no->esq, valor);",
+    "    }",
+    "    else if (valor > no->chave) {",
+    "        no->dir = inserirRecursivo(no->dir, valor);",
+    "    }",
+    "    else {",
+    "        cout << \"Valor ja existe na ABB\" << endl;",
+    "    }",
+    "    return no;                                      // devolve o no ao pai",
+    "}"
+  ],
+  buscar: [
+    "bool ArvoreBinariaBusca::buscar(int valor) {",
+    "    return buscarRecursivo(raiz, valor);",
+    "}",
+    "",
+    "bool ArvoreBinariaBusca::buscarRecursivo(No* no, int valor) {",
+    "    if (no == nullptr) {",
+    "        return false;                               // nao encontrado",
+    "    }",
+    "    if (valor == no->chave) {",
+    "        return true;                                // encontrado",
+    "    }",
+    "    if (valor < no->chave) {",
+    "        return buscarRecursivo(no->esq, valor);",
+    "    }",
+    "    else {",
+    "        return buscarRecursivo(no->dir, valor);",
+    "    }",
+    "}"
+  ],
+  pre: [
+    "void ArvoreBinariaBusca::imprimirPreOrdem() {",
+    "    preOrdem(raiz);",
+    "    cout << endl;",
+    "}",
+    "",
+    "void ArvoreBinariaBusca::preOrdem(No* no) {",
+    "    if (no == nullptr) {",
+    "        return;                                     // caso base",
+    "    }",
+    "    cout << no->chave << \" \";                       // 1) visita a raiz",
+    "    preOrdem(no->esq);                              // 2) percorre a esquerda",
+    "    preOrdem(no->dir);                              // 3) percorre a direita",
+    "}"
+  ],
+  in: [
+    "void ArvoreBinariaBusca::imprimirEmOrdem() {",
+    "    emOrdem(raiz);",
+    "    cout << endl;",
+    "}",
+    "",
+    "void ArvoreBinariaBusca::emOrdem(No* no) {",
+    "    if (no == nullptr) {",
+    "        return;                                     // caso base",
+    "    }",
+    "    emOrdem(no->esq);                               // 1) percorre a esquerda",
+    "    cout << no->chave << \" \";                       // 2) visita a raiz",
+    "    emOrdem(no->dir);                               // 3) percorre a direita",
+    "}"
+  ],
+  pos: [
+    "void ArvoreBinariaBusca::imprimirPosOrdem() {",
+    "    posOrdem(raiz);",
+    "    cout << endl;",
+    "}",
+    "",
+    "void ArvoreBinariaBusca::posOrdem(No* no) {",
+    "    if (no == nullptr) {",
+    "        return;                                     // caso base",
+    "    }",
+    "    posOrdem(no->esq);                              // 1) percorre a esquerda",
+    "    posOrdem(no->dir);                              // 2) percorre a direita",
+    "    cout << no->chave << \" \";                       // 3) visita a raiz",
+    "}"
+  ],
+  destruir: [
+    "ArvoreBinariaBusca::~ArvoreBinariaBusca() {",
+    "    destruir(raiz);",
+    "}",
+    "",
+    "void ArvoreBinariaBusca::destruir(No* no) {",
+    "    if (no == nullptr) {",
+    "        return;                                     // caso base",
+    "    }",
+    "    destruir(no->esq);                              // 1) destroi a esquerda",
+    "    destruir(no->dir);                              // 2) destroi a direita",
+    "    delete no;                                      // 3) libera o no atual",
+    "}"
+  ]
+};
+
+const NOMES = { pre:"preOrdem", in:"emOrdem", pos:"posOrdem", destruir:"destruir" };
+const PUBLICOS = { pre:"imprimirPreOrdem", in:"imprimirEmOrdem", pos:"imprimirPosOrdem" };
+
+/* linhas destacadas em cada codigo (indice do vetor CODES) */
+const L = {
+  inserir:  { chamada:1, fim:2, ifNull:5, novo:6, menor:8, retEsq:9,
+              maior:11, retDir:12, senao:14, dup:15, ret:17 },
+  buscar:   { chamada:1, fim:2, ifNull:5, retFalse:6, ifIgual:8, retTrue:9,
+              ifMenor:11, recEsq:12, senao:14, recDir:15 },
+  pre:      { chamada:1, fim:2, base:6, retNull:7, fimRec:12,
+              plano:[["print",9],["esq",10],["dir",11]] },
+  in:       { chamada:1, fim:2, base:6, retNull:7, fimRec:12,
+              plano:[["esq",9],["print",10],["dir",11]] },
+  pos:      { chamada:1, fim:2, base:6, retNull:7, fimRec:12,
+              plano:[["esq",9],["dir",10],["print",11]] },
+  destruir: { chamada:1, fim:2, base:5, retNull:6, fimRec:11,
+              plano:[["esq",8],["dir",9],["del",10]] }
+};
+
+/* ------------------------------------------------------------------ */
+/* Estado da árvore                                                    */
+/* ------------------------------------------------------------------ */
+let arvore = { nodes:{}, root:null, nextId:1 };
+let passos = [];
+let idx = 0;
+let lay = null;
+let opAtual = "inserir";
+let tocando = null;
+
+function clonar(t){
+  return { nodes: JSON.parse(JSON.stringify(t.nodes)), root:t.root, nextId:t.nextId };
+}
+
+function inserirDireto(t, v){
+  if (t.root === null){
+    const id = t.nextId++;
+    t.nodes[id] = {id:id, key:v, left:null, right:null};
+    t.root = id;
+    return;
+  }
+  let cur = t.root;
+  while (true){
+    const n = t.nodes[cur];
+    if (v < n.key){
+      if (n.left === null){
+        const id = t.nextId++;
+        t.nodes[id] = {id:id, key:v, left:null, right:null};
+        n.left = id; return;
+      }
+      cur = n.left;
+    } else if (v > n.key){
+      if (n.right === null){
+        const id = t.nextId++;
+        t.nodes[id] = {id:id, key:v, left:null, right:null};
+        n.right = id; return;
+      }
+      cur = n.right;
+    } else return;
+  }
+}
+
+function montar(lista){
+  arvore = { nodes:{}, root:null, nextId:1 };
+  lista.forEach(v => inserirDireto(arvore, v));
+  passos = [];
+  idx = 0;
+  lay = calcularLayout(arvore.nodes, arvore.root);
+  desenharEstatico();
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout                                                              */
+/* ------------------------------------------------------------------ */
+function calcularLayout(nodes, root){
+  const pos = {}; let i = 0; let maxd = 0;
+  (function rec(id, d){
+    if (id === null || id === undefined) return;
+    if (d > maxd) maxd = d;
+    rec(nodes[id].left, d+1);
+    pos[id] = { x:i++, y:d };
+    rec(nodes[id].right, d+1);
+  })(root, 0);
+  // nós que ficaram fora da raiz (ex.: no novo ainda nao ligado)
+  Object.keys(nodes).forEach(k=>{
+    if(!pos[k]) pos[k] = { x:i++, y:maxd+1 };
+  });
+  return { pos:pos, count:Math.max(i,1), depth:maxd };
+}
+
+/* ------------------------------------------------------------------ */
+/* Geração dos passos                                                  */
+/* ------------------------------------------------------------------ */
+function gerar(op, valor){
+  const w = clonar(arvore);
+  const steps = [];
+  const stack = [];
+  let states = {};
+  let printed = {};
+  let out = "";
+  let commitVazio = false;
+
+  function snap(line, msg){
+    steps.push({
+      line: line,
+      msg: msg,
+      stack: stack.map(f => ({ label:f.label, tag:f.tag || "" })),
+      states: Object.assign({}, states),
+      nodes: JSON.parse(JSON.stringify(w.nodes)),
+      root: w.root,
+      out: out
+    });
+  }
+  function pausado(id){
+    states[id] = printed[id] ? "impresso" : "pilha";
+  }
+  function entra(nodeId, label, tag){
+    const cur = stack[stack.length-1];
+    if (cur && cur.nodeId !== null && cur.nodeId !== undefined) pausado(cur.nodeId);
+    stack.push({ nodeId:(nodeId===undefined?null:nodeId), label:label, tag:tag||"" });
+    if (nodeId !== null && nodeId !== undefined) states[nodeId] = "ativa";
+  }
+  function sai(estadoFinal){
+    const f = stack.pop();
+    if (f.nodeId !== null && f.nodeId !== undefined && estadoFinal) states[f.nodeId] = estadoFinal;
+    const cur = stack[stack.length-1];
+    if (cur && cur.nodeId !== null && cur.nodeId !== undefined) states[cur.nodeId] = "ativa";
+  }
+  const chave = id => w.nodes[id].key;
+
+  /* ---------------- inserir ---------------- */
+  if (op === "inserir"){
+    const Li = L.inserir;
+    snap(Li.chamada, "O método público inserir chama inserirRecursivo(raiz, " + valor + ") e guarda o retorno em raiz.");
+    const ins = function(id){
+      entra(id, id === null ? "inserirRecursivo(nullptr, " + valor + ")"
+                            : "inserirRecursivo(&" + chave(id) + ", " + valor + ")");
+      if (id === null){
+        snap(Li.ifNull, "no == nullptr, chegamos ao ponto exato onde o nó deve ficar.");
+        const nid = w.nextId++;
+        w.nodes[nid] = { id:nid, key:valor, left:null, right:null };
+        states[nid] = "novo";
+        snap(Li.novo, "new No(" + valor + ") cria o nó na heap e devolve o endereço a quem chamou.");
+        sai(null);
+        return nid;
+      }
+      const k = chave(id);
+      snap(Li.ifNull, "no aponta para o nó " + k + ", logo no != nullptr; a procura pelo lugar continua.");
+      if (valor < k){
+        snap(Li.menor, valor + " < " + k + ", então a inserção segue pela subárvore ESQUERDA.");
+        w.nodes[id].left = ins(w.nodes[id].left);
+        snap(Li.retEsq, "no->esq recebe o endereço devolvido pela chamada da esquerda.");
+      } else if (valor > k){
+        snap(Li.menor, valor + " não é menor que " + k + "; testamos a outra condição.");
+        snap(Li.maior, valor + " > " + k + ", então a inserção segue pela subárvore DIREITA.");
+        w.nodes[id].right = ins(w.nodes[id].right);
+        snap(Li.retDir, "no->dir recebe o endereço devolvido pela chamada da direita.");
+      } else {
+        snap(Li.senao, valor + " é igual à chave " + k + ".");
+        snap(Li.dup, "Em uma ABB não existem chaves repetidas, nada é inserido.");
+      }
+      snap(Li.ret, "Retorna o próprio nó " + k + ", preservando a ligação feita pelo pai.");
+      sai("done");
+      return id;
+    };
+    w.root = ins(w.root);
+    snap(Li.fim, "raiz recebe o retorno da primeira chamada; a raiz da árvore é o nó " + chave(w.root) + ".");
+  }
+
+  /* ---------------- buscar ---------------- */
+  else if (op === "buscar"){
+    const Lb = L.buscar;
+    snap(Lb.chamada, "O método público buscar devolve o resultado de buscarRecursivo(raiz, " + valor + ").");
+    let encontrado = null;
+    const bus = function(id){
+      entra(id, id === null ? "buscarRecursivo(nullptr, " + valor + ")"
+                            : "buscarRecursivo(&" + chave(id) + ", " + valor + ")");
+      if (id === null){
+        snap(Lb.ifNull, "no == nullptr, a subárvore acabou sem encontrar o valor.");
+        out = "false";
+        snap(Lb.retFalse, "A função devolve false, sinalizando que o valor não existe na árvore.");
+        sai(null);
+        return false;
+      }
+      const k = chave(id);
+      snap(Lb.ifNull, "no aponta para o nó " + k + ", a busca continua.");
+      snap(Lb.ifIgual, "Compara " + valor + " com a chave " + k + ".");
+      if (valor === k){
+        states[id] = "achado";
+        encontrado = id;
+        out = "true";
+        snap(Lb.retTrue, "São iguais: a função devolve true, o valor " + k + " foi encontrado.");
+        sai("achado");
+        return true;
+      }
+      snap(Lb.ifMenor, valor + (valor < k ? " < " : " > ") + k + ".");
+      if (valor < k){
+        snap(Lb.recEsq, "Como é menor, a busca desce pela subárvore ESQUERDA. Note que metade da árvore foi descartada.");
+        const r = bus(w.nodes[id].left);
+        sai(states[id] === "achado" ? "achado" : "done");
+        return r;
+      }
+      snap(Lb.senao, "Como não é menor, a execução cai no else.");
+      snap(Lb.recDir, "A busca desce pela subárvore DIREITA. Note que metade da árvore foi descartada.");
+      const r = bus(w.nodes[id].right);
+      sai(states[id] === "achado" ? "achado" : "done");
+      return r;
+    };
+    if (w.root === null){
+      out = "false";
+      snap(Lb.chamada, "A árvore está vazia: buscarRecursivo recebe nullptr e devolve false.");
+    } else {
+      bus(w.root);
+      if (encontrado !== null) states[encontrado] = "achado";
+      snap(Lb.fim, encontrado !== null
+        ? "Busca concluída: buscar devolveu true, o valor " + valor + " está na árvore."
+        : "Busca concluída: buscar devolveu false, o valor " + valor + " não está na árvore.");
+    }
+  }
+
+  /* ---------------- percursos e destrutor ---------------- */
+  else {
+    const Lt = L[op];
+    const nome = NOMES[op];
+    const plano = Lt.plano;
+    if (op === "destruir"){
+      snap(Lt.chamada, "O destrutor ~ArvoreBinariaBusca chama destruir(raiz) para liberar todos os nós.");
+    } else {
+      snap(Lt.chamada, "O método público " + PUBLICOS[op] + " chama o método privado " + nome + "(raiz).");
+    }
+    const walk = function(id){
+      entra(id, id === null ? nome + "(nullptr)" : nome + "(&" + chave(id) + ")");
+      if (id === null){
+        snap(Lt.retNull, "no == nullptr, caso base atingido: a chamada retorna imediatamente.");
+        sai(null);
+        return;
+      }
+      const k = chave(id);
+      snap(Lt.base, "no aponta para o nó " + k + ", a condição do caso base é falsa e o corpo da função é executado.");
+      for (let i = 0; i < plano.length; i++){
+        const acao = plano[i][0], linha = plano[i][1];
+        if (acao === "print"){
+          out += k + " ";
+          printed[id] = true;
+          states[id] = "ativa";
+          snap(linha, "cout imprime a chave " + k + ".");
+        } else if (acao === "del"){
+          out += k + " ";
+          states[id] = "excluido";
+          snap(linha, "delete libera o nó " + k + ". Os dois filhos já foram destruídos, então nenhum endereço é perdido.");
+        } else {
+          const filho = acao === "esq" ? w.nodes[id].left : w.nodes[id].right;
+          snap(linha, "Chama " + nome + " para a subárvore " + (acao === "esq" ? "esquerda" : "direita") + " do nó " + k + ".");
+          walk(filho);
+          snap(linha, "A chamada da " + (acao === "esq" ? "esquerda" : "direita") + " terminou e o controle volta ao nó " + k + ".");
+        }
+      }
+      snap(Lt.fimRec, "Fim de " + nome + "(&" + k + "); a chamada retorna para quem a chamou.");
+      sai(states[id] === "excluido" ? "excluido" : "done");
+    };
+    if (w.root === null){
+      snap(Lt.retNull, "A árvore está vazia, a primeira chamada já cai no caso base.");
+    } else {
+      walk(w.root);
+    }
+    if (op === "destruir"){
+      commitVazio = true;
+      snap(Lt.fim, "Todos os nós foram liberados em pós-ordem, sem vazamento de memória. Como o objeto está sendo destruído, não é preciso zerar raiz; em um método limpar() seria necessário fazer raiz = nullptr.");
+    } else {
+      snap(Lt.fim, "cout << endl encerra a linha impressa. Saída: " + (out.trim() || "(vazia)"));
+    }
+  }
+
+  // efetiva a alteração na árvore real
+  if (op === "inserir"){
+    arvore = { nodes:w.nodes, root:w.root, nextId:w.nextId };
+  } else if (commitVazio){
+    arvore = { nodes:{}, root:null, nextId:1 };
+  }
+
+  return { steps:steps, layoutNodes:w.nodes, layoutRoot:w.root };
+}
+
+/* ------------------------------------------------------------------ */
+/* Desenho                                                             */
+/* ------------------------------------------------------------------ */
+const CORES = {
+  ativa:    ["var(--ativa-bg)","var(--ativa-bd)"],
+  pilha:    ["var(--pilha-bg)","var(--pilha-bd)"],
+  impresso: ["var(--impr-bg)","var(--impr-bd)"],
+  done:     ["var(--done-bg)","var(--done-bd)"],
+  novo:     ["var(--novo-bg)","var(--novo-bd)"],
+  achado:   ["var(--ok-bg)","var(--ok-bd)"],
+  excluido: ["var(--del-bg)","var(--del-bd)"],
+  neutro:   ["#ffffff","#1b6ca8"]
+};
+
+function svgEl(nome, attrs){
+  const e = document.createElementNS("http://www.w3.org/2000/svg", nome);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function desenhar(nodes, root, states, layout){
+  const SX = 66, SY = 78, PAD = 38, R = 22;
+  const w = layout.count * SX + PAD * 2;
+  const h = layout.depth * SY + PAD + R * 2 + 16;
+  const svg = svgEl("svg", {
+    viewBox: "0 0 " + w + " " + h,
+    width: Math.max(w, 300), height: h,
+    style: "max-width:100%;height:auto"
+  });
+
+  const px = id => PAD + layout.pos[id].x * SX + SX / 2;
+  const py = id => PAD + layout.pos[id].y * SY + R;
+
+  // arestas
+  Object.keys(nodes).forEach(function(id){
+    const n = nodes[id];
+    ["left","right"].forEach(function(lado){
+      const f = n[lado];
+      if (f === null || f === undefined || !nodes[f] || !layout.pos[f]) return;
+      const morto = states[id] === "excluido" || states[f] === "excluido";
+      svg.appendChild(svgEl("line", {
+        x1:px(id), y1:py(id), x2:px(f), y2:py(f),
+        stroke: morto ? "#e3b3b3" : "#9db4c8",
+        "stroke-width": 2,
+        "stroke-dasharray": morto ? "4 4" : "0"
+      }));
+    });
+  });
+
+  // ponteiro raiz
+  if (root !== null && root !== undefined && layout.pos[root]){
+    const t = svgEl("text", { x:px(root), y:py(root) - R - 14, "text-anchor":"middle",
+      "font-size":"11", fill:"#5c7a99", "font-weight":"700" });
+    t.textContent = "raiz";
+    svg.appendChild(t);
+    svg.appendChild(svgEl("line", {
+      x1:px(root), y1:py(root) - R - 10, x2:px(root), y2:py(root) - R - 2,
+      stroke:"#5c7a99", "stroke-width":1.5
+    }));
+  }
+
+  // nós
+  Object.keys(nodes).forEach(function(id){
+    if (!layout.pos[id]) return;
+    const st = states[id] || "neutro";
+    const cor = CORES[st] || CORES.neutro;
+    const g = svgEl("g", {});
+    const c = svgEl("circle", {
+      cx:px(id), cy:py(id), r:R, fill:cor[0], stroke:cor[1], "stroke-width":3
+    });
+    if (st === "excluido"){ c.setAttribute("stroke-dasharray","5 4"); c.setAttribute("opacity","0.55"); }
+    g.appendChild(c);
+    const t = svgEl("text", {
+      x:px(id), y:py(id) + 5, "text-anchor":"middle",
+      "font-size":"15", "font-weight":"700",
+      fill: st === "excluido" ? "#a14444" : "#16324f",
+      "font-family":"Consolas,Menlo,monospace"
+    });
+    t.textContent = nodes[id].key;
+    g.appendChild(t);
+    if (st === "excluido"){
+      g.appendChild(svgEl("line", {
+        x1:px(id)-14, y1:py(id)+14, x2:px(id)+14, y2:py(id)-14,
+        stroke:"#c92a2a", "stroke-width":2, opacity:"0.6"
+      }));
+    }
+    svg.appendChild(g);
+  });
+
+  const box = document.getElementById("treeBox");
+  box.innerHTML = "";
+  if (Object.keys(nodes).length === 0){
+    box.innerHTML = '<p class="empty" style="padding:24px 10px">Árvore vazia, raiz == nullptr.</p>';
+  } else {
+    box.appendChild(svg);
+  }
+}
+
+function desenharCodigo(op, linha){
+  const pre = document.getElementById("code");
+  pre.innerHTML = "";
+  CODES[op].forEach(function(txt, i){
+    const d = document.createElement("span");
+    d.className = "ln" + (i === linha ? " on" : "");
+    d.setAttribute("data-n", i + 1);
+    d.textContent = txt === "" ? " " : txt;
+    pre.appendChild(d);
+  });
+  const titulos = {
+    inserir:"Código C++ &middot; inserir e inserirRecursivo",
+    buscar:"Código C++ &middot; buscar e buscarRecursivo",
+    pre:"Código C++ &middot; imprimirPreOrdem e preOrdem",
+    in:"Código C++ &middot; imprimirEmOrdem e emOrdem",
+    pos:"Código C++ &middot; imprimirPosOrdem e posOrdem",
+    destruir:"Código C++ &middot; destrutor e destruir"
+  };
+  document.getElementById("codeTitle").innerHTML = titulos[op];
+}
+
+function desenharPilha(frames){
+  const el = document.getElementById("stack");
+  el.innerHTML = "";
+  if (frames.length === 0){
+    el.innerHTML = '<p class="empty">Pilha vazia, nenhuma chamada em execução.</p>';
+    return;
+  }
+  for (let i = frames.length - 1; i >= 0; i--){
+    const d = document.createElement("div");
+    d.className = "frame" + (i === frames.length - 1 ? " top" : "");
+    const s = document.createElement("span");
+    s.className = "tag";
+    s.textContent = i === frames.length - 1 ? "topo" : "";
+    d.appendChild(s);
+    d.appendChild(document.createTextNode(frames[i].label));
+    el.appendChild(d);
+  }
+}
+
+function tituloSaida(op){
+  if (op === "destruir") return "Ordem de liberação (delete)";
+  if (op === "buscar") return "Valor retornado";
+  return "Saída na tela (cout)";
+}
+
+function desenharPasso(){
+  if (passos.length === 0) return;
+  const p = passos[idx];
+  desenhar(p.nodes, p.root, p.states, lay);
+  desenharCodigo(opAtual, p.line);
+  desenharPilha(p.stack);
+  document.getElementById("outTitle").textContent = tituloSaida(opAtual);
+  const outEl = document.getElementById("out");
+  outEl.textContent = p.out;
+  const cur = document.createElement("span");
+  cur.className = "cursor";
+  cur.textContent = "_";
+  outEl.appendChild(cur);
+  document.getElementById("state").textContent = p.msg;
+  document.getElementById("counter").textContent = "passo " + (idx + 1) + " de " + passos.length;
+  document.getElementById("btnPrev").disabled = idx === 0;
+  document.getElementById("btnNext").disabled = idx === passos.length - 1;
+}
+
+function desenharEstatico(){
+  lay = calcularLayout(arvore.nodes, arvore.root);
+  desenhar(arvore.nodes, arvore.root, {}, lay);
+  desenharCodigo(opAtual, -1);
+  desenharPilha([]);
+  document.getElementById("outTitle").textContent = tituloSaida(opAtual);
+  document.getElementById("out").textContent = "";
+  document.getElementById("counter").textContent = "passo 0 de 0";
+  document.getElementById("btnPrev").disabled = true;
+  document.getElementById("btnNext").disabled = true;
+}
+
+/* ------------------------------------------------------------------ */
+/* Controles                                                           */
+/* ------------------------------------------------------------------ */
+function parar(){
+  if (tocando){ clearInterval(tocando); tocando = null; }
+  document.getElementById("btnPlay").textContent = "Reproduzir";
+}
+
+function executar(){
+  parar();
+  opAtual = document.getElementById("op").value;
+  let v = parseInt(document.getElementById("valor").value, 10);
+  if ((opAtual === "inserir" || opAtual === "buscar") && isNaN(v)){
+    document.getElementById("state").textContent = "Informe um valor inteiro para esta operação.";
+    return;
+  }
+  const r = gerar(opAtual, v);
+  passos = r.steps;
+  lay = calcularLayout(r.layoutNodes, r.layoutRoot);
+  idx = 0;
+  desenharPasso();
+}
+
+function proximo(){
+  if (idx < passos.length - 1){ idx++; desenharPasso(); }
+  else parar();
+}
+function anterior(){
+  if (idx > 0){ idx--; desenharPasso(); }
+}
+
+document.getElementById("btnExec").addEventListener("click", executar);
+document.getElementById("btnNext").addEventListener("click", function(){ parar(); proximo(); });
+document.getElementById("btnPrev").addEventListener("click", function(){ parar(); anterior(); });
+document.getElementById("btnPlay").addEventListener("click", function(){
+  if (tocando){ parar(); return; }
+  if (passos.length === 0) executar();
+  if (idx === passos.length - 1) idx = 0;
+  this.textContent = "Pausar";
+  const vel = parseInt(document.getElementById("vel").value, 10);
+  tocando = setInterval(proximo, vel);
+});
+document.getElementById("vel").addEventListener("input", function(){
+  if (tocando){
+    clearInterval(tocando);
+    tocando = setInterval(proximo, parseInt(this.value, 10));
+  }
+});
+document.getElementById("op").addEventListener("change", function(){
+  parar();
+  opAtual = this.value;
+  const precisa = (opAtual === "inserir" || opAtual === "buscar");
+  document.getElementById("valorField").style.display = precisa ? "flex" : "none";
+  passos = [];
+  desenharEstatico();
+  document.getElementById("state").textContent = "Clique em Executar para simular a operação escolhida.";
+});
+document.getElementById("btnMontar").addEventListener("click", function(){
+  parar();
+  const lista = document.getElementById("montar").value
+    .split(/[,;\s]+/).map(s => parseInt(s,10)).filter(n => !isNaN(n));
+  montar(lista);
+  document.getElementById("state").textContent = "Árvore montada com " + lista.length + " inserções.";
+});
+document.getElementById("btnExemplo").addEventListener("click", function(){
+  parar();
+  document.getElementById("montar").value = "50, 30, 70, 20, 40, 60, 80";
+  montar([50,30,70,20,40,60,80]);
+  document.getElementById("state").textContent = "Árvore exemplo restaurada.";
+});
+document.getElementById("btnVazia").addEventListener("click", function(){
+  parar();
+  montar([]);
+  document.getElementById("state").textContent = "Árvore esvaziada, raiz == nullptr.";
+});
+document.addEventListener("keydown", function(e){
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (e.key === "ArrowRight"){ parar(); proximo(); e.preventDefault(); }
+  if (e.key === "ArrowLeft"){ parar(); anterior(); e.preventDefault(); }
+});
+
+montar([50,30,70,20,40,60,80]);
+document.getElementById("state").textContent = "Árvore exemplo pronta. Escolha uma operação e clique em Executar.";
+</script>
+</body>
+</html>
