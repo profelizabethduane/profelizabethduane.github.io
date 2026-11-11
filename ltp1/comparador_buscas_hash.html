@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Comparador de Buscas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: coluna única de leitura, três seções (números, busca ao vivo, qual usar); painéis em grade 2x2 que vira 1 coluna no celular */
+:root {
+  --bg: #f6f7fa;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5d6779;
+  --line: #d9dee8;
+  --cell: #eef1f6;
+  --dim: #f3f4f7;
+  --dimfg: #a5adbb;
+  --seq: #c2410c;
+  --bin: #1d4ed8;
+  --abb: #15803d;
+  --hash: #7c3aed;
+  --look: #fde68a;
+  --lookfg: #1b2230;
+  --ok: #16a34a;
+  --okbg: #dcfce7;
+  --bad: #dc2626;
+  --badbg: #fee2e2;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #1a1f29; --fg: #e6e9ef; --muted: #9aa3b4; --line: #2e3544;
+    --cell: #242b38; --dim: #161a22; --dimfg: #4f5869;
+    --seq: #fb923c; --bin: #60a5fa; --abb: #4ade80; --hash: #a78bfa;
+    --look: #facc15; --lookfg: #11151c; --ok: #4ade80; --okbg: #14321f; --bad: #f87171; --badbg: #3a1717;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #1a1f29; --fg: #e6e9ef; --muted: #9aa3b4; --line: #2e3544;
+  --cell: #242b38; --dim: #161a22; --dimfg: #4f5869;
+  --seq: #fb923c; --bin: #60a5fa; --abb: #4ade80; --hash: #a78bfa;
+  --look: #facc15; --lookfg: #11151c; --ok: #4ade80; --okbg: #14321f; --bad: #f87171; --badbg: #3a1717;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 700; }
+h2 { font-size: 1.4rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); font-size: 1.02rem; }
+header { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--bin); outline-offset: 2px; }
+
+/* controles */
+.controls { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 6px 12px; font-size: .88rem; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.nbox { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 280px; }
+.nbox label { font-size: .85rem; color: var(--muted); }
+.nbox .nval { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; }
+input[type="range"] { width: 100%; accent-color: var(--fg); }
+
+/* barras */
+.bars { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.bar-row { display: grid; grid-template-columns: 170px 1fr 120px; gap: 12px; align-items: center; }
+.bar-name { font-weight: 600; font-size: .92rem; display: flex; flex-direction: column; line-height: 1.25; }
+.bar-name small { font-weight: 400; color: var(--muted); font-size: .76rem; }
+.track { height: 22px; background: var(--cell); border-radius: 4px; position: relative; overflow: hidden; }
+.fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; transition: width .45s ease; min-width: 3px; }
+.bar-val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; font-size: .95rem; }
+.axis { display: grid; grid-template-columns: 170px 1fr 120px; gap: 12px; }
+.ticks { position: relative; height: 16px; font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
+.ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.note { font-size: .85rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .bar-row, .axis { grid-template-columns: 1fr 86px; }
+  .bar-name { grid-column: 1 / -1; flex-direction: row; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+  .axis > div:first-child, .axis > div:last-child { display: none; }
+  .axis { grid-template-columns: 1fr 86px; }
+}
+
+/* busca ao vivo */
+.picker { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 4px 11px; font-family: var(--font-mono); font-size: .85rem; }
+.chip.ausente { border-style: dashed; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.picker input { width: 84px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--fg); font-family: var(--font-mono); }
+.btn { border: 0; border-radius: 8px; padding: 7px 16px; background: var(--fg); color: var(--bg); font-weight: 600; }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .panels { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; border-top: 4px solid var(--c); }
+.panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.panel-head p { font-size: .82rem; color: var(--muted); }
+.count { text-align: right; flex: none; }
+.count b { font-family: var(--font-display); font-size: 1.9rem; line-height: 1; color: var(--c); font-variant-numeric: tabular-nums; display: block; }
+.count span { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.cells { display: flex; flex-wrap: wrap; gap: 4px; }
+.cellbox { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.cellbox i { font-style: normal; font-family: var(--font-mono); font-size: .62rem; color: var(--muted); }
+.cell { width: 34px; height: 32px; display: grid; place-items: center; border-radius: 5px; background: var(--cell); font-family: var(--font-mono); font-size: .85rem; font-weight: 600; border: 2px solid transparent; transition: background .2s, color .2s, border-color .2s; }
+.cell.vazia { color: transparent; }
+.cell.dim { background: var(--dim); color: var(--dimfg); }
+.cell.look { background: var(--look); color: var(--lookfg); border-color: var(--c); }
+.cell.found { background: var(--okbg); border-color: var(--ok); color: var(--fg); }
+.cell.passed { border-color: color-mix(in srgb, var(--c) 45%, transparent); }
+.cellbox u { text-decoration: none; font-family: var(--font-mono); font-size: .62rem; height: 13px; color: var(--c); font-weight: 600; white-space: nowrap; }
+.msg { font-size: .86rem; min-height: 2.7em; font-family: var(--font-mono); background: var(--cell); border-radius: 6px; padding: 7px 10px; }
+.msg.ok { background: var(--okbg); }
+.msg.bad { background: var(--badbg); }
+.tree-wrap { overflow-x: auto; max-height: 360px; overflow-y: auto; }
+.tree-wrap svg { display: block; width: 100%; min-width: 300px; height: auto; }
+.tree-wrap line { stroke: var(--line); stroke-width: 2; }
+.tree-wrap circle { fill: var(--cell); stroke: var(--line); stroke-width: 2; transition: fill .2s; }
+.tree-wrap text { fill: var(--fg); font-family: var(--font-mono); font-size: 13px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+.tree-wrap g.look circle { fill: var(--look); stroke: var(--c); stroke-width: 3; }
+.tree-wrap g.look text { fill: var(--lookfg); }
+.tree-wrap g.passed circle { stroke: var(--c); }
+.tree-wrap g.found circle { fill: var(--okbg); stroke: var(--ok); stroke-width: 3; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .8rem; color: var(--muted); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+
+/* qual usar */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: .9rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; border-left: 4px solid var(--c); }
+tr.hl td { background: color-mix(in srgb, var(--c) 12%, transparent); }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: .78rem; font-weight: 600; }
+.pill.sim { background: var(--okbg); color: var(--fg); }
+.pill.nao { background: var(--cell); color: var(--muted); }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.rule strong { font-family: var(--font-display); font-size: 1.1rem; }
+.quiz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 16px; }
+@media (max-width: 760px) { .quiz { grid-template-columns: minmax(0, 1fr); } }
+.scen-list { display: flex; flex-direction: column; gap: 6px; }
+.scen { text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 8px; padding: 9px 12px; font-size: .9rem; display: flex; gap: 10px; align-items: center; }
+.scen[aria-pressed="true"] { border-color: var(--fg); box-shadow: inset 3px 0 0 var(--fg); }
+.scen .st { margin-left: auto; font-size: .78rem; flex: none; }
+.answer { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.answer .q { font-size: 1.05rem; font-weight: 600; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.opt { border: 2px solid var(--c); background: transparent; color: var(--fg); border-radius: 8px; padding: 8px 10px; font-weight: 600; font-size: .9rem; }
+.opt.right { background: var(--okbg); border-color: var(--ok); }
+.opt.wrong { background: var(--badbg); border-color: var(--bad); }
+.feedback { font-size: .92rem; }
+.feedback b { display: block; margin-bottom: 2px; }
+.credit { border-top: 1px solid var(--line); padding-top: 16px; font-size: .82rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">LTPI · Pesquisa e Tabela Hash · Prof. Elizabeth Duane</span>
+    <h1>Sequencial, binária, ABB ou hash?</h1>
+    <p class="lead">Quatro formas de achar uma chave. Compare quantas comparações cada uma faz quando os dados crescem, veja cada busca acontecer passo a passo e treine a escolha da estrutura certa.</p>
+  </header>
+
+  <!-- 1. Números -->
+  <section aria-labelledby="s1">
+    <div class="sec-head">
+      <h2 id="s1">Quantas comparações para achar 1 chave entre n?</h2>
+      <p class="lead">Arraste o n. Com poucos dados, todas parecem iguais; com 1 milhão, a diferença aparece.</p>
+    </div>
+    <div class="controls">
+      <div class="nbox">
+        <label for="nslider">Quantidade de chaves (n)</label>
+        <span class="nval mono" id="nval">1.000.000</span>
+        <input type="range" id="nslider" min="0" max="6" step="1" value="5">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="seg" role="group" aria-label="Caso">
+          <button id="m-pior" aria-pressed="true">Pior caso</button>
+          <button id="m-medio" aria-pressed="false">Caso médio</button>
+        </div>
+        <div class="seg" role="group" aria-label="Escala">
+          <button id="e-log" aria-pressed="true">Escala log</button>
+          <button id="e-lin" aria-pressed="false">Escala linear</button>
+        </div>
+      </div>
+    </div>
+    <div class="bars" id="bars"></div>
+    <p class="note" id="barnote"></p>
+  </section>
+
+  <!-- 2. Ao vivo -->
+  <section aria-labelledby="s2">
+    <div class="sec-head">
+      <h2 id="s2">Veja a busca acontecer</h2>
+      <p class="lead">As mesmas 15 chaves guardadas de quatro jeitos. Escolha uma chave e acompanhe as quatro buscas ao mesmo tempo. As chaves tracejadas não estão guardadas.</p>
+    </div>
+    <div class="picker" id="picker"></div>
+    <div class="picker">
+      <label for="keyin" class="note">Outra chave:</label>
+      <input id="keyin" type="number" min="0" max="999" value="58">
+      <button class="btn" id="go">Buscar</button>
+      <button class="btn ghost" id="stepbtn">Passo a passo</button>
+      <label class="toggle"><input type="checkbox" id="degen"> ABB com inserção em ordem crescente</label>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--look)"></i>casa olhada agora</span>
+      <span><i style="background:var(--okbg);border:2px solid var(--ok)"></i>achou</span>
+      <span><i style="background:var(--dim);border:1px solid var(--line)"></i>descartada pela binária</span>
+    </div>
+    <div class="panels">
+      <article class="panel" style="--c:var(--seq)">
+        <div class="panel-head"><div><h3>Busca sequencial</h3><p>Vetor na ordem de chegada. Olha um por um.</p></div><div class="count"><b id="c-seq">0</b><span>comparações</span></div></div>
+        <div class="cells" id="v-seq"></div>
+        <div class="msg" id="m-seq">Escolha uma chave.</div>
+      </article>
+      <article class="panel" style="--c:var(--bin)">
+        <div class="panel-head"><div><h3>Busca binária</h3><p>Vetor ordenado. Olha o meio e descarta metade.</p></div><div class="count"><b id="c-bin">0</b><span>comparações</span></div></div>
+        <div class="cells" id="v-bin"></div>
+        <div class="msg" id="m-bin">Escolha uma chave.</div>
+      </article>
+      <article class="panel" style="--c:var(--abb)">
+        <div class="panel-head"><div><h3>Árvore binária de busca</h3><p>Menor vai para a esquerda, maior para a direita.</p></div><div class="count"><b id="c-abb">0</b><span>comparações</span></div></div>
+        <div class="tree-wrap" id="v-abb"></div>
+        <div class="msg" id="m-abb">Escolha uma chave.</div>
+      </article>
+      <article class="panel" style="--c:var(--hash)">
+        <div class="panel-head"><div><h3>Tabela hash</h3><p>TAM = 23, posição = chave % 23, sondagem linear.</p></div><div class="count"><b id="c-hash">0</b><span>acessos</span></div></div>
+        <div class="cells" id="v-hash"></div>
+        <div class="msg" id="m-hash">Escolha uma chave.</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3. Qual usar -->
+  <section aria-labelledby="s3">
+    <div class="sec-head">
+      <h2 id="s3">Onde cada uma é útil</h2>
+      <p class="lead">A hash ganha na busca pela chave exata e perde em tudo que depende de ordem.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Estrutura</th><th>Busca (média)</th><th>Busca (pior caso)</th><th>Mantém ordem?</th><th>Bom para</th></tr></thead>
+        <tbody>
+          <tr id="t-seq" style="--c:var(--seq)"><td>Vetor desordenado, sequencial</td><td class="mono">O(n)</td><td class="mono">O(n)</td><td><span class="pill nao">não</span></td><td>poucos dados, uma busca só</td></tr>
+          <tr id="t-bin" style="--c:var(--bin)"><td>Vetor ordenado, binária</td><td class="mono">O(log n)</td><td class="mono">O(log n)</td><td><span class="pill sim">sim</span></td><td>dados que quase não mudam, listagem em ordem</td></tr>
+          <tr id="t-abb" style="--c:var(--abb)"><td>ABB</td><td class="mono">O(log n)</td><td class="mono">O(n), se degenerar</td><td><span class="pill sim">sim</span></td><td>inserir e remover mantendo a ordem</td></tr>
+          <tr id="t-hash" style="--c:var(--hash)"><td>Tabela hash</td><td class="mono">O(1)</td><td class="mono">O(n), se tudo colidir</td><td><span class="pill nao">não</span></td><td>muitas buscas pela chave exata</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rule">
+      <strong>Como escolher, em uma pergunta: "preciso das chaves em ordem?"</strong>
+      <p><b>Sim</b> (ranking, ordem alfabética, faixa de valores, menor e maior): vetor ordenado ou ABB.<br><b>Não</b>, só preciso saber se a chave existe e pegar o registro: tabela hash.</p>
+    </div>
+    <h3>Teste a sua escolha</h3>
+    <div class="quiz">
+      <div class="scen-list" id="scens"></div>
+      <div class="answer" id="answer"></div>
+    </div>
+  </section>
+  <footer class="credit">Material interativo criado pela Prof. Elizabeth Duane com suporte do Claude Opus 5.5 (Anthropic).</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var fmt = function (x) { return Math.round(x).toLocaleString("pt-BR"); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 1. Barras ---------- */
+  var NS = [15, 100, 1000, 10000, 100000, 1000000, 1000000000];
+  var mode = "pior", escala = "log";
+  var log2f = function (n) { return Math.floor(Math.log2(n)); };
+  function linhas(n) {
+    if (mode === "pior") {
+      return [
+        { nome: "Sequencial", sub: "olha todos", v: n, c: "--seq" },
+        { nome: "Binária", sub: "vetor ordenado", v: log2f(n) + 1, c: "--bin" },
+        { nome: "ABB balanceada", sub: "altura da árvore", v: log2f(n) + 1, c: "--abb" },
+        { nome: "ABB degenerada", sub: "virou uma lista", v: n, c: "--abb" },
+        { nome: "Tabela hash", sub: "se tudo colidir", v: n, c: "--hash" }
+      ];
+    }
+    return [
+      { nome: "Sequencial", sub: "acha, em média, no meio", v: (n + 1) / 2, c: "--seq" },
+      { nome: "Binária", sub: "vetor ordenado", v: Math.max(1, log2f(n)), c: "--bin" },
+      { nome: "ABB balanceada", sub: "chaves aleatórias", v: Math.max(1, log2f(n)), c: "--abb" },
+      { nome: "ABB degenerada", sub: "inserida em ordem", v: (n + 1) / 2, c: "--abb" },
+      { nome: "Tabela hash", sub: "até 70% cheia", v: 2, c: "--hash", txt: "1 a 2" }
+    ];
+  }
+  function pos(v, n) {
+    if (escala === "lin") { return v / n * 100; }
+    return n <= 1 ? 100 : Math.log10(Math.max(1, v)) / Math.log10(n) * 100;
+  }
+  function desenhaBarras() {
+    var n = NS[+document.getElementById("nslider").value];
+    document.getElementById("nval").textContent = fmt(n);
+    var html = "";
+    linhas(n).forEach(function (l) {
+      html += '<div class="bar-row"><div class="bar-name">' + l.nome + '<small>' + l.sub + '</small></div>' +
+        '<div class="track"><div class="fill" style="width:' + pos(l.v, n).toFixed(2) + '%;background:var(' + l.c + ')"></div></div>' +
+        '<div class="bar-val">' + (l.txt || fmt(l.v)) + '</div></div>';
+    });
+    var ticks = "";
+    if (escala === "log") {
+      var maxe = Math.floor(Math.log10(n));
+      var passo = maxe > 6 ? 3 : 1;
+      for (var e = 0; e <= maxe; e += passo) { ticks += '<span style="left:' + pos(Math.pow(10, e), n) + '%">' + fmt(Math.pow(10, e)) + '</span>'; }
+    } else {
+      [0, 0.5, 1].forEach(function (f) { ticks += '<span style="left:' + (f * 100) + '%">' + fmt(n * f) + '</span>'; });
+    }
+    html += '<div class="axis"><div></div><div class="ticks">' + ticks + '</div><div></div></div>';
+    document.getElementById("bars").innerHTML = html;
+    var b = log2f(n) + 1;
+    document.getElementById("barnote").textContent = (escala === "log"
+      ? "Escala logarítmica: cada marca vale 10 vezes a anterior. Troque para a escala linear e veja a binária e a hash quase sumirem. "
+      : "Escala linear: as barras da binária e da hash ficam tão pequenas que quase não aparecem. ") +
+      "Com n = " + fmt(n) + ", a binária faz no máximo " + b + " comparações, porque cada uma corta a busca pela metade." + (mode === "pior" ? " O pior caso da hash só acontece se todas as chaves colidirem; com uma boa função e a tabela até 70% cheia, ela fica em 1 ou 2 acessos (veja o caso médio)." : "");
+  }
+  function seg(a, b, on) { document.getElementById(a).setAttribute("aria-pressed", on); document.getElementById(b).setAttribute("aria-pressed", !on); }
+  document.getElementById("nslider").addEventListener("input", desenhaBarras);
+  document.getElementById("m-pior").onclick = function () { mode = "pior"; seg("m-pior", "m-medio", true); desenhaBarras(); };
+  document.getElementById("m-medio").onclick = function () { mode = "medio"; seg("m-pior", "m-medio", false); desenhaBarras(); };
+  document.getElementById("e-log").onclick = function () { escala = "log"; seg("e-log", "e-lin", true); desenhaBarras(); };
+  document.getElementById("e-lin").onclick = function () { escala = "lin"; seg("e-log", "e-lin", false); desenhaBarras(); };
+  desenhaBarras();
+
+  /* ---------- 2. Busca ao vivo ---------- */
+  var CHAVES = [47, 23, 81, 12, 35, 66, 90, 8, 19, 29, 41, 58, 72, 85, 97];
+  var ORD = CHAVES.slice().sort(function (a, b) { return a - b; });
+  var TAM = 23;
+  var tabela = [];
+  for (var i = 0; i < TAM; i++) { tabela.push(-1); }
+  CHAVES.forEach(function (c) {
+    var p = c % TAM;
+    for (var k = 0; k < TAM; k++) { if (tabela[p] === -1) { tabela[p] = c; return; } p = (p + 1) % TAM; }
+  });
+
+  // ABB
+  function montaABB(ordem) {
+    var raiz = null;
+    ordem.forEach(function (c) {
+      var no = { k: c, e: null, d: null };
+      if (!raiz) { raiz = no; return; }
+      var a = raiz;
+      while (true) {
+        if (c < a.k) { if (a.e) { a = a.e; } else { a.e = no; break; } }
+        else { if (a.d) { a = a.d; } else { a.d = no; break; } }
+      }
+    });
+    var idx = 0, nos = [];
+    (function em(n, prof) { if (!n) { return; } em(n.e, prof + 1); n.x = idx++; n.y = prof; nos.push(n); em(n.d, prof + 1); })(raiz, 0);
+    return { raiz: raiz, nos: nos };
+  }
+  var abb = montaABB(CHAVES);
+
+  // passos de cada busca: {look, passed[], dim[], found, msg, count, fim, achou}
+  function passosSeq(x) {
+    var out = [], passed = [];
+    for (var i = 0; i < CHAVES.length; i++) {
+      var eq = CHAVES[i] === x;
+      out.push({ look: i, passed: passed.slice(), count: i + 1, found: eq ? i : null,
+        msg: "v[" + i + "] = " + CHAVES[i] + (eq ? " é igual a " + x + ": achou!" : " ≠ " + x + ", próximo") });
+      if (eq) { out[out.length - 1].fim = true; out[out.length - 1].achou = true; return out; }
+      passed.push(i);
+    }
+    out.push({ look: null, passed: passed, count: CHAVES.length, fim: true, achou: false, msg: "Chegou ao fim do vetor: não está (-1)." });
+    return out;
+  }
+  function passosBin(x) {
+    var out = [], ini = 0, fim = ORD.length - 1, c = 0;
+    while (ini <= fim) {
+      var meio = Math.floor((ini + fim) / 2); c++;
+      var dim = [];
+      for (var j = 0; j < ORD.length; j++) { if (j < ini || j > fim) { dim.push(j); } }
+      var s = { look: meio, dim: dim, count: c, ini: ini, fim: fim, meio: meio };
+      if (ORD[meio] === x) { s.found = meio; s.fim2 = true; s.msg = "meio = " + meio + ", v[meio] = " + ORD[meio] + ": achou!"; s.fim = true; s.achou = true; out.push(s); return out; }
+      if (x < ORD[meio]) { s.msg = "meio = " + meio + ", " + x + " < " + ORD[meio] + ": fica com a metade da esquerda"; fim = meio - 1; }
+      else { s.msg = "meio = " + meio + ", " + x + " > " + ORD[meio] + ": fica com a metade da direita"; ini = meio + 1; }
+      out.push(s);
+    }
+    var dimAll = []; for (var t = 0; t < ORD.length; t++) { dimAll.push(t); }
+    out.push({ look: null, dim: dimAll, count: c, fim: true, achou: false, msg: "ini > fim: o intervalo ficou vazio, não está (-1)." });
+    return out;
+  }
+  function passosABB(x) {
+    var out = [], a = abb.raiz, c = 0, passed = [];
+    while (a) {
+      c++;
+      var s = { look: a.k, passed: passed.slice(), count: c };
+      if (a.k === x) { s.found = a.k; s.msg = "nó " + a.k + ": achou!"; s.fim = true; s.achou = true; out.push(s); return out; }
+      s.msg = "nó " + a.k + ": " + x + (x < a.k ? " < " + a.k + ", vai para a esquerda" : " > " + a.k + ", vai para a direita");
+      out.push(s); passed.push(a.k);
+      a = x < a.k ? a.e : a.d;
+    }
+    out.push({ look: null, passed: passed, count: c, fim: true, achou: false, msg: "Chegou num ponteiro nulo: não está." });
+    return out;
+  }
+  function passosHash(x) {
+    var out = [], p = x % TAM, passed = [];
+    for (var k = 0; k < TAM; k++) {
+      var s = { look: p, passed: passed.slice(), count: k + 1 };
+      if (tabela[p] === -1) { s.msg = (k === 0 ? x + " % 23 = " + p + ". " : "") + "casa " + p + " vazia: não está (-1)."; s.fim = true; s.achou = false; out.push(s); return out; }
+      if (tabela[p] === x) { s.found = p; s.msg = (k === 0 ? x + " % 23 = " + p + ". " : "") + "casa " + p + " tem o " + x + ": achou!"; s.fim = true; s.achou = true; out.push(s); return out; }
+      s.msg = (k === 0 ? x + " % 23 = " + p + ". " : "") + "casa " + p + " tem o " + tabela[p] + ", colisão: vai para " + ((p + 1) % TAM);
+      out.push(s); passed.push(p); p = (p + 1) % TAM;
+    }
+    out[out.length - 1].fim = true;
+    return out;
+  }
+
+  function celulas(el, vals, idxMostrar, s, vaziaFn, markFn) {
+    var h = "";
+    vals.forEach(function (v, i) {
+      var cls = "cell";
+      if (vaziaFn && vaziaFn(v)) { cls += " vazia"; }
+      if (s) {
+        if (s.dim && s.dim.indexOf(i) >= 0) { cls += " dim"; }
+        if (s.passed && s.passed.indexOf(i) >= 0) { cls += " passed"; }
+        if (s.found === i) { cls += " found"; } else if (s.look === i) { cls += " look"; }
+      }
+      h += '<div class="cellbox">' + (idxMostrar ? "<i>" + i + "</i>" : "") + '<div class="' + cls + '">' + (vaziaFn && vaziaFn(v) ? "." : v) + "</div>" + (markFn ? "<u>" + markFn(i) + "</u>" : "") + "</div>";
+    });
+    el.innerHTML = h;
+  }
+  function desenhaArvore(s) {
+    var nos = abb.nos, W = 44, H = 52;
+    var maxY = 0; nos.forEach(function (n) { maxY = Math.max(maxY, n.y); });
+    var w = nos.length * W + 10, h = (maxY + 1) * H + 10;
+    var X = function (n) { return n.x * W + W / 2 + 5; }, Y = function (n) { return n.y * H + 26; };
+    var linhasS = "", nosS = "";
+    nos.forEach(function (n) {
+      [n.e, n.d].forEach(function (f) { if (f) { linhasS += '<line x1="' + X(n) + '" y1="' + Y(n) + '" x2="' + X(f) + '" y2="' + Y(f) + '"></line>'; } });
+      var cls = "";
+      if (s) {
+        if (s.found === n.k) { cls = "found"; } else if (s.look === n.k) { cls = "look"; } else if (s.passed && s.passed.indexOf(n.k) >= 0) { cls = "passed"; }
+      }
+      nosS += '<g class="' + cls + '"><circle cx="' + X(n) + '" cy="' + Y(n) + '" r="17"></circle><text x="' + X(n) + '" y="' + Y(n) + '">' + n.k + "</text></g>";
+    });
+    document.getElementById("v-abb").innerHTML = '<svg viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="Árvore binária de busca">' + linhasS + nosS + "</svg>";
+  }
+  function marcaBin(s) {
+    return function (i) {
+      if (!s || s.ini === undefined) { return ""; }
+      var r = [];
+      if (i === s.ini) { r.push("ini"); }
+      if (i === s.meio) { r.push("meio"); }
+      if (i === s.fim) { r.push("fim"); }
+      return r.join("/");
+    };
+  }
+
+  var P = {}, passo = 0, timer = null, chaveAtual = null;
+  function render() {
+    var nomes = ["seq", "bin", "abb", "hash"];
+    nomes.forEach(function (nm) {
+      var lista = P[nm], s = lista ? lista[Math.min(passo, lista.length - 1)] : null;
+      if (nm === "seq") { celulas(document.getElementById("v-seq"), CHAVES, true, s); }
+      if (nm === "bin") { celulas(document.getElementById("v-bin"), ORD, true, s, null, marcaBin(s)); }
+      if (nm === "abb") { desenhaArvore(s); }
+      if (nm === "hash") { celulas(document.getElementById("v-hash"), tabela, true, s, function (v) { return v === -1; }); }
+      document.getElementById("c-" + nm).textContent = s ? s.count : 0;
+      var m = document.getElementById("m-" + nm);
+      m.textContent = s ? s.msg : "Escolha uma chave.";
+      m.className = "msg" + (s && s.fim && passo >= lista.length - 1 ? (s.achou ? " ok" : " bad") : "");
+    });
+  }
+  function maxPassos() { var m = 0; for (var k in P) { m = Math.max(m, P[k].length); } return m; }
+  function prepara(x) {
+    if (timer) { clearInterval(timer); timer = null; }
+    chaveAtual = x;
+    P = { seq: passosSeq(x), bin: passosBin(x), abb: passosABB(x), hash: passosHash(x) };
+    passo = 0;
+    document.getElementById("keyin").value = x;
+    document.querySelectorAll("#picker .chip").forEach(function (b) { b.setAttribute("aria-pressed", +b.dataset.k === x); });
+  }
+  function buscar(x) {
+    prepara(x);
+    if (reduce) { passo = maxPassos() - 1; render(); return; }
+    render();
+    timer = setInterval(function () {
+      if (passo >= maxPassos() - 1) { clearInterval(timer); timer = null; return; }
+      passo++; render();
+    }, 750);
+  }
+  function lerChave() {
+    var v = parseInt(document.getElementById("keyin").value, 10);
+    if (isNaN(v) || v < 0) { v = 0; }
+    return v;
+  }
+  // chips: as 15 guardadas + 3 ausentes
+  var chips = "";
+  ORD.forEach(function (c) { chips += '<button class="chip" data-k="' + c + '" aria-pressed="false">' + c + "</button>"; });
+  [50, 3, 99].forEach(function (c) { chips += '<button class="chip ausente" data-k="' + c + '" aria-pressed="false" title="não está guardada">' + c + "</button>"; });
+  var pk = document.getElementById("picker"); pk.innerHTML = '<span class="note">Chaves:</span>' + chips;
+  pk.addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (b) { buscar(+b.dataset.k); } });
+  document.getElementById("go").onclick = function () { buscar(lerChave()); };
+  document.getElementById("keyin").addEventListener("keydown", function (e) { if (e.key === "Enter") { buscar(lerChave()); } });
+  document.getElementById("stepbtn").onclick = function () {
+    var x = lerChave();
+    if (timer || chaveAtual !== x) { prepara(x); render(); return; }
+    if (passo < maxPassos() - 1) { passo++; render(); }
+  };
+  document.getElementById("degen").addEventListener("change", function (e) {
+    abb = montaABB(e.target.checked ? ORD : CHAVES);
+    if (chaveAtual !== null) { buscar(chaveAtual); } else { render(); }
+  });
+  prepara(58); passo = 0; render();
+
+  /* ---------- 3. Quiz ---------- */
+  var OPC = { seq: "Sequencial", bin: "Binária (vetor ordenado)", abb: "ABB", hash: "Tabela hash" };
+  var COR = { seq: "--seq", bin: "--bin", abb: "--abb", hash: "--hash" };
+  var CEN = [
+    { t: "Conferir se um código de produto existe, milhares de vezes por dia.", ok: ["hash"], e: "Busca pela chave exata, muitas vezes, e a ordem não importa: 1 ou 2 acessos por busca." },
+    { t: "Mostrar os 10 alunos com as maiores notas.", ok: ["bin", "abb"], e: "Precisa de ordem. A hash espalha as chaves e não sabe quem é o maior." },
+    { t: "Achar um nome numa lista de 20 contatos, uma vez só.", ok: ["seq"], e: "Poucos dados e uma busca só: ordenar ou montar uma estrutura custa mais do que olhar os 20." },
+    { t: "Cadastro em que alunos entram e saem o tempo todo e a lista sai em ordem alfabética.", ok: ["abb"], e: "Inserir e remover mantendo a ordem. No vetor ordenado, cada inserção desloca os elementos." },
+    { t: "Login: achar o usuário pelo nome de usuário.", ok: ["hash"], e: "Chave exata, muitas buscas, sem precisar de ordem." },
+    { t: "Lista de CEPs que muda uma vez por ano e é consultada pelo número.", ok: ["bin", "hash"], e: "Os dois servem. Dados que quase não mudam ficam bem num vetor ordenado (binária, cerca de 20 comparações para 1 milhão); a hash faz 1 ou 2 acessos, mas não lista em ordem." },
+    { t: "Buscar todas as notas entre 6 e 8.", ok: ["bin", "abb"], e: "Faixa de valores depende de ordem. Na hash, notas vizinhas ficam em casas espalhadas." }
+  ];
+  var resp = {}, atual = 0;
+  function desenhaQuiz() {
+    var h = "";
+    CEN.forEach(function (c, i) {
+      var st = resp[i] === undefined ? "" : (resp[i] ? '<span class="st" style="color:var(--ok)">acertou</span>' : '<span class="st" style="color:var(--bad)">reveja</span>');
+      h += '<button class="scen" data-i="' + i + '" aria-pressed="' + (i === atual) + '"><span>' + c.t + "</span>" + st + "</button>";
+    });
+    document.getElementById("scens").innerHTML = h;
+    var c = CEN[atual], escolhida = resp["e" + atual];
+    var o = "";
+    Object.keys(OPC).forEach(function (k) {
+      var cls = "opt";
+      if (escolhida !== undefined) { if (c.ok.indexOf(k) >= 0) { cls += " right"; } else if (k === escolhida) { cls += " wrong"; } }
+      o += '<button class="' + cls + '" data-k="' + k + '" style="--c:var(' + COR[k] + ')">' + OPC[k] + "</button>";
+    });
+    var fb = "";
+    if (escolhida !== undefined) {
+      fb = '<div class="feedback"><b style="color:var(' + (resp[atual] ? "--ok" : "--bad") + ')">' + (resp[atual] ? "Boa escolha." : "Não é a melhor opção.") + "</b>" +
+        "Melhor: " + c.ok.map(function (k) { return OPC[k]; }).join(" ou ") + ". " + c.e + "</div>";
+    }
+    document.getElementById("answer").innerHTML = '<span class="eyebrow">Cenário ' + (atual + 1) + " de " + CEN.length + '</span><div class="q">' + c.t + '</div><div class="opts">' + o + "</div>" + fb +
+      (escolhida !== undefined && atual < CEN.length - 1 ? '<div><button class="btn" id="prox">Próximo cenário</button></div>' : "");
+    ["seq", "bin", "abb", "hash"].forEach(function (k) { document.getElementById("t-" + k).classList.toggle("hl", escolhida !== undefined && c.ok.indexOf(k) >= 0); });
+  }
+  document.getElementById("scens").addEventListener("click", function (e) { var b = e.target.closest(".scen"); if (b) { atual = +b.dataset.i; desenhaQuiz(); } });
+  document.getElementById("answer").addEventListener("click", function (e) {
+    var b = e.target.closest(".opt");
+    if (b && resp["e" + atual] === undefined) { resp["e" + atual] = b.dataset.k; resp[atual] = CEN[atual].ok.indexOf(b.dataset.k) >= 0; desenhaQuiz(); return; }
+    if (e.target.id === "prox") { atual++; desenhaQuiz(); }
+  });
+  desenhaQuiz();
+})();
+</script>
+
+</body>
+</html>
